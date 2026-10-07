@@ -7,6 +7,7 @@ use App\Models\Setting;
 use App\Services\AccessControlService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class SettingsController extends Controller
 {
@@ -40,10 +41,14 @@ class SettingsController extends Controller
             'ui_brand',
         ];
 
-        $settings = array_intersect_key($this->defaults(), array_flip($allowedKeys));
+        $settings = Cache::rememberForever('nst.settings.public_appearance.v1', function () use ($allowedKeys) {
+            $settings = array_intersect_key($this->defaults(), array_flip($allowedKeys));
 
-        Setting::query()->whereIn('key', $allowedKeys)->get()->each(function (Setting $setting) use (&$settings) {
-            $settings[$setting->key] = $this->castSettingValue($setting->value, $setting->type);
+            Setting::query()->whereIn('key', $allowedKeys)->get()->each(function (Setting $setting) use (&$settings) {
+                $settings[$setting->key] = $this->castSettingValue($setting->value, $setting->type);
+            });
+
+            return $settings;
         });
 
         return response()->json([
@@ -196,6 +201,8 @@ class SettingsController extends Controller
 
             Setting::setValue($key, $value, $group, $type);
         }
+
+        Cache::forget('nst.settings.public_appearance.v1');
 
         if (! empty($data['timezone'])) {
             config(['app.timezone' => $data['timezone']]);
