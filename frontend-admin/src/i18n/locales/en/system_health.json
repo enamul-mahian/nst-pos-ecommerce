@@ -1,0 +1,5 @@
+{
+  "subtitle": "Verify Purchase, Sale, IMEI stock, Accounts, Reports, Export, Settings, Audit Logs and storage/database readiness from one place.",
+  "load_failed": "Could not load system health data.",
+  "confirm_repair": "Run the auto-fix for sale due mismatch, purchase due mismatch and user normalization?"
+}

@@ -1,0 +1,9 @@
+{
+  "company": "New Singapur Telecom",
+  "title": "Supplier Portal",
+  "intro": "This login is only for registered NST suppliers. Supplier accounts cannot enter the POS.",
+  "login_id": "Email, phone or username",
+  "password": "Password",
+  "signing_in": "Signing in…",
+  "submit": "Open Supplier Portal"
+}

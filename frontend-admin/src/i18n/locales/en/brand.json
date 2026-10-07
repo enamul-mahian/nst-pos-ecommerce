@@ -1,0 +1,33 @@
+{
+  "title": "{name} Business OS",
+  "workspace_tagline": "Unified operations workspace",
+  "editor": {
+    "open": "Edit brand",
+    "title": "Sidebar Brand",
+    "hint": "Logo, colours and text shown at the top of the sidebar.",
+    "upload_logo": "Upload logo",
+    "remove_logo": "Remove logo",
+    "logo_fit": "Logo fit",
+    "fit_contain": "Fit inside",
+    "fit_cover": "Fill tile",
+    "mark_text": "Logo text (used when there is no logo image)",
+    "brand_title": "Title",
+    "brand_subtitle": "Subtitle",
+    "background": "Logo background",
+    "text_color": "Title colour",
+    "subtitle_color": "Subtitle colour",
+    "theme_default": "Theme default",
+    "clear": "Clear",
+    "saved": "Saved",
+    "save_failed": "Could not save the brand.",
+    "image_only": "Choose an image file.",
+    "image_too_large": "The logo image is too large. Use a smaller image.",
+    "image_failed": "Could not read the image.",
+    "favicon": "Browser tab icon",
+    "favicon_logo": "Use the logo (automatic)",
+    "favicon_custom": "Upload a separate icon",
+    "favicon_default": "Default icon",
+    "favicon_upload": "Upload icon",
+    "favicon_help": "Shown on the browser tab of the admin panel and the website. Square PNG, 64 x 64 or larger, works best."
+  }
+}

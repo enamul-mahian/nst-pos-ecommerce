@@ -1,0 +1,13 @@
+{
+  "create_title": "Create Purchase",
+  "create_subtitle": "এক supplier invoice-এর ভিতরে multiple product, IMEI এবং barcode add করুন।",
+  "same_price_confirm": "এই product \"{name}\" একই Purchase Price সহ ইতিমধ্যে আছে।\n\nআপনি কি quantity +{quantity} করতে চান?\n\nCancel চাপলে আলাদা row করা হবে।",
+  "price_row_help": "Same product different price হলে আলাদা row হবে। Same price হলে quantity বাড়ানোর confirmation দেখাবে।",
+  "manual_add_disabled_title": "Manual Product Add এখানে রাখা হয়নি।",
+  "manual_add_disabled_body": "Supplier purchase entry-তে existing product/variant Barcode/SKU scan করে item add করুন। Product না পাওয়া গেলে Product/Catalog module থেকে authorized user আগে product/variant create করবে।",
+  "device_price_help": "IMEI-tracked product হলে প্রতিটি device-এর Purchase Price আলাদা edit করা যাবে।",
+  "price_visibility_note": "Purchase price এবং payment amount শুধু Super Admin, Admin ও Accountant দেখতে পারবে।",
+  "list_title": "Purchases",
+  "list_subtitle": "Supplier purchase invoice, products, IMEI এবং barcode history.",
+  "list_price_visibility_note": "Purchase price এবং payment information শুধু Super Admin, Admin ও Accountant দেখতে পারবে।"
+}

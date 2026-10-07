@@ -1,0 +1,29 @@
+{
+  "title": "Dashboard",
+  "welcome": {
+    "title": "Welcome back, {name}!",
+    "subtitle": "Here’s what’s happening with your business today.",
+    "fallback_name": "User"
+  },
+  "welcome_editor": {
+    "open": "Edit welcome section",
+    "close": "Close welcome editor",
+    "title": "Welcome Section",
+    "hint": "Use {token} to insert the signed-in user's name.",
+    "title_en": "English title",
+    "subtitle_en": "English subtitle",
+    "title_bn": "Bangla title",
+    "subtitle_bn": "Bangla subtitle",
+    "icon": "Icon / Emoji",
+    "visible": "Show on Dashboard",
+    "save": "Save Welcome Section"
+  },
+  "widget": {
+    "lock": "Lock widget",
+    "unlock": "Unlock widget",
+    "lock_named": "Lock {name}",
+    "unlock_named": "Unlock {name}",
+    "drag_named": "Drag {name}",
+    "resize_named": "Resize {name}"
+  }
+}

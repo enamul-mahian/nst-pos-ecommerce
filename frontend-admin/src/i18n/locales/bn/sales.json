@@ -1,0 +1,25 @@
+{
+  "pos_title": "POS Sale",
+  "pos_subtitle": "এখন IMEI/device scan করলে নির্দিষ্ট device sold হবে, stock কমবে এবং profit device purchase cost অনুযায়ী calculate হবে।",
+  "errors": {
+    "device_in_cart_or_unavailable": "এই IMEI/device already cart-এ আছে অথবা available নয়।",
+    "device_stock_not_found": "এই device-এর branch stock পাওয়া যায়নি। আগে stock sync/check করুন।",
+    "product_not_found": "Product পাওয়া যায়নি। Barcode/SKU/Product name ঠিক আছে কিনা check করুন।",
+    "no_branch_stock": "এই product-এর branch stock নেই।",
+    "no_available_imei": "এই product device/IMEI tracked, কিন্তু available IMEI নেই। Device Stock check করুন।",
+    "imei_count_mismatch": "{name} এর quantity এবং selected IMEI count same হতে হবে।"
+  },
+  "search_help": "IMEI, device barcode, product barcode, SKU অথবা product name লিখে Enter চাপুন। IMEI scan করলে exact device sold হবে।",
+  "select_branch_placeholder": "আগে Branch select করুন",
+  "no_branch_stock_products": "এই branch-এ sale করার মতো stock product পাওয়া যায়নি। আগে Purchase/Branch Stock check করুন।",
+  "device_results_heading": "Available Device / IMEI Result - click করলে exact device cart-এ যাবে",
+  "product_results_heading": "Product Result - click row / press Add / press Enter to add cart; device tracked product হলে auto first available IMEI select হবে",
+  "search_no_results": "Product/IMEI পাওয়া যায়নি। Product name, SKU, barcode বা IMEI আবার check করুন। Branch stock-এ quantity আছে কিনা দেখুন।",
+  "mfs_help": "bKash, Nagad, Rocket, Upay, Other MFS একসাথে add করা যাবে।",
+  "list_title": "Sales List",
+  "list_subtitle": "POS sale invoice, payment, print, cancel এবং return manage করুন।",
+  "cancel_reason_prompt": "Invoice \"{invoice}\" এর cancel reason লিখুন:",
+  "return_confirm": "Invoice \"{invoice}\" return করবেন? Stock এবং IMEI আবার available হবে।",
+  "return_note_placeholder": "Extra note লিখুন...",
+  "return_info": "Return confirm করলে product stock/branch stock বাড়বে এবং IMEI device আবার available হবে।"
+}

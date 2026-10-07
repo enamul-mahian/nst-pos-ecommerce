@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <!-- Responsive mobile safe-area viewport cover -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    
+    <title>New Singapur Telecom | Premium Mobile, Gadget & Telecom Store</title>
+    
+    <!-- Dynamic Fonts Integration: Inter Font Family -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" /></noscript>
+    <link rel="stylesheet" href="/chatbox/nst-imessage-chatbox.css">
+</head>
+  <body>
+    <!-- The primary mounting point for the React application -->
+    <div id="root"></div>
+    
+    <!-- Entry script module referencing the React bootstrap file -->
+    <script type="module" src="/src/main.tsx"></script>
+    <script>window.NST_CHATBOX_CONFIG={apiBase:(window.location.hostname==='127.0.0.1'||window.location.hostname==='localhost')?'http://127.0.0.1:8000/api':'/api'};</script>
+  <script defer src="/chatbox/nst-imessage-chatbox.js"></script>
+</body>
+</html>

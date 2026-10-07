@@ -1,0 +1,974 @@
+:root {
+  --nst-ui-primary: #7c5cff;
+  --nst-ui-primary-soft: color-mix(in srgb, var(--nst-ui-primary) 13%, transparent);
+  --nst-ui-text: var(--nst-dashboard-text, #e9eef7);
+  --nst-ui-muted: var(--nst-dashboard-muted, #94a3b8);
+  --nst-ui-surface: var(--nst-dashboard-surface, #0f1a2b);
+  --nst-ui-surface-soft: color-mix(in srgb, var(--nst-ui-surface) 88%, transparent);
+  --nst-ui-glass: color-mix(in srgb, var(--nst-ui-surface) 74%, transparent);
+  --nst-ui-border: color-mix(in srgb, var(--nst-ui-text) 12%, transparent);
+  --nst-ui-border-strong: color-mix(in srgb, var(--nst-ui-primary) 38%, var(--nst-ui-border));
+  --nst-ui-tooltip: #111827;
+  --nst-ui-shadow-sm: 0 8px 24px rgba(2, 8, 23, .14);
+  --nst-ui-shadow-lg: 0 22px 65px rgba(2, 8, 23, .28);
+}
+
+.nst-ui-card { min-height: 0; }
+.nst-ui-card, .nst-ui-icon-box, .nst-dock-shell { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+
+/* Normalize icon treatment inside the business dashboard without changing icon meaning. */
+.nst-business-dashboard .nst-dashboard-panel-icon,
+.nst-business-dashboard .nst-ui-icon-box {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--nst-ui-border) !important;
+  background: var(--nst-ui-primary-soft) !important;
+  color: var(--nst-ui-primary) !important;
+  box-shadow: none !important;
+}
+.nst-business-dashboard .nst-dashboard-panel-icon svg,
+.nst-business-dashboard .nst-ui-icon-box svg { width: 19px !important; height: 19px !important; stroke-width: 1.8 !important; }
+
+/* Keep cards compact/readable; avoid forced blank space from visual decoration. */
+.nst-business-dashboard .nst-dashboard-surface { border-radius: 16px !important; box-shadow: var(--nst-ui-shadow-sm) !important; }
+.nst-business-dashboard .nst-dashboard-widget { border-radius: 16px !important; }
+
+/* The grid itself must not create an artificial blank canvas when content is shorter. */
+.nst-business-dashboard .nst-dashboard-widget-grid { align-content: start !important; }
+
+@media (max-width: 767px) {
+  .nst-dock-shell { max-width: calc(100vw - 14px); gap: 2px; padding: 6px; border-radius: 18px; }
+  .nst-business-dashboard .nst-dashboard-surface { border-radius: 14px !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nst-dock-shell *, [data-swapy-item] { animation: none !important; transition-duration: .01ms !important; }
+}
+
+
+/* NST Smooth Dashboard Integration */
+.nst-business-dashboard .nst-dashboard-swapy-slot { min-height: 0; transition: grid-column 220ms cubic-bezier(.2,.8,.2,1), grid-row 220ms cubic-bezier(.2,.8,.2,1); }
+.nst-business-dashboard .nst-dashboard-widget { height: 100%; min-height: 0; transition: box-shadow 180ms ease, border-color 180ms ease, transform 180ms ease; will-change: transform; }
+.nst-business-dashboard [data-swapy-dragging] .nst-dashboard-widget { box-shadow: var(--nst-ui-shadow-lg) !important; transform: scale(1.012); }
+.nst-business-dashboard [data-swapy-highlighted] { outline: 1px solid var(--nst-ui-border-strong); outline-offset: 2px; }
+.nst-business-dashboard .nst-widget-six-dot-handle { touch-action: none; cursor: grab; }
+.nst-business-dashboard .nst-widget-six-dot-handle:active { cursor: grabbing; }
+@media (max-width: 767px) {
+  .nst-business-dashboard .nst-dashboard-widget-grid { grid-auto-rows: auto !important; grid-template-rows: none !important; }
+  .nst-business-dashboard .nst-dashboard-swapy-slot { grid-column: 1 / -1 !important; grid-row: auto !important; min-height: auto; }
+  .nst-business-dashboard .nst-dashboard-widget { height: auto; }
+}
+
+/* NST Dashboard collision-safe smooth layout repair */
+.nst-business-dashboard .nst-dashboard-widget-grid {
+  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  grid-auto-rows: 28px !important;
+  gap: 12px !important;
+  min-height: 0 !important;
+  align-content: start !important;
+  background-image: none !important;
+}
+.nst-business-dashboard .nst-dashboard-swapy-slot {
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+  transition: grid-column-start 240ms cubic-bezier(.2,.8,.2,1), grid-column-end 240ms cubic-bezier(.2,.8,.2,1), grid-row-start 240ms cubic-bezier(.2,.8,.2,1), grid-row-end 240ms cubic-bezier(.2,.8,.2,1);
+}
+.nst-business-dashboard .nst-dashboard-swapy-slot > [data-swapy-item] { height: 100%; min-height: 0; }
+.nst-business-dashboard .nst-dashboard-widget {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  transform-origin: center;
+  transition: transform 200ms cubic-bezier(.2,.8,.2,1), box-shadow 200ms ease, border-color 180ms ease !important;
+}
+.nst-business-dashboard .nst-dashboard-widget.is-unlocked {
+  outline: 1px solid color-mix(in srgb,var(--nst-dashboard-primary) 48%,transparent) !important;
+  padding-top: 32px;
+  box-shadow: 0 0 0 3px color-mix(in srgb,var(--nst-dashboard-primary) 7%,transparent) !important;
+  cursor: default !important;
+}
+.nst-business-dashboard .nst-dashboard-widget.is-unlocked::after { display: none !important; }
+.nst-business-dashboard .nst-widget-editor-bar {
+  left: 8px; right: 8px; top: 6px; height: 24px;
+  border: 1px solid color-mix(in srgb,var(--nst-dashboard-primary) 22%,var(--nst-dashboard-border));
+  background: color-mix(in srgb,var(--nst-dashboard-surface) 88%,var(--nst-dashboard-primary) 12%) !important;
+  cursor: default !important;
+}
+.nst-business-dashboard .nst-widget-six-dot-handle {
+  pointer-events: auto;
+  cursor: grab !important;
+  border-radius: 7px;
+  transition: transform 150ms ease, background-color 150ms ease;
+}
+.nst-business-dashboard .nst-widget-six-dot-handle:hover { transform: scale(1.08); background: color-mix(in srgb,var(--nst-dashboard-primary) 20%,transparent); }
+.nst-business-dashboard .nst-widget-six-dot-handle:active { cursor: grabbing !important; }
+.nst-business-dashboard [data-swapy-dragging] { z-index: 70 !important; }
+.nst-business-dashboard [data-swapy-dragging] .nst-dashboard-widget {
+  transform: scale(1.018) rotate(.15deg) !important;
+  box-shadow: var(--nst-ui-shadow-lg) !important;
+}
+.nst-business-dashboard [data-swapy-highlighted] {
+  outline: 1px solid color-mix(in srgb,var(--nst-dashboard-primary) 52%,transparent) !important;
+  outline-offset: 3px;
+}
+.nst-business-dashboard .nst-widget-content { overscroll-behavior: contain; }
+@media (max-width: 1199px) {
+  .nst-business-dashboard .nst-dashboard-widget-grid { grid-template-columns: repeat(12,minmax(0,1fr)) !important; }
+}
+@media (max-width: 767px) {
+  .nst-business-dashboard .nst-dashboard-widget-grid { display: flex !important; flex-direction: column; gap: 12px !important; }
+  .nst-business-dashboard .nst-dashboard-swapy-slot { width: 100%; min-height: auto; }
+  .nst-business-dashboard .nst-dashboard-swapy-slot > [data-swapy-item],
+  .nst-business-dashboard .nst-dashboard-widget { height: auto !important; min-height: 0 !important; }
+  .nst-business-dashboard .nst-dashboard-widget > .nst-widget-content,
+  .nst-business-dashboard .nst-dashboard-widget > .nst-widget-content > section { height: auto !important; }
+  .nst-business-dashboard .nst-widget-resize-handle { display: none; }
+}
+/* NST Dashboard Premium Card System */
+.nst-business-dashboard {
+  --nst-card-border: color-mix(in srgb, var(--nst-dashboard-text) 13%, transparent);
+  --nst-card-border-hover: color-mix(in srgb, var(--nst-dashboard-text) 22%, transparent);
+  --nst-card-bg: color-mix(in srgb, var(--nst-dashboard-surface) 97%, #050914 3%);
+  --nst-card-bg-raised: color-mix(in srgb, var(--nst-dashboard-surface) 92%, #151a2e 8%);
+  --nst-card-highlight: rgba(255,255,255,.035);
+  --nst-card-shadow: 0 1px 0 rgba(255,255,255,.025) inset, 0 12px 34px rgba(2,8,23,.16);
+}
+
+.nst-business-dashboard .nst-dashboard-widget-grid {
+  display: grid !important;
+  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  grid-auto-flow: row dense !important;
+  grid-auto-rows: 22px !important;
+  gap: 12px !important;
+  align-items: stretch !important;
+  align-content: start !important;
+  min-height: 0 !important;
+  background: none !important;
+}
+
+.nst-business-dashboard .nst-dashboard-swapy-slot {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  align-self: stretch;
+  border-radius: 18px;
+  transition: transform 220ms cubic-bezier(.2,.8,.2,1), opacity 160ms ease !important;
+}
+.nst-business-dashboard .nst-dashboard-swapy-slot > [data-swapy-item] {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.nst-business-dashboard .nst-dashboard-widget {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: visible;
+  border-radius: 18px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+.nst-business-dashboard .nst-widget-content {
+  position: relative;
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 18px;
+}
+.nst-business-dashboard .nst-widget-content > .nst-dashboard-surface,
+.nst-business-dashboard .nst-widget-content > section {
+  width: 100%;
+  height: 100% !important;
+  min-height: 0 !important;
+}
+
+.nst-business-dashboard .nst-premium-card,
+.nst-business-dashboard .nst-dashboard-surface {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--nst-card-border) !important;
+  border-radius: 18px !important;
+  background: var(--nst-card-bg) !important;
+  box-shadow: var(--nst-card-shadow) !important;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease !important;
+}
+.nst-business-dashboard .nst-premium-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--nst-card-highlight), transparent);
+}
+.nst-business-dashboard .nst-premium-card:hover {
+  border-color: var(--nst-card-border-hover) !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,.035) inset, 0 16px 38px rgba(2,8,23,.2) !important;
+}
+
+.nst-business-dashboard .nst-premium-icon,
+.nst-business-dashboard .nst-dashboard-panel-icon,
+.nst-business-dashboard .nst-widget-identity-icon {
+  display: inline-grid !important;
+  width: 40px !important;
+  height: 40px !important;
+  flex: 0 0 40px !important;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--nst-dashboard-primary) 22%, var(--nst-card-border)) !important;
+  border-radius: 999px !important;
+  background: color-mix(in srgb, var(--nst-dashboard-primary) 8%, transparent) !important;
+  color: color-mix(in srgb, var(--nst-dashboard-primary) 86%, white 14%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025) !important;
+}
+.nst-business-dashboard .nst-premium-icon-sm {
+  width: 36px !important;
+  height: 36px !important;
+  flex-basis: 36px !important;
+}
+.nst-business-dashboard .nst-premium-icon svg,
+.nst-business-dashboard .nst-dashboard-panel-icon svg,
+.nst-business-dashboard .nst-widget-identity-icon svg {
+  width: 18px !important;
+  height: 18px !important;
+  stroke-width: 1.8 !important;
+}
+
+.nst-business-dashboard .nst-metric-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px !important;
+}
+.nst-business-dashboard .nst-metric-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.nst-business-dashboard .nst-metric-copy { margin-top: 14px; min-width: 0; }
+.nst-business-dashboard .nst-metric-label {
+  margin: 0;
+  color: var(--nst-dashboard-muted);
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: .01em;
+}
+.nst-business-dashboard .nst-metric-value {
+  margin: 5px 0 0;
+  color: var(--nst-dashboard-text);
+  font-size: clamp(22px, 1.6vw, 30px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -.035em;
+}
+.nst-business-dashboard .nst-metric-note {
+  margin: 8px 0 0;
+  overflow: hidden;
+  color: color-mix(in srgb, var(--nst-dashboard-muted) 88%, transparent);
+  font-size: 11px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nst-business-dashboard .nst-metric-trend {
+  min-height: 24px;
+  padding: 5px 8px;
+  border: 1px solid var(--nst-card-border);
+  border-radius: 999px;
+  background: rgba(255,255,255,.025);
+  font-size: 10px;
+  font-weight: 750;
+  line-height: 1;
+}
+.nst-business-dashboard .nst-metric-trend.is-positive { color: #4ade80; }
+.nst-business-dashboard .nst-metric-trend.is-negative { color: #fb7185; }
+.nst-business-dashboard .nst-secondary-metric { padding: 14px !important; }
+
+.nst-business-dashboard .nst-quick-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 54px;
+  padding: 9px 11px;
+  border: 1px solid var(--nst-card-border);
+  border-radius: 14px;
+  background: rgba(255,255,255,.018);
+  color: var(--nst-dashboard-text);
+  font-size: 13px;
+  font-weight: 700;
+  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+.nst-business-dashboard .nst-quick-action:hover {
+  border-color: var(--nst-card-border-hover);
+  background: rgba(255,255,255,.03);
+  transform: translateY(-1px);
+}
+
+/* Edit mode stays visually clean: controls float above the card instead of creating a second header border. */
+.nst-business-dashboard .nst-dashboard-widget.is-editing,
+.nst-business-dashboard .nst-dashboard-widget.is-unlocked,
+.nst-business-dashboard .nst-dashboard-widget.is-locked {
+  padding-top: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.nst-business-dashboard .nst-dashboard-widget.is-editing .nst-premium-card {
+  border-color: color-mix(in srgb, var(--nst-dashboard-primary) 26%, var(--nst-card-border)) !important;
+}
+.nst-business-dashboard .nst-dashboard-widget.is-locked .nst-premium-card {
+  border-color: var(--nst-card-border) !important;
+}
+.nst-business-dashboard .nst-widget-editor-bar {
+  position: absolute !important;
+  z-index: 48 !important;
+  top: 8px !important;
+  right: 8px !important;
+  left: auto !important;
+  width: auto !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  margin: 0 !important;
+  padding: 3px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 2px !important;
+  border: 1px solid color-mix(in srgb, var(--nst-dashboard-text) 12%, transparent) !important;
+  border-radius: 10px !important;
+  background: color-mix(in srgb, var(--nst-dashboard-bg) 82%, transparent) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.22) !important;
+  backdrop-filter: blur(14px);
+}
+.nst-business-dashboard .nst-widget-editor-title { display: none !important; }
+.nst-business-dashboard .nst-widget-editor-actions { display: inline-flex; align-items: center; gap: 2px; }
+.nst-business-dashboard .nst-widget-editor-action,
+.nst-business-dashboard .nst-widget-six-dot-handle {
+  display: inline-grid !important;
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  min-height: 24px !important;
+  padding: 0 !important;
+  place-items: center;
+  border: 0 !important;
+  border-radius: 7px !important;
+  background: transparent !important;
+  color: var(--nst-dashboard-muted) !important;
+}
+.nst-business-dashboard .nst-widget-editor-action:hover,
+.nst-business-dashboard .nst-widget-six-dot-handle:hover {
+  background: rgba(255,255,255,.06) !important;
+  color: var(--nst-dashboard-text) !important;
+}
+.nst-business-dashboard .nst-widget-resize-handle {
+  z-index: 50 !important;
+  right: 8px !important;
+  bottom: 8px !important;
+  width: 26px !important;
+  height: 26px !important;
+  border: 1px solid var(--nst-card-border) !important;
+  border-radius: 9px !important;
+  background: color-mix(in srgb, var(--nst-dashboard-bg) 84%, transparent) !important;
+  color: var(--nst-dashboard-muted) !important;
+  box-shadow: 0 8px 22px rgba(0,0,0,.18);
+  backdrop-filter: blur(12px);
+}
+
+.nst-business-dashboard [data-swapy-highlighted] {
+  outline: none !important;
+}
+.nst-business-dashboard [data-swapy-highlighted] .nst-premium-card {
+  border-color: color-mix(in srgb, var(--nst-dashboard-primary) 52%, var(--nst-card-border)) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--nst-dashboard-primary) 8%, transparent), var(--nst-card-shadow) !important;
+}
+.nst-business-dashboard [data-swapy-dragging] { z-index: 90 !important; }
+.nst-business-dashboard [data-swapy-dragging] .nst-dashboard-widget {
+  transform: scale(1.018) !important;
+  filter: saturate(1.04);
+}
+.nst-business-dashboard [data-swapy-dragging] .nst-premium-card {
+  border-color: color-mix(in srgb, var(--nst-dashboard-primary) 54%, var(--nst-card-border)) !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,.34) !important;
+}
+
+/* Toolbar follows the same border/radius language as the cards. */
+.nst-business-dashboard .nst-dashboard-toolbar {
+  gap: 10px !important;
+}
+.nst-business-dashboard .nst-dashboard-toolbar > select,
+.nst-business-dashboard .nst-dashboard-toolbar > label,
+.nst-business-dashboard .nst-dashboard-toolbar > button,
+.nst-business-dashboard .nst-dashboard-toolbar > a {
+  min-height: 42px !important;
+  height: 42px !important;
+  border-radius: 12px !important;
+  border-color: var(--nst-card-border) !important;
+  box-shadow: none !important;
+  font-size: 13px !important;
+}
+
+@media (max-width: 1023px) and (min-width: 768px) {
+  .nst-business-dashboard .nst-dashboard-widget-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-auto-rows: auto !important;
+    grid-auto-flow: row !important;
+    gap: 12px !important;
+  }
+  .nst-business-dashboard .nst-dashboard-swapy-slot {
+    grid-column: auto !important;
+    grid-row: auto !important;
+    min-height: 138px;
+  }
+  .nst-business-dashboard .nst-dashboard-swapy-slot:has([data-swapy-item="sales-overview"]),
+  .nst-business-dashboard .nst-dashboard-swapy-slot:has([data-swapy-item="system-status"]),
+  .nst-business-dashboard .nst-dashboard-swapy-slot:has([data-swapy-item="module-shortcuts"]) {
+    grid-column: 1 / -1 !important;
+  }
+}
+@media (max-width: 767px) {
+  .nst-business-dashboard .nst-dashboard-widget-grid {
+    display: flex !important;
+    flex-direction: column;
+    gap: 12px !important;
+  }
+  .nst-business-dashboard .nst-dashboard-swapy-slot,
+  .nst-business-dashboard .nst-dashboard-swapy-slot > [data-swapy-item],
+  .nst-business-dashboard .nst-dashboard-widget,
+  .nst-business-dashboard .nst-widget-content,
+  .nst-business-dashboard .nst-widget-content > .nst-dashboard-surface,
+  .nst-business-dashboard .nst-widget-content > section {
+    width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+  .nst-business-dashboard .nst-metric-card { min-height: 136px !important; }
+  .nst-business-dashboard .nst-widget-resize-handle { display: none !important; }
+}
+
+/* NST Dashboard Freeform Motion Grid - single layout owner on desktop/tablet */
+@media (min-width: 768px) {
+  .nst-business-dashboard .nst-dashboard-widget-grid {
+    display: grid !important;
+    grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+    grid-auto-rows: 22px !important;
+    grid-auto-flow: row !important;
+    gap: 12px !important;
+    align-items: stretch !important;
+    align-content: start !important;
+    min-height: 0 !important;
+  }
+
+  .nst-business-dashboard .nst-dashboard-swapy-slot {
+    min-width: 0 !important;
+    min-height: 0 !important;
+    align-self: stretch !important;
+    position: relative !important;
+  }
+
+  .nst-business-dashboard .nst-dashboard-swapy-slot > [data-swapy-item],
+  .nst-business-dashboard .nst-dashboard-widget,
+  .nst-business-dashboard .nst-widget-content,
+  .nst-business-dashboard .nst-widget-content > .nst-dashboard-surface,
+  .nst-business-dashboard .nst-widget-content > section {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+  }
+
+  .nst-business-dashboard .nst-widget-content {
+    overflow: auto !important;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--nst-dashboard-text) 18%, transparent) transparent;
+  }
+
+  .nst-business-dashboard .nst-widget-content::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .nst-business-dashboard .nst-widget-content::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--nst-dashboard-text) 18%, transparent);
+  }
+
+  .nst-business-dashboard .nst-dashboard-widget.is-dragging,
+  .nst-business-dashboard .nst-dashboard-widget.is-resizing {
+    z-index: 120 !important;
+  }
+
+  .nst-business-dashboard .nst-dashboard-widget.is-dragging .nst-premium-card,
+  .nst-business-dashboard .nst-dashboard-widget.is-resizing .nst-premium-card {
+    border-color: color-mix(in srgb, var(--nst-dashboard-primary) 48%, var(--nst-card-border)) !important;
+    box-shadow: 0 22px 64px rgba(2,8,23,.30) !important;
+  }
+
+  .nst-business-dashboard .nst-dashboard-widget.is-dragging {
+    opacity: .98;
+  }
+
+  .nst-business-dashboard .nst-widget-six-dot-handle,
+  .nst-business-dashboard .nst-widget-resize-handle {
+    touch-action: none !important;
+    user-select: none !important;
+  }
+}
+
+body.nst-dashboard-dragging {
+  user-select: none !important;
+  cursor: grabbing !important;
+}
+
+/* Mobile keeps Swapy reorder and content-fit cards; freeform resize is intentionally desktop/tablet only. */
+@media (max-width: 767px) {
+  .nst-business-dashboard .nst-dashboard-widget-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  .nst-business-dashboard .nst-dashboard-swapy-slot,
+  .nst-business-dashboard .nst-dashboard-swapy-slot > [data-swapy-item],
+  .nst-business-dashboard .nst-dashboard-widget,
+  .nst-business-dashboard .nst-widget-content,
+  .nst-business-dashboard .nst-widget-content > .nst-dashboard-surface,
+  .nst-business-dashboard .nst-widget-content > section {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+  .nst-business-dashboard .nst-widget-content { overflow: visible !important; }
+  .nst-business-dashboard .nst-widget-resize-handle { display: none !important; }
+}
+
+/* NST Dashboard Interaction Stabilization ---------------------------------
+   Goals: smooth pixel-preview drag/resize, visible hover elevation, scroll
+   chaining, larger resize hit target, and no nested scroll trap.
+----------------------------------------------------------------------------- */
+@media (min-width: 768px) {
+  .nst-business-dashboard .nst-dashboard-widget-grid {
+    overflow: visible !important;
+  }
+
+  .nst-business-dashboard .nst-dashboard-swapy-slot,
+  .nst-business-dashboard .nst-dashboard-widget,
+  .nst-business-dashboard .nst-widget-content {
+    overflow: visible !important;
+  }
+
+  .nst-business-dashboard .nst-dashboard-widget {
+    transform: translate3d(0,0,0);
+    transition: transform 180ms cubic-bezier(.2,.8,.2,1), filter 180ms ease !important;
+    will-change: transform;
+  }
+
+  .nst-business-dashboard .nst-dashboard-widget:not(.is-editing):hover {
+    z-index: 24 !important;
+    transform: translate3d(0,-3px,0);
+    filter: drop-shadow(0 18px 24px rgba(2,8,23,.28));
+  }
+
+  .nst-business-dashboard .nst-dashboard-widget:not(.is-editing):hover .nst-premium-card,
+  .nst-business-dashboard .nst-dashboard-widget:not(.is-editing):hover .nst-dashboard-surface {
+    border-color: color-mix(in srgb, var(--nst-dashboard-primary) 28%, var(--nst-card-border)) !important;
+  }
+
+  .nst-business-dashboard .nst-dashboard-widget.is-dragging {
+    z-index: 160 !important;
+    transform: translate3d(var(--nst-live-x, 0px), var(--nst-live-y, 0px), 0) scale(1.008) !important;
+    transition: none !important;
+    filter: drop-shadow(0 24px 34px rgba(2,8,23,.36));
+    pointer-events: none;
+  }
+
+  .nst-business-dashboard .nst-dashboard-widget.is-resizing {
+    z-index: 160 !important;
+    width: var(--nst-live-width, 100%) !important;
+    height: var(--nst-live-height, 100%) !important;
+    min-width: 120px !important;
+    min-height: 76px !important;
+    transition: none !important;
+    filter: drop-shadow(0 24px 34px rgba(2,8,23,.34));
+  }
+
+  .nst-business-dashboard .nst-dashboard-widget.is-dragging .nst-premium-card,
+  .nst-business-dashboard .nst-dashboard-widget.is-dragging .nst-dashboard-surface,
+  .nst-business-dashboard .nst-dashboard-widget.is-resizing .nst-premium-card,
+  .nst-business-dashboard .nst-dashboard-widget.is-resizing .nst-dashboard-surface {
+    border-color: color-mix(in srgb, var(--nst-dashboard-primary) 58%, var(--nst-card-border)) !important;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--nst-dashboard-primary) 16%, transparent), 0 22px 58px rgba(2,8,23,.32) !important;
+  }
+
+  .nst-business-dashboard .nst-widget-content {
+    overscroll-behavior: auto !important;
+  }
+
+  .nst-business-dashboard .nst-widget-content > .nst-dashboard-surface,
+  .nst-business-dashboard .nst-widget-content > section {
+    overflow: auto !important;
+    overscroll-behavior: auto !important;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--nst-dashboard-text) 16%, transparent) transparent;
+  }
+
+  .nst-business-dashboard .nst-widget-content > .nst-dashboard-surface::-webkit-scrollbar,
+  .nst-business-dashboard .nst-widget-content > section::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  .nst-business-dashboard .nst-widget-content > .nst-dashboard-surface::-webkit-scrollbar-thumb,
+  .nst-business-dashboard .nst-widget-content > section::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--nst-dashboard-text) 16%, transparent);
+  }
+
+  .nst-business-dashboard .nst-widget-resize-handle {
+    width: 32px !important;
+    height: 32px !important;
+    right: 7px !important;
+    bottom: 7px !important;
+    cursor: nwse-resize !important;
+    touch-action: none !important;
+    transition: transform 140ms ease, border-color 140ms ease, background-color 140ms ease !important;
+  }
+
+  .nst-business-dashboard .nst-widget-resize-handle:hover,
+  .nst-business-dashboard .nst-widget-resize-handle:focus-visible {
+    transform: scale(1.08);
+    border-color: color-mix(in srgb, var(--nst-dashboard-primary) 55%, var(--nst-card-border)) !important;
+    background: color-mix(in srgb, var(--nst-dashboard-primary) 16%, var(--nst-dashboard-bg)) !important;
+    outline: none !important;
+  }
+
+  .nst-business-dashboard .nst-widget-six-dot-handle {
+    touch-action: none !important;
+  }
+}
+
+body.nst-dashboard-dragging {
+  user-select: none !important;
+  cursor: grabbing !important;
+}
+
+body.nst-dashboard-dragging * {
+  scroll-behavior: auto !important;
+}
+
+@media (max-width: 767px) {
+  .nst-business-dashboard .nst-dashboard-widget,
+  .nst-business-dashboard .nst-widget-content,
+  .nst-business-dashboard .nst-widget-content > .nst-dashboard-surface,
+  .nst-business-dashboard .nst-widget-content > section {
+    overflow: visible !important;
+    overscroll-behavior: auto !important;
+  }
+}
+
+/* NST Dashboard Selective Scroll + Dead-Pixel Cleanup ---------------------
+   Default dashboard cards never own a scrollbar. Only explicit content-heavy
+   regions may scroll, keeping KPI/metric cards visually clean.
+----------------------------------------------------------------------------- */
+@media (min-width: 768px) {
+  .nst-business-dashboard .nst-widget-content,
+  .nst-business-dashboard .nst-widget-content > .nst-dashboard-surface,
+  .nst-business-dashboard .nst-widget-content > section {
+    overflow: hidden !important;
+    overscroll-behavior: auto !important;
+    scrollbar-width: none !important;
+  }
+
+  .nst-business-dashboard .nst-widget-content > .nst-dashboard-surface::-webkit-scrollbar,
+  .nst-business-dashboard .nst-widget-content > section::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  .nst-business-dashboard .nst-widget-scroll-region {
+    min-width: 0;
+    min-height: 0;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    scrollbar-gutter: auto;
+    scrollbar-width: thin !important;
+    scrollbar-color: transparent transparent !important;
+  }
+
+  .nst-business-dashboard .nst-widget-scroll-region:hover,
+  .nst-business-dashboard .nst-widget-scroll-region:focus-within {
+    scrollbar-color: color-mix(in srgb, var(--nst-dashboard-text) 24%, transparent) transparent !important;
+  }
+
+  .nst-business-dashboard .nst-widget-scroll-region::-webkit-scrollbar {
+    width: 5px !important;
+    height: 5px !important;
+  }
+
+  .nst-business-dashboard .nst-widget-scroll-region::-webkit-scrollbar-track {
+    background: transparent !important;
+  }
+
+  .nst-business-dashboard .nst-widget-scroll-region::-webkit-scrollbar-thumb {
+    min-height: 28px;
+    border-radius: 999px;
+    background: transparent !important;
+  }
+
+  .nst-business-dashboard .nst-widget-scroll-region:hover::-webkit-scrollbar-thumb,
+  .nst-business-dashboard .nst-widget-scroll-region:focus-within::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--nst-dashboard-text) 24%, transparent) !important;
+  }
+
+  /* Prevent tiny scrollbar/rounding artifacts on ordinary metric cards. */
+  .nst-business-dashboard .nst-metric-card,
+  .nst-business-dashboard .nst-dashboard-widget[data-widget-id="today-target"] .nst-dashboard-surface,
+  .nst-business-dashboard .nst-dashboard-widget[data-widget-id="website-orders"] .nst-dashboard-surface,
+  .nst-business-dashboard .nst-dashboard-widget[data-widget-id="profit-overview"] .nst-dashboard-surface,
+  .nst-business-dashboard .nst-dashboard-widget[data-widget-id="sales-overview"] .nst-dashboard-surface {
+    overflow: hidden !important;
+  }
+}
+
+/* Inline section editor */
+.nst-inline-editable-section{position:relative!important}
+.nst-inline-edit-button{display:none!important}
+body.nst-design-mode .nst-inline-edit-button{display:inline-flex!important;opacity:1!important}
+.nst-design-mode-toggle{position:fixed;z-index:9990;right:14px;bottom:14px;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--nst-dashboard-border);border-radius:999px;background:var(--nst-dashboard-surface,#fff);color:var(--nst-dashboard-muted);padding:7px 11px;font-size:11px;font-weight:800;box-shadow:0 6px 20px rgba(0,0,0,.14);opacity:.75}
+.nst-design-mode-toggle:hover,.nst-design-mode-toggle.is-on{opacity:1;color:var(--nst-dashboard-primary);border-color:var(--nst-dashboard-primary)}
+@media (max-width:767px){.nst-design-mode-toggle{bottom:calc(84px + env(safe-area-inset-bottom))}}
+.nst-inline-edit-button{position:absolute;z-index:35;top:10px;right:10px;display:inline-flex;align-items:center;gap:6px;border:1px solid color-mix(in srgb,var(--nst-dashboard-primary) 55%,var(--nst-dashboard-border));border-radius:9px;background:color-mix(in srgb,var(--nst-dashboard-bg) 88%,transparent);color:var(--nst-dashboard-text);padding:6px 9px;font-size:11px;font-weight:800;line-height:1;box-shadow:0 5px 18px rgba(0,0,0,.18);opacity:.18;transform:translateY(-2px);transition:opacity .16s ease,transform .16s ease,background .16s ease}
+.nst-inline-editable-section:hover>.nst-inline-edit-button,.nst-inline-edit-button:focus-visible{opacity:1;transform:translateY(0);background:color-mix(in srgb,var(--nst-dashboard-primary) 18%,var(--nst-dashboard-bg))}
+.nst-inline-edit-button span{font-size:14px}.nst-inline-edit-button b{font:inherit}
+.nst-inline-editor-modal{position:fixed;z-index:99999;inset:0;display:grid;place-items:center;padding:20px}
+.nst-inline-editor-backdrop{position:absolute;inset:0;border:0;background:rgba(2,8,23,.72);backdrop-filter:blur(5px)}
+.nst-inline-editor-sheet{position:relative;width:min(680px,96vw);max-height:min(760px,92vh);overflow:auto;border:1px solid var(--nst-dashboard-border);border-radius:18px;background:var(--nst-dashboard-surface);padding:18px;box-shadow:0 30px 80px rgba(0,0,0,.42);color:var(--nst-dashboard-text)}
+.nst-inline-editor-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:14px;border-bottom:1px solid var(--nst-dashboard-border)}
+.nst-inline-editor-head span{display:block;color:var(--nst-dashboard-primary);font-size:10px;font-weight:900;letter-spacing:.13em}.nst-inline-editor-head h2{margin:4px 0 2px;font-size:21px;font-weight:900}.nst-inline-editor-head p{margin:0;color:var(--nst-dashboard-muted);font-size:12px}.nst-inline-editor-head>button{border:1px solid var(--nst-dashboard-border);border-radius:9px;background:transparent;color:inherit;padding:7px}
+.nst-inline-editor-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}.nst-inline-editor-grid label{display:grid;gap:6px}.nst-inline-editor-grid label>span{font-size:11px;font-weight:800;color:var(--nst-dashboard-muted)}.nst-inline-editor-grid .is-wide{grid-column:1/-1}.nst-inline-editor-grid input:not([type=checkbox]),.nst-inline-editor-grid select{width:100%;min-height:39px;border:1px solid var(--nst-dashboard-border);border-radius:9px;background:color-mix(in srgb,var(--nst-dashboard-bg) 60%,transparent);color:var(--nst-dashboard-text);padding:8px 10px;outline:0}.nst-inline-editor-grid input:focus,.nst-inline-editor-grid select:focus{border-color:var(--nst-dashboard-primary)}
+.nst-inline-check{display:flex!important;grid-column:1/-1;grid-template-columns:auto 1fr!important;align-items:center;justify-content:flex-start;border:1px solid var(--nst-dashboard-border);border-radius:10px;padding:10px 12px}.nst-inline-check input{width:16px;height:16px;accent-color:var(--nst-dashboard-primary)}
+.nst-inline-editor-actions{display:flex;justify-content:space-between;gap:10px;margin-top:16px}.nst-inline-editor-actions button{display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:10px;padding:10px 14px;font-size:12px;font-weight:900}.nst-inline-editor-actions .is-reset{border:1px solid var(--nst-dashboard-border);background:transparent;color:var(--nst-dashboard-text)}.nst-inline-editor-actions .is-save{border:1px solid transparent;background:var(--nst-dashboard-primary);color:#fff}.nst-inline-editor-message{margin:12px 0 0;border-radius:9px;background:color-mix(in srgb,var(--nst-dashboard-primary) 10%,transparent);padding:9px 11px;font-size:12px}.nst-inline-editor-note{display:flex;align-items:center;gap:8px;margin-top:12px;color:var(--nst-dashboard-muted);font-size:11px}
+@media(max-width:640px){.nst-inline-editor-grid{grid-template-columns:1fr}.nst-inline-editor-grid .is-wide{grid-column:auto}.nst-inline-editor-actions{flex-direction:column}.nst-inline-editor-actions button{width:100%}}
+
+/* Visual normalization: one visual owner, less hard-coded contrast. */
+.nst-shell-main :is(section,article,.nst-panel,.nst-card)[class*="border"]{border-color:var(--nst-dashboard-border)}
+.nst-shell-main :is(section,article,.nst-panel,.nst-card)[class*="shadow"]{box-shadow:var(--nst-dashboard-shadow)}
+.nst-shell-main .text-slate-950,.nst-shell-main .text-slate-900,.nst-shell-main .text-slate-800,.nst-shell-main .text-slate-700{color:var(--nst-dashboard-text)!important}
+.nst-shell-main .text-slate-500,.nst-shell-main .text-slate-600{color:var(--nst-dashboard-muted)!important}
+.nst-shell-main .bg-white{background:var(--nst-dashboard-surface)!important}
+.nst-shell-main .bg-slate-50{background:var(--nst-dashboard-bg)!important}
+
+
+/* NST Dashboard Dense Card Grid -----------------------------------------
+   Dead-space correction + smoother edit feedback. The JS layout applies
+   vertical gravity; these rules remove visual lag while dragging/resizing.
+----------------------------------------------------------------------------- */
+@media (min-width: 768px) {
+  .nst-business-dashboard .nst-dashboard-widget-grid {
+    grid-auto-rows: 18px !important;
+    gap: 10px !important;
+  }
+  .nst-business-dashboard .nst-dashboard-swapy-slot {
+    transition: grid-row 150ms cubic-bezier(.2,.8,.2,1), grid-column 150ms cubic-bezier(.2,.8,.2,1), transform 120ms ease !important;
+  }
+  .nst-business-dashboard .nst-dashboard-widget.is-editing {
+    transition: transform 120ms cubic-bezier(.2,.8,.2,1), filter 120ms ease !important;
+  }
+  .nst-business-dashboard .nst-dashboard-widget.is-dragging,
+  .nst-business-dashboard .nst-dashboard-widget.is-resizing {
+    transition: none !important;
+  }
+  .nst-business-dashboard .nst-widget-content,
+  .nst-business-dashboard .nst-widget-content > .nst-dashboard-surface,
+  .nst-business-dashboard .nst-widget-content > section {
+    min-height: 0 !important;
+  }
+}
+
+/* Tighter sidebar + compact cards + overlap safety */
+.nst-sidebar input,.nst-sidebar button,.nst-sidebar a,.nst-sidebar .active,
+aside input,aside button,aside a[aria-current="page"]{border-radius:10px!important}
+
+.nst-dashboard-widget,.nst-widget,[data-widget-id]{
+  position:relative;min-width:0!important;overflow:hidden
+}
+.nst-dashboard-widget>*,.nst-widget>*,[data-widget-id]>*{min-width:0}
+.nst-dashboard-widget h1,.nst-dashboard-widget h2,.nst-dashboard-widget h3,.nst-dashboard-widget p,
+.nst-widget h1,.nst-widget h2,.nst-widget h3,.nst-widget p,
+[data-widget-id] h1,[data-widget-id] h2,[data-widget-id] h3,[data-widget-id] p{
+  min-width:0;max-width:100%;overflow-wrap:anywhere
+}
+
+/* KPI cards adapt to the height the layout gives them: short tiles switch to icon-left so the value is never cut off.
+   Only where the grid gives fixed row heights (desktop); tablet/phone rows are auto height. */
+@media (min-width: 1024px) {
+  .nst-business-dashboard .nst-dashboard-swapy-slot:has(.nst-metric-card) { container-type: size; container-name: nst-kpi; }
+  .nst-business-dashboard .nst-metric-card { position: relative; }
+  @container nst-kpi (max-height: 165px) {
+    .nst-business-dashboard .nst-metric-card { justify-content: center; }
+    .nst-business-dashboard .nst-metric-card-top { position: absolute; left: 16px; right: 16px; top: 50%; transform: translateY(-50%); align-items: center; }
+    .nst-business-dashboard .nst-metric-copy { margin-top: 0; padding-left: 52px; padding-right: 56px; }
+    .nst-business-dashboard .nst-metric-note { display: none; }
+  }
+}
+
+/* Dashboard toolbar: same compact controls everywhere, two per row on phones. */
+.nst-business-dashboard .nst-dashboard-toolbar > select,
+.nst-business-dashboard .nst-dashboard-toolbar > label,
+.nst-business-dashboard .nst-dashboard-toolbar > button,
+.nst-business-dashboard .nst-dashboard-toolbar > a,
+.nst-business-dashboard .nst-dashboard-toolbar > * > button { font-size: 13px !important; padding-top: 0 !important; padding-bottom: 0 !important; }
+@media (max-width: 767px) {
+  .nst-business-dashboard .nst-dashboard-toolbar { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
+  .nst-business-dashboard .nst-dashboard-toolbar > * { width: 100% !important; min-width: 0; justify-content: center; }
+  .nst-business-dashboard .nst-dashboard-toolbar > label input { min-width: 0; width: 100%; }
+}
+
+/* Global save feedback pill (components/system/NstSaveStatus.jsx). */
+.nst-save-status{position:fixed;z-index:100000;left:50%;top:calc(12px + env(safe-area-inset-top));transform:translateX(-50%);display:inline-flex;align-items:center;gap:8px;max-width:min(560px,calc(100vw - 24px));border-radius:999px;padding:9px 16px;font-size:13px;font-weight:700;line-height:1.3;box-shadow:0 10px 30px rgba(15,23,42,.18);border:1px solid transparent;animation:nst-save-in .16s ease-out}
+.nst-save-status.is-saving{background:#fff;color:#334155;border-color:#e2e8f0}
+.nst-save-status.is-saved{background:#ecfdf5;color:#047857;border-color:#a7f3d0}
+.nst-save-status.is-error{background:#fef2f2;color:#b91c1c;border-color:#fecaca;border-radius:14px;align-items:flex-start}
+.nst-save-status.is-error svg{flex-shrink:0;margin-top:1px}
+.nst-save-status-text{min-width:0;font-weight:600}
+.nst-save-status button{margin-left:4px;border:0;background:transparent;color:inherit;padding:2px;cursor:pointer}
+.nst-save-status-spin{animation:nst-save-spin .8s linear infinite}
+@keyframes nst-save-spin{to{transform:rotate(360deg)}}
+@keyframes nst-save-in{from{opacity:0;transform:translate(-50%,-6px)}to{opacity:1;transform:translate(-50%,0)}}
+
+/* Widget content that is taller than its grid cell scrolls inside the card instead of being cut off. */
+.nst-business-dashboard .nst-widget-content > .nst-dashboard-surface { overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.nst-business-dashboard .nst-dashboard-swapy-slot { border: 0; background: transparent; box-shadow: none; }
+/* Card gap from Settings > UI & Layout > Design Defaults. */
+.nst-business-shell .nst-business-dashboard .nst-dashboard-widget-grid { gap: var(--nst-custom-card-gap, 12px) !important; }
+/* Room below the last row so the floating dock never covers a card. */
+.nst-business-shell .nst-shell-main > div.nst-business-dashboard { padding-bottom: calc(104px + env(safe-area-inset-bottom)) !important; }
+
+/* Dashboard cards: one radius for the frame and its clip; edit controls float inside the card so size and position match view mode */
+.nst-business-dashboard {
+  --nst-widget-radius: var(--nst-card-radius, 8px);
+  --nst-widget-pad: var(--nst-card-pad, 16px);
+  --nst-widget-tool: 24px;
+  --nst-widget-tool-gap: 6px;
+}
+.nst-business-dashboard .nst-dashboard-swapy-slot,
+.nst-business-dashboard .nst-dashboard-widget,
+.nst-business-dashboard .nst-dashboard-widget > .nst-widget-content {
+  border-radius: var(--nst-widget-radius) !important;
+}
+.nst-business-dashboard .nst-widget-content > .nst-dashboard-surface,
+.nst-business-dashboard .nst-widget-content > section {
+  border-radius: var(--nst-widget-radius) !important;
+  transform: none !important;
+}
+.nst-business-dashboard .nst-dashboard-widget.is-editing > .nst-widget-content > :first-child {
+  border-color: color-mix(in srgb, var(--nst-dashboard-primary) 42%, var(--nst-card-border, var(--nst-dashboard-border))) !important;
+}
+.nst-business-dashboard .nst-dashboard-widget.is-editing .nst-widget-editor-bar {
+  top: var(--nst-widget-tool-gap) !important;
+  right: var(--nst-widget-tool-gap) !important;
+  height: calc(var(--nst-widget-tool) + 4px) !important;
+  min-height: 0 !important;
+  padding: 2px !important;
+  border-radius: calc(var(--nst-widget-radius) - 2px) !important;
+  background: color-mix(in srgb, var(--nst-card-bg, var(--nst-dashboard-surface)) 92%, transparent) !important;
+  box-shadow: 0 4px 14px rgba(0,0,0,.2) !important;
+}
+.nst-business-dashboard .nst-dashboard-widget.is-editing .nst-widget-editor-action,
+.nst-business-dashboard .nst-dashboard-widget.is-editing .nst-widget-six-dot-handle {
+  width: var(--nst-widget-tool) !important;
+  height: var(--nst-widget-tool) !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+}
+.nst-business-dashboard .nst-dashboard-widget.is-editing .nst-widget-resize-handle {
+  right: var(--nst-widget-tool-gap) !important;
+  bottom: var(--nst-widget-tool-gap) !important;
+  width: var(--nst-widget-tool) !important;
+  height: var(--nst-widget-tool) !important;
+  border-radius: calc(var(--nst-widget-radius) - 2px) !important;
+  background: color-mix(in srgb, var(--nst-card-bg, var(--nst-dashboard-surface)) 92%, transparent) !important;
+  box-shadow: 0 4px 14px rgba(0,0,0,.2) !important;
+  transform: none !important;
+}
+.nst-business-dashboard .nst-dashboard-widget.is-editing .nst-widget-resize-handle:hover,
+.nst-business-dashboard .nst-dashboard-widget.is-editing .nst-widget-resize-handle:focus-visible {
+  color: var(--nst-dashboard-primary) !important;
+  border-color: var(--nst-dashboard-primary) !important;
+  outline: none !important;
+}
+.nst-business-dashboard .nst-dashboard-widget.is-editing .nst-widget-editor-bar,
+.nst-business-dashboard .nst-dashboard-widget.is-editing .nst-widget-resize-handle {
+  opacity: .72;
+  transition: opacity 120ms ease !important;
+}
+.nst-business-dashboard .nst-dashboard-widget.is-editing:hover .nst-widget-editor-bar,
+.nst-business-dashboard .nst-dashboard-widget.is-editing:hover .nst-widget-resize-handle,
+.nst-business-dashboard .nst-dashboard-widget.is-editing .nst-widget-editor-bar:focus-within,
+.nst-business-dashboard .nst-dashboard-widget.is-editing .nst-widget-resize-handle:focus-visible {
+  opacity: 1;
+}
+
+/* Dashboard on tablet and small laptop (768-1199px): cards flow in two columns and grow to their content */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .nst-business-shell .nst-business-dashboard .nst-dashboard-widget-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-rows: none !important;
+    grid-auto-rows: auto !important;
+    grid-auto-flow: row dense !important;
+    gap: var(--nst-custom-card-gap, 12px) !important;
+  }
+  .nst-business-shell .nst-business-dashboard .nst-dashboard-widget-grid > .nst-dashboard-swapy-slot {
+    grid-column: span 2 !important;
+    grid-row: auto !important;
+    height: auto !important;
+    min-width: 0;
+    min-height: 0;
+  }
+  .nst-business-shell .nst-business-dashboard .nst-dashboard-widget-grid > .nst-dashboard-swapy-slot:has(.nst-metric-card) {
+    grid-column: span 1 !important;
+    min-height: 114px !important;
+  }
+  .nst-business-shell .nst-business-dashboard .nst-dashboard-swapy-slot:has(.nst-metric-card) > [data-swapy-item],
+  .nst-business-shell .nst-business-dashboard .nst-dashboard-swapy-slot:has(.nst-metric-card) .nst-dashboard-widget,
+  .nst-business-shell .nst-business-dashboard .nst-dashboard-swapy-slot:has(.nst-metric-card) .nst-widget-content,
+  .nst-business-shell .nst-business-dashboard .nst-dashboard-swapy-slot:has(.nst-metric-card) .nst-metric-card {
+    height: 100% !important;
+    min-height: 114px !important;
+  }
+  .nst-business-shell .nst-business-dashboard .nst-dashboard-swapy-slot > [data-swapy-item],
+  .nst-business-shell .nst-business-dashboard .nst-dashboard-widget {
+    grid-column: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+  .nst-business-shell .nst-business-dashboard .nst-dashboard-widget > .nst-widget-content,
+  .nst-business-shell .nst-business-dashboard .nst-widget-content > .nst-dashboard-surface,
+  .nst-business-shell .nst-business-dashboard .nst-widget-content > section {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+  }
+  .nst-business-shell .nst-business-dashboard .nst-widget-resize-handle { display: none !important; }
+}
+
+/* Card content never scrolls sideways */
+.nst-business-dashboard .nst-dashboard-widget > .nst-widget-content,
+.nst-business-dashboard .nst-widget-content > .nst-dashboard-surface,
+.nst-business-dashboard .nst-widget-content > section {
+  overflow-x: hidden !important;
+}

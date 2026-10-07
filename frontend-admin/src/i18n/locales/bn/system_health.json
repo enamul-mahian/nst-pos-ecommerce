@@ -1,0 +1,5 @@
+{
+  "subtitle": "Purchase, Sale, IMEI stock, Accounts, Reports, Export, Settings, Audit Logs এবং storage/database readiness এক জায়গা থেকে verify করুন।",
+  "load_failed": "System health data load করা যায়নি।",
+  "confirm_repair": "Sale due mismatch, purchase due mismatch এবং user normalization auto-fix চালাবেন?"
+}

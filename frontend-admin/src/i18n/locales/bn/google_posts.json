@@ -1,0 +1,9 @@
+{
+  "errors": {
+    "load_one_failed": "Post load করা যায়নি।",
+    "save_failed": "Google Post save করা যায়নি।",
+    "load_failed": "Google Post data load করা যায়নি।",
+    "delete_failed": "Google Post delete করা যায়নি।"
+  },
+  "image_help": "JPG, PNG, WEBP supported. Google API integration পরে সহজে করা যাবে।"
+}

@@ -1,0 +1,20 @@
+{
+  "home": "হোম",
+  "breadcrumb": "পেজের পথ",
+  "more_pages": "আরও",
+  "nav": {
+    "home": "হোম",
+    "brands": "ব্র্যান্ড",
+    "phones": "ফোন",
+    "accessories": "এক্সেসরিজ",
+    "used_phones": "ইউজড ফোন",
+    "preorder": "প্রি-অর্ডার",
+    "offers": "অফার",
+    "blog": "ব্লগ",
+    "support": "সাপোর্ট",
+    "all_categories": "সব ক্যাটাগরি",
+    "view_all_categories": "সব ক্যাটাগরি দেখুন",
+    "main": "প্রধান মেনু"
+  },
+  "custom_code_empty": "Custom Code section: editor প্যানেলে HTML, CSS বা JavaScript দিন।"
+}

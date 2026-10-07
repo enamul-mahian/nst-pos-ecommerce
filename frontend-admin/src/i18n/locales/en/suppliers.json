@@ -1,0 +1,11 @@
+{
+  "recalc_confirm": "Recalculating the supplier due will calculate it again from the purchase invoices. Continue?",
+  "ledger_title": "Supplier Ledger",
+  "ledger_subtitle": "Supplier purchase history, due payments, advance payments, pay slips and ledger summary.",
+  "payment_help_due": "When paying the supplier due, enter the amount and method and upload the pay slip here.",
+  "payment_help_advance": "This supplier has no due. A payment made now will be saved as an Advance Payment.",
+  "no_due_notice": "This supplier has no due. A payment made now will count as an Advance Payment.",
+  "list_title": "Suppliers",
+  "list_subtitle": "Create, edit and delete suppliers and manage their ledgers.",
+  "form_help": "Fill in the supplier information."
+}

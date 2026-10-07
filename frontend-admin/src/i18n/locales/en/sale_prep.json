@@ -1,0 +1,137 @@
+{
+  "title": "Prepare For Sale",
+  "title_update": "Update Sale Details",
+  "subtitle": "Inspect the device, link it to the catalog and save its sale details. The same device record and IMEI become sellable in POS; the website shows it only when publish is on.",
+  "loading": "Loading device details...",
+  "status": {
+    "awaiting_inspection": "Awaiting Inspection",
+    "ready_for_sale": "Ready For Sale"
+  },
+  "actions": {
+    "save_ready": "Save & Mark Ready For Sale",
+    "saving": "Saving...",
+    "back": "Back",
+    "open_product": "Open catalog product",
+    "open_device_stock": "Open Device Stock",
+    "inspect_prepare": "Inspect / Prepare",
+    "edit_sale_details": "Sale details"
+  },
+  "errors": {
+    "load_failed": "Could not load the device details.",
+    "save_failed": "Could not mark the device Ready For Sale."
+  },
+  "done_title": "Device is Ready For Sale.",
+  "device": {
+    "title": "Device",
+    "summary": "The physical device from stock. These identity details are not changed here.",
+    "product": "Product",
+    "brand": "Brand",
+    "model": "Model",
+    "sku": "SKU / Barcode",
+    "branch": "Branch",
+    "condition": "Condition",
+    "battery": "Battery",
+    "purchase_cost": "Purchase cost",
+    "seller": "Seller",
+    "purchase_ref": "Used purchase"
+  },
+  "catalog": {
+    "title": "Catalog product",
+    "summary": "Pick the catalog product this device is sold under. A matching product is reused; a new one is created only when nothing matches.",
+    "source_linked": "Already linked to",
+    "source_matched": "Matching product found:",
+    "source_selected": "Selected product:",
+    "no_match": "No matching catalog product. A new product will be created.",
+    "mode": "Catalog link",
+    "mode_existing": "Use existing product",
+    "mode_new": "Create new product",
+    "product": "Product",
+    "choose_product": "Choose a product",
+    "product_name": "Product name",
+    "category": "Category",
+    "choose_category": "Choose a category",
+    "model_number": "Model number",
+    "used_rule": "Only used / pre-owned / refurbished products are listed, so a used phone never joins a new-phone listing."
+  },
+  "variant": {
+    "title": "Variant & condition",
+    "summary": "The spec combination of this device. Devices with the same specs share one variant.",
+    "reuse": "Matching variant:",
+    "units": "{count} unit(s)",
+    "create": "No matching variant. A new variant is created under the product.",
+    "match_rule": "Same condition + colour + storage + RAM + region + SIM = same variant.",
+    "color": "Colour",
+    "storage": "Storage",
+    "ram": "RAM",
+    "region": "Region / version",
+    "sim": "SIM / network",
+    "activation": "Activation status",
+    "battery": "Battery health (%)",
+    "physical_condition": "Physical condition",
+    "condition_grade": "Condition grade"
+  },
+  "activation": {
+    "active": "Active",
+    "activated": "Activated",
+    "open_box": "Open box",
+    "inactive": "Inactive",
+    "not_activated": "Not activated",
+    "boxed": "Boxed"
+  },
+  "price": {
+    "title": "Price & sale rules",
+    "summary": "The price is saved on this device. The purchase cost is never changed.",
+    "sale_price": "Sale price",
+    "market_price": "Market price",
+    "booking_type": "Minimum booking",
+    "booking_percentage": "Percentage",
+    "booking_fixed": "Fixed amount",
+    "booking_value": "Booking value",
+    "emi": "EMI available",
+    "preorder": "Allow pre-order",
+    "website": "Show on website",
+    "website_help": "Off keeps it in POS only.",
+    "show_branch": "Show branch on website",
+    "show_branch_help": "No = the website only says the product is available, without branch name or piece count."
+  },
+  "warranty": {
+    "title": "Warranty & box",
+    "summary": "Warranty and box details shown to the customer.",
+    "official": "Official warranty",
+    "shop": "Shop warranty",
+    "duration": "Warranty duration",
+    "box_included": "Box included",
+    "notes": "Warranty notes",
+    "in_box": "What's in the box"
+  },
+  "content": {
+    "title": "Product page content",
+    "summary": "The same sections as the New Product form. They are saved on the catalog product and shared by every device of it.",
+    "short_description": "Short description",
+    "specs": "Specifications"
+  },
+  "inspection": {
+    "title": "Inspection",
+    "summary": "Anything found while checking the device.",
+    "note": "Inspection note",
+    "placeholder": "Screen, body, camera, speaker, Face ID, charging..."
+  },
+  "images": {
+    "title": "Images",
+    "help": "Purchase photos are linked, not copied. Up to 5 images per device.",
+    "use_existing": "Use the {count} purchase photo(s)"
+  },
+  "result": {
+    "title": "On save",
+    "product_reuse": "Uses catalog product: {name}",
+    "product_create": "Creates one new catalog product",
+    "variant_reuse": "Adds the device to the matching variant",
+    "variant_create": "Creates one new variant",
+    "same_device": "Keeps the same device record and IMEI",
+    "stock_add": "Adds 1 to stock at {branch}",
+    "stock_same": "Stock stays the same (already Ready For Sale)",
+    "cost_kept": "Keeps the purchase cost for profit",
+    "website_on": "Visible on the website",
+    "website_off": "POS only, hidden on the website"
+  }
+}

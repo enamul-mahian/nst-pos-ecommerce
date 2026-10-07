@@ -1,0 +1,920 @@
+﻿/* ==========================================
+   1. Tailwind CSS v4 Core Directive
+   ========================================== */
+@import "tailwindcss";
+
+/* ==========================================
+   2. Tailwind CSS v4 Dynamic Theme Configurations
+   ========================================== */
+/* Site theme: set from the Website Control Panel (see applySiteTheme in useWebsiteStore). */
+:root {
+  --nst-primary: #6d28d9;
+  --nst-primary-dark: color-mix(in oklab, var(--nst-primary) 82%, black);
+  --nst-primary-deep: color-mix(in oklab, var(--nst-primary) 62%, black);
+  --nst-primary-soft: color-mix(in oklab, var(--nst-primary) 8%, white);
+  --nst-primary-light: color-mix(in oklab, var(--nst-primary) 50%, white);
+  --nst-ink: color-mix(in oklab, var(--nst-primary) 30%, #07030f);
+  --primary-color: var(--nst-primary);
+}
+
+@theme {
+  /* Dynamically binds Tailwind utilities to our CSS Variable resolved from CMS */
+  --color-primary: var(--primary-color, #6d28d9);
+  --color-primary-hover: color-mix(in srgb, var(--primary-color, #6d28d9) 85%, black);
+  
+  /* Violet/purple utilities follow the Website Control Panel theme colour. */
+  --color-violet-50: color-mix(in oklab, var(--nst-primary) 7%, white);
+  --color-violet-100: color-mix(in oklab, var(--nst-primary) 14%, white);
+  --color-violet-200: color-mix(in oklab, var(--nst-primary) 26%, white);
+  --color-violet-300: color-mix(in oklab, var(--nst-primary) 42%, white);
+  --color-violet-400: color-mix(in oklab, var(--nst-primary) 62%, white);
+  --color-violet-500: color-mix(in oklab, var(--nst-primary) 82%, white);
+  --color-violet-600: color-mix(in oklab, var(--nst-primary) 92%, white);
+  --color-violet-700: var(--nst-primary);
+  --color-violet-800: var(--nst-primary-dark);
+  --color-violet-900: var(--nst-primary-deep);
+  --color-violet-950: var(--nst-ink);
+  --color-purple-50: color-mix(in oklab, var(--nst-primary) 7%, white);
+  --color-purple-100: color-mix(in oklab, var(--nst-primary) 14%, white);
+  --color-purple-200: color-mix(in oklab, var(--nst-primary) 26%, white);
+  --color-purple-300: color-mix(in oklab, var(--nst-primary) 42%, white);
+  --color-purple-400: color-mix(in oklab, var(--nst-primary) 62%, white);
+  --color-purple-500: color-mix(in oklab, var(--nst-primary) 82%, white);
+  --color-purple-600: color-mix(in oklab, var(--nst-primary) 92%, white);
+  --color-purple-700: var(--nst-primary);
+  --color-purple-800: var(--nst-primary-dark);
+  --color-purple-900: var(--nst-primary-deep);
+  --color-purple-950: var(--nst-ink);
+
+  --font-sans: 'Inter', 'Noto Sans Bengali', 'Hind Siliguri', 'Nirmala UI', 'Bangla Sangam MN', 'Kohinoor Bangla', system-ui, -apple-system, sans-serif;
+}
+
+/* ==========================================
+   3. Custom Global Core Styles
+   ========================================== */
+html, body {
+  scroll-behavior: smooth;
+   /* Globally prevent horizontal scrolling/overflow */
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: #f8fafc;
+  color: #0f172a;
+  /* Safe area handling on notch/border devices */
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ==========================================
+   4. Custom High-Fidelity Utility Layers
+   ========================================== */
+
+/* Hide scrollbars elegantly on horizontal swiping layouts (Used Products swiper) */
+@utility scrollbar-none {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;    /* Firefox */
+  
+  &::-webkit-scrollbar {
+    display: none;          /* Chrome, Safari and Opera */
+  }
+}
+
+/* iOS Safe Areas utilities helper */
+@utility safe-area-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+@utility safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Premium gradient animations */
+@keyframes pulse-glowing {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+.glowing-pulsar {
+  animation: pulse-glowing 3s infinite ease-in-out;
+}
+/* NST Builder-rendered green commerce design */
+:root{--nst-secondary:#4c1d95;--nst-accent:#f59e0b;--nst-bg:#f7f6fb;--nst-surface:#fff;--nst-text:#140a2e;--nst-muted:#64748b;--nst-border:#e4e0ef}
+.nst-builder-page{background:var(--nst-bg);color:var(--nst-text);min-height:100vh;padding:18px 14px 64px}.nst-content-shell{max-width:1280px;margin:auto}.nst-hero-wrap{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(250px,.8fr);gap:14px}.nst-hero-main{min-height:405px;background:linear-gradient(125deg,var(--nst-secondary),var(--nst-primary));border-radius:24px;overflow:hidden;display:grid;grid-template-columns:1.1fr .9fr;box-shadow:0 18px 40px rgba(76,29,149,.18)}.nst-hero-copy{padding:54px;display:flex;flex-direction:column;justify-content:center;color:white}.nst-hero-copy>span{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.nst-hero-copy h1{font-size:clamp(38px,5vw,66px);line-height:.98;margin:18px 0;font-weight:900;letter-spacing:-.045em}.nst-hero-copy h1 em{font-style:normal;color:#fde68a}.nst-hero-copy p{max-width:560px;color:#ede9fe;font-size:16px;line-height:1.65}.nst-hero-copy>div{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap}.nst-hero-copy a{background:white;color:var(--nst-secondary);padding:12px 18px;border-radius:12px;font-weight:850}.nst-hero-copy a.secondary{background:transparent;color:white;border:1px solid rgba(255,255,255,.45)}.nst-device-stage{position:relative;display:flex;align-items:center;justify-content:center;min-height:330px}.phone{position:absolute;width:150px;height:292px;border:8px solid #101820;border-radius:32px;background:linear-gradient(155deg,#f8fafc,#bbf7d0);display:grid;place-items:center;font-weight:950;color:var(--nst-secondary);box-shadow:0 30px 45px rgba(0,0,0,.28)}.phone-one{transform:rotate(-12deg) translateX(-35px)}.phone-two{transform:rotate(11deg) translateX(62px);background:linear-gradient(145deg,#fde68a,#fff)}.hero-seal{position:absolute;bottom:24px;right:22px;background:white;color:var(--nst-secondary);border-radius:999px;padding:9px 13px;display:flex;align-items:center;gap:7px;font-weight:900;font-size:12px;box-shadow:0 10px 30px rgba(0,0,0,.18)}.nst-hero-side{display:grid;gap:14px}.nst-mini-banner{border-radius:22px;padding:28px;display:flex;flex-direction:column;justify-content:flex-end;min-height:195px;box-shadow:0 15px 32px rgba(15,23,42,.09)}.nst-mini-banner.green{background:linear-gradient(145deg,#ede9fe,#f5f3ff);color:#14532d}.nst-mini-banner.amber{background:linear-gradient(145deg,#fef3c7,#fff7ed);color:#78350f}.nst-mini-banner small{font-weight:900;letter-spacing:.1em}.nst-mini-banner strong{font-size:25px;margin:8px 0 4px}.nst-mini-banner span{font-size:13px}.nst-section{margin-top:22px;background:var(--nst-surface);border:1px solid var(--nst-border);border-radius:22px;padding:24px;box-shadow:0 10px 28px rgba(15,23,42,.045)}.nst-section-title{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px}.nst-section-title small{color:var(--nst-primary);font-weight:900;letter-spacing:.11em}.nst-section-title h2{font-size:28px;margin:4px 0 0;font-weight:900}.nst-section-title a{display:flex;align-items:center;gap:6px;color:var(--nst-primary);font-weight:850}.nst-deal-head{display:flex;justify-content:flex-end;align-items:center;gap:6px;margin:-54px 0 20px;font-size:13px}.nst-deal-head b{background:var(--nst-secondary);color:white;border-radius:7px;padding:6px 8px}.nst-deal-head button{margin-left:10px;display:flex;gap:3px}.nst-deal-head button svg{background:#eef6f0;border-radius:8px;padding:5px;width:30px;height:30px}.nst-product-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:13px}.nst-product-card{border:1px solid var(--nst-border);border-radius:17px;overflow:hidden;background:white;transition:.2s}.nst-product-card:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(76,29,149,.1)}.nst-product-art{height:170px;position:relative;display:grid;place-items:center}.nst-product-art>span{width:82px;height:126px;background:linear-gradient(145deg,#0f172a,#334155);color:white;border-radius:18px;display:grid;place-items:center;text-align:center;font-weight:900;padding:8px;box-shadow:0 14px 24px rgba(0,0,0,.2)}.nst-product-art button{position:absolute;right:10px;top:10px;background:white;border-radius:50%;width:34px;height:34px;display:grid;place-items:center}.nst-product-art b{position:absolute;left:9px;top:10px;background:var(--nst-primary);color:white;border-radius:999px;padding:5px 8px;font-size:9px}.nst-product-body{padding:13px}.nst-product-body small{color:var(--nst-primary);font-weight:800}.nst-product-body h3{font-size:14px;line-height:1.35;min-height:38px;margin:7px 0;font-weight:850}.nst-price{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.nst-price strong{font-size:16px;color:var(--nst-secondary)}.nst-price del{font-size:11px;color:#94a3b8}.nst-product-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}.nst-product-actions a,.nst-product-actions button{border-radius:9px;padding:8px;text-align:center;font-size:11px;font-weight:850}.nst-product-actions a{background:#ecfdf5;color:#5b21b6}.nst-product-actions button{background:var(--nst-primary);color:white;display:flex;align-items:center;justify-content:center;gap:4px}.nst-category-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}.nst-category-grid a{border:1px solid var(--nst-border);border-radius:16px;padding:20px 12px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:7px;transition:.2s}.nst-category-grid a:hover{background:#f5f3ff;border-color:#86efac;transform:translateY(-3px)}.nst-category-grid svg{color:var(--nst-primary);width:30px;height:30px}.nst-category-grid strong{font-size:14px}.nst-category-grid span{font-size:11px;color:var(--nst-muted)}.nst-brand-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}.nst-brand-grid a{height:82px;border:1px solid var(--nst-border);border-radius:15px;display:grid;place-items:center;font-size:18px;font-weight:950;color:#173322;background:linear-gradient(145deg,#fff,#f5f3ff)}.nst-feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;background:var(--nst-secondary);border:0}.nst-feature-grid>div{display:flex;gap:12px;align-items:center;color:white;padding:8px}.nst-feature-grid svg{color:#fde68a;width:30px;height:30px}.nst-feature-grid span{display:flex;flex-direction:column}.nst-feature-grid strong{font-size:14px}.nst-feature-grid small{color:#bbf7d0;margin-top:3px}
+@media(max-width:1100px){.nst-product-grid{grid-template-columns:repeat(3,1fr)}.nst-category-grid,.nst-brand-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){.nst-builder-page{padding:10px 10px 86px}.nst-hero-wrap{grid-template-columns:1fr}.nst-hero-main{grid-template-columns:1fr;min-height:auto}.nst-hero-copy{padding:34px 25px}.nst-device-stage{min-height:270px}.phone{height:230px;width:118px}.nst-hero-side{grid-template-columns:1fr 1fr}.nst-mini-banner{min-height:140px;padding:18px}.nst-mini-banner strong{font-size:18px}.nst-product-grid{grid-template-columns:repeat(2,1fr)}.nst-category-grid,.nst-brand-grid{grid-template-columns:repeat(2,1fr)}.nst-feature-grid{grid-template-columns:1fr 1fr}.nst-deal-head{margin:0 0 16px;justify-content:flex-start}.nst-section{padding:16px;border-radius:17px}.nst-section-title h2{font-size:22px}}
+@media(max-width:390px){.nst-hero-side{grid-template-columns:1fr}.nst-feature-grid{grid-template-columns:1fr}.nst-product-art{height:145px}.nst-product-art>span{height:105px;width:68px}.nst-product-actions{grid-template-columns:1fr}.nst-section-title a{font-size:12px}}
+
+/* Confirmed 12-slide homepage additions */
+.nst-slide{scroll-margin-top:120px}.nst-gadget-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.nst-gadget-grid a{min-height:170px;border-radius:20px;padding:24px;background:linear-gradient(145deg,#ecfdf5,#fff);border:1px solid var(--nst-border);display:flex;flex-direction:column;justify-content:flex-end;gap:8px;transition:.2s}.nst-gadget-grid a:hover{transform:translateY(-4px);box-shadow:0 16px 34px rgba(76,29,149,.1)}.nst-gadget-grid svg{width:40px;height:40px;color:var(--nst-primary)}.nst-gadget-grid strong{font-size:20px}.nst-gadget-grid span{font-size:12px;color:var(--nst-muted)}.nst-promo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.nst-promo-grid a{min-height:190px;border-radius:22px;padding:28px;display:flex;flex-direction:column;justify-content:flex-end;color:white;background:linear-gradient(140deg,var(--nst-secondary),var(--nst-primary));overflow:hidden;position:relative}.nst-promo-grid a:nth-child(2){background:linear-gradient(140deg,#92400e,#f59e0b)}.nst-promo-grid a:nth-child(3){background:linear-gradient(140deg,#0f172a,#334155)}.nst-promo-grid b{font-size:24px}.nst-promo-grid span{margin-top:8px;color:rgba(255,255,255,.82);font-size:13px}.nst-blog-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.nst-blog-grid a{border:1px solid var(--nst-border);border-radius:18px;overflow:hidden;background:#fff;padding-bottom:18px;transition:.2s}.nst-blog-grid a:hover{transform:translateY(-4px);box-shadow:0 16px 32px rgba(76,29,149,.09)}.nst-blog-grid a>div{height:150px;display:grid;place-items:center;background:linear-gradient(145deg,#ede9fe,#f8fafc);color:var(--nst-primary)}.nst-blog-grid a>div svg{width:44px;height:44px}.nst-blog-grid small,.nst-blog-grid h3,.nst-blog-grid span{display:flex;margin-left:16px;margin-right:16px}.nst-blog-grid small{margin-top:15px;color:var(--nst-primary);font-weight:900}.nst-blog-grid h3{font-size:16px;line-height:1.4;min-height:46px;margin-top:7px}.nst-blog-grid span{align-items:center;gap:5px;color:var(--nst-primary);font-size:12px;font-weight:850;margin-top:12px}
+@media(max-width:900px){.nst-gadget-grid,.nst-blog-grid{grid-template-columns:repeat(2,1fr)}.nst-promo-grid{grid-template-columns:1fr}}
+@media(max-width:520px){.nst-gadget-grid,.nst-blog-grid{grid-template-columns:1fr 1fr}.nst-gadget-grid a{min-height:140px;padding:18px}.nst-blog-grid a>div{height:112px}.nst-blog-grid h3{font-size:14px}.nst-promo-grid a{min-height:150px;padding:22px}}
+
+/* NST Website Builder responsive 12-column layout */
+.nst-builder-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(12px, 1.5vw, 24px);
+  align-items: start;
+}
+.nst-builder-grid-item {
+  min-width: 0;
+  grid-column: span var(--nst-span-desktop, 12) / span var(--nst-span-desktop, 12);
+}
+.nst-builder-grid-item > .nst-section,
+.nst-builder-grid-item > .nst-hero-wrap {
+  margin: 0;
+  width: 100%;
+}
+@media (max-width: 1024px) {
+  .nst-builder-grid-item {
+    grid-column: span var(--nst-span-tablet, 12) / span var(--nst-span-tablet, 12);
+  }
+}
+@media (max-width: 430px) {
+  .nst-builder-grid { gap: 12px; }
+  .nst-builder-grid-item {
+    grid-column: span var(--nst-span-mobile, 12) / span var(--nst-span-mobile, 12);
+  }
+}
+.nst-social-icon {
+  display: block !important;
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  max-width: 16px !important;
+  min-height: 16px !important;
+  max-height: 16px !important;
+  flex: 0 0 16px !important;
+}
+
+/* Compare discoverability and published-builder actions */
+.nst-compare-button{width:100%;margin:12px 0 10px;display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid #cbd5e1;background:#fff;color:#334155;border-radius:10px;padding:9px 10px;font-size:11px;font-weight:900;transition:.2s}.nst-compare-button:hover{border-color:var(--nst-primary,#6d28d9);color:var(--nst-primary,#6d28d9);background:#f5f3ff}.nst-compare-button.is-added{border-color:#7c3aed;color:#5b21b6;background:#ede9fe}.nst-floating-compare{position:fixed;right:18px;bottom:22px;z-index:80;display:flex;align-items:center;gap:8px;background:#4c1d95;color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:11px 13px;box-shadow:0 12px 30px rgba(76,29,149,.28);font-size:12px;font-weight:900}.nst-floating-compare:hover{background:#6d28d9}.nst-floating-compare b{display:grid;place-items:center;min-width:21px;height:21px;padding:0 5px;border-radius:999px;background:#fbbf24;color:#2e1065;font-size:10px}@media(max-width:1023px){.nst-floating-compare{bottom:82px;right:12px;padding:10px 12px}.nst-floating-compare span{display:inline}}
+
+/* Builder published layout, brand matrix and overflow protection */
+.nst-builder-page{font-family:var(--nst-font,"Inter","Noto Sans Bengali",sans-serif)}
+.nst-builder-grid-item{min-width:0;min-height:var(--nst-min-height-desktop,0);overflow:hidden}
+.nst-builder-grid-item .nst-product-grid,.nst-builder-grid-item .nst-category-grid,.nst-builder-grid-item .nst-brand-grid{grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr))}
+.nst-brand-grid{grid-template-columns:repeat(6,minmax(0,1fr));grid-auto-rows:92px}
+.nst-brand-grid a{height:auto;min-height:92px;padding:12px;display:flex;flex-direction:column;gap:7px;align-items:center;justify-content:center}
+.nst-brand-logo{display:grid;width:38px;height:38px;place-items:center;border-radius:12px;background:rgba(255,255,255,.78);box-shadow:0 6px 18px rgba(15,23,42,.08);font-size:12px;font-weight:950}
+.nst-brand-grid strong{font-size:14px}
+.nst-deal-head{position:relative;z-index:1;flex-wrap:wrap;row-gap:8px;white-space:nowrap}
+.nst-deal-head button{position:static!important;transform:none!important;flex-shrink:0;margin-left:12px}
+@media(max-width:1024px){.nst-builder-grid-item{min-height:var(--nst-min-height-tablet,0)}.nst-brand-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:430px){.nst-builder-grid-item{min-height:var(--nst-min-height-mobile,0)}.nst-brand-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Builder-published Deals header: prevent countdown/navigation overlap */
+.nst-deals .nst-section-title{margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.nst-deal-head{margin:0 0 20px!important;display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap;white-space:normal!important}
+.nst-countdown,.nst-deal-nav{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+.nst-countdown i{font-style:normal;font-weight:900;color:var(--nst-muted)}
+.nst-deal-nav button{display:grid!important;place-items:center;width:32px;height:32px;margin:0!important;border:0;border-radius:9px;background:#eef6f0}
+.nst-deal-nav button svg{width:18px!important;height:18px!important;padding:0!important;background:transparent!important}
+@media(max-width:760px){.nst-deals .nst-section-title{align-items:flex-start}.nst-deal-head{justify-content:flex-start}}
+
+/* Builder shared-renderer sync fixes */
+.nst-builder-grid-item {
+  height: auto;
+  min-height: var(--nst-min-height-desktop, 0px);
+  align-self: stretch;
+}
+.nst-builder-grid-item > .nst-section,
+.nst-builder-grid-item > .nst-hero-wrap {
+  min-height: inherit;
+  height: 100%;
+  box-sizing: border-box;
+}
+.nst-deals .nst-section-title {
+  margin-bottom: 12px;
+}
+.nst-deals .nst-deal-head {
+  margin: 0 0 20px !important;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.nst-countdown,.nst-deal-nav{display:flex;align-items:center;gap:7px;flex:0 0 auto;min-width:max-content}
+.nst-deal-nav button{margin:0!important;position:static!important;display:grid!important;place-items:center;width:32px;height:32px;border-radius:9px;background:#eef6f0}
+@media(max-width:1024px){.nst-builder-grid-item{min-height:var(--nst-min-height-tablet,0px)}}
+@media(max-width:760px){.nst-deals .nst-deal-head{justify-content:flex-start}}
+@media(max-width:430px){.nst-builder-grid-item{min-height:var(--nst-min-height-mobile,0px)}}
+
+/* Final deals toolbar isolation: title/link and timer/navigation never overlap. */
+.nst-deals-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:18px;margin-bottom:20px}
+.nst-deals-toolbar .nst-section-title{margin:0;min-width:0}
+.nst-deals-toolbar .nst-deal-head{margin:0!important;min-width:max-content;justify-self:end;align-self:end;display:flex;align-items:center;gap:12px;flex-wrap:nowrap!important}
+.nst-deals-toolbar .nst-countdown,.nst-deals-toolbar .nst-deal-nav{display:flex;align-items:center;gap:7px;flex:0 0 auto;white-space:nowrap}
+.nst-deals-toolbar .nst-deal-nav button{margin:0!important;position:static!important;transform:none!important}
+@media(max-width:900px){.nst-deals-toolbar{grid-template-columns:1fr;align-items:start}.nst-deals-toolbar .nst-deal-head{justify-self:start}.nst-deals-toolbar .nst-section-title{align-items:flex-start}}
+
+/* POST UI SYNC â€” customer-friendly real navigation actions */
+.nst-product-art>a{position:absolute;right:10px;top:10px;background:white;border-radius:50%;width:34px;height:34px;display:grid;place-items:center;color:var(--nst-secondary)}
+.nst-product-actions .nst-primary-action{background:var(--nst-primary);color:white;display:flex;align-items:center;justify-content:center;gap:4px}
+
+/* NST real storefront editor preview */
+[data-nst-editor-preview='true'] .nst-editor-preview-item,
+[data-nst-editor-preview='true'] .nst-editor-preview-footer {
+  position: relative;
+  cursor: pointer;
+  outline: 2px dashed transparent;
+  outline-offset: 4px;
+  transition: outline-color .18s ease, filter .18s ease;
+}
+
+[data-nst-editor-preview='true'] .nst-editor-preview-item:hover,
+[data-nst-editor-preview='true'] .nst-editor-preview-footer:hover {
+  outline-color: #10b981;
+  filter: saturate(1.04);
+}
+
+[data-nst-editor-preview='true'] a,
+[data-nst-editor-preview='true'] button {
+  cursor: pointer;
+}
+
+/* NST floating controls stack
+   Bottom to top: NST Chat -> Compare -> Back to Top.
+   The mobile value leaves room for the fixed mobile navigation. */
+:root {
+  --nst-floating-control-right: 18px;
+  --nst-floating-base-bottom: 22px;
+}
+
+.nst-floating-compare {
+  right: var(--nst-floating-control-right, 18px);
+  bottom: calc(var(--nst-floating-base-bottom, 22px) + 74px);
+  z-index: 90;
+  max-width: calc(100vw - 32px);
+}
+
+.nst-footer-back-to-top {
+  position: fixed;
+  right: var(--nst-floating-control-right, 18px);
+  bottom: calc(var(--nst-floating-base-bottom, 22px) + 136px);
+  z-index: 85;
+  border: 0;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease;
+}
+
+.nst-footer-back-to-top:hover {
+  transform: translateY(-2px);
+}
+
+.nst-footer-back-to-top:focus-visible,
+.nst-floating-compare:focus-visible {
+  outline: 3px solid rgba(124, 58, 237, .35);
+  outline-offset: 3px;
+}
+
+@media (max-width: 1023px) {
+  :root {
+    --nst-floating-control-right: 12px;
+    --nst-floating-base-bottom: 82px;
+  }
+
+  .nst-floating-compare {
+    right: var(--nst-floating-control-right);
+    bottom: calc(var(--nst-floating-base-bottom) + 74px);
+    padding: 10px 12px;
+  }
+
+  .nst-footer-back-to-top {
+    right: var(--nst-floating-control-right);
+    bottom: calc(var(--nst-floating-base-bottom) + 136px);
+  }
+}
+
+@media (max-width: 520px) {
+  .nst-floating-compare {
+    max-width: calc(100vw - 24px);
+  }
+}
+
+
+/* NST Button Effect Preview --------------------------------------------
+   Visual trial only. POS keeps its real submit/loading logic.
+   Website product Link keeps its existing navigation logic.
+--------------------------------------------------------------------------- */
+.nst-expand-action {
+  --nst-action-height: 46px;
+  --nst-action-icon-width: 46px;
+  position: relative;
+  min-height: var(--nst-action-height);
+  overflow: hidden;
+  border: 0;
+  border-radius: 12px;
+  transition: padding-right .28s ease, transform .18s ease, box-shadow .18s ease;
+  will-change: padding-right, transform;
+}
+
+.nst-expand-action:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--nst-primary) 30%, transparent);
+  outline-offset: 3px;
+}
+
+.nst-expand-action:not(:disabled):active {
+  transform: translateY(1px) scale(.99);
+}
+
+.nst-expand-action__label {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+}
+
+.nst-expand-action__icon {
+  position: absolute;
+  inset-block: 0;
+  right: 0;
+  width: var(--nst-action-icon-width);
+  display: grid;
+  place-items: center;
+  border-left: 1px solid rgba(255,255,255,.28);
+  transform: translateX(calc(100% + 1px));
+  transition: transform .28s ease .03s;
+}
+
+.nst-expand-action__arrow {
+  width: 12px;
+  height: 12px;
+  transition: transform .25s ease, opacity .18s ease;
+}
+
+.nst-expand-action:hover .nst-expand-action__icon,
+.nst-expand-action:focus-visible .nst-expand-action__icon,
+.nst-expand-action.is-loading .nst-expand-action__icon {
+  transform: translateX(0);
+}
+
+.nst-expand-action:hover,
+.nst-expand-action:focus-visible,
+.nst-expand-action.is-loading {
+  padding-right: calc(1rem + var(--nst-action-icon-width));
+}
+
+.nst-expand-action__loader {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,.95);
+  border-left-color: transparent;
+  border-radius: 999px;
+  opacity: 0;
+  animation: nst-action-spin .75s linear infinite;
+}
+
+.nst-expand-action.is-loading .nst-expand-action__arrow {
+  opacity: 0;
+  transform: scale(.45);
+}
+
+.nst-expand-action.is-loading .nst-expand-action__loader {
+  opacity: 1;
+}
+
+.nst-expand-action--pos {
+  width: 100%;
+  padding: .75rem 1rem;
+  background: var(--nst-dashboard-primary);
+  color: #fff;
+  font-size: .875rem;
+  font-weight: 700;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--nst-dashboard-primary) 20%, transparent);
+}
+
+.nst-expand-action--pos:not(:disabled):hover {
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--nst-dashboard-primary) 28%, transparent);
+}
+
+.nst-expand-action--pos:disabled {
+  cursor: wait;
+  opacity: .72;
+}
+
+.nst-expand-action--shop {
+  --nst-action-height: 38px;
+  --nst-action-icon-width: 38px;
+  min-width: 72px;
+  padding-right: .8rem;
+  text-decoration: none;
+}
+
+.nst-expand-action__label--shop {
+  width: 100%;
+}
+
+@keyframes nst-action-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .nst-expand-action {
+    --nst-action-height: 44px;
+    --nst-action-icon-width: 42px;
+    border-radius: 11px;
+  }
+  .nst-expand-action--shop {
+    --nst-action-height: 36px;
+    --nst-action-icon-width: 34px;
+    min-width: 68px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nst-expand-action,
+  .nst-expand-action__icon,
+  .nst-expand-action__arrow {
+    transition: none !important;
+  }
+  .nst-expand-action__loader {
+    animation-duration: 1.4s;
+  }
+}
+
+/* Portal (customer / supplier) pages: keep the floating chat launcher above the phone bottom navigation */
+@media (max-width: 767px) {
+  body.nst-portal-page #nstChatWidgetRoot { bottom: calc(80px + env(safe-area-inset-bottom)) !important; right: 12px !important; }
+}
+
+/* Phones: compare lives in the product cards / compare page; keep the corner clear for the bottom bar and chat */
+@media (max-width: 767px) {
+  .nst-floating-compare { display: none !important; }
+}
+
+/* Phones: compact Daraz-style hero so products show above the fold */
+@media (max-width: 640px) {
+  .nst-hero-main { min-height: 0 !important; }
+  .nst-hero-copy { padding: 22px 18px !important; }
+  .nst-hero-copy h1 { font-size: clamp(26px, 8vw, 32px) !important; line-height: 1.08 !important; }
+  .nst-hero-copy p { font-size: 13px !important; line-height: 1.5 !important; margin-top: 8px !important; }
+  .nst-hero-copy > div { gap: 8px !important; margin-top: 14px !important; }
+  .nst-hero-copy > div a { padding: 9px 14px !important; font-size: 13px !important; }
+  .nst-device-stage { min-height: 0 !important; height: 170px !important; transform: scale(.72); transform-origin: center top; }
+}
+
+/* NST Promo Ticker - smooth marquee, theme driven (Website Control Center) */
+@keyframes nst-promo-ticker-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.nst-promo-ticker__track { animation: nst-promo-ticker-scroll linear infinite; will-change: transform; }
+.nst-promo-ticker.is-pausable:hover .nst-promo-ticker__track { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .nst-promo-ticker__track { animation: none; } }
+/* Website Control Center preview: sections are clickable for selection */
+[data-nst-editor-preview="true"] [data-nst-section-id] { cursor: pointer; }
+[data-nst-editor-preview="true"] [data-nst-section-id]:hover { outline: 1px dashed color-mix(in oklab, var(--nst-primary) 55%, white); outline-offset: 3px; }
+
+/* Recent purchase toast: bottom-left, clear of the phone bottom bar and the right-side buttons */
+.nst-purchase-popup {
+  position: fixed;
+  left: 20px;
+  bottom: 22px;
+  z-index: 75;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: min(330px, calc(100vw - 40px));
+  padding: 10px 30px 10px 10px;
+  border: 1px solid #eef0f4;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, .16);
+  opacity: 0;
+  transform: translateY(14px);
+  pointer-events: none;
+  transition: opacity .35s ease, transform .35s ease;
+}
+.nst-purchase-popup.is-visible { opacity: 1; transform: none; pointer-events: auto; }
+.nst-purchase-popup.is-right { left: auto; right: calc(var(--nst-floating-control-right, 18px) + 64px); }
+.nst-purchase-popup__media {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--nst-primary-soft, #f5f3ff);
+}
+.nst-purchase-popup__media img { width: 100%; height: 100%; border-radius: 10px; background: #fff; object-fit: contain; }
+.nst-purchase-popup__media i { position: absolute; top: -3px; right: -3px; width: 9px; height: 9px; border-radius: 999px; background: #22c55e; box-shadow: 0 0 0 2px #fff; }
+.nst-purchase-popup__close { position: absolute; top: 6px; right: 6px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 999px; color: #94a3b8; }
+.nst-purchase-popup__close:hover { background: #f1f5f9; color: #334155; }
+
+/* Phone buy bar on the product page, directly above the bottom navigation */
+.nst-product-buybar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(4rem + 1px + env(safe-area-inset-bottom));
+  z-index: 65;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-top: 1px solid #e2e8f0;
+  background: #fff;
+  box-shadow: 0 -8px 24px rgba(15, 23, 42, .08);
+}
+.nst-product-buybar__btn {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--nst-primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.nst-product-buybar__btn.is-soft { width: 42px; padding: 0; background: var(--nst-primary-soft); color: var(--nst-primary-dark, var(--nst-primary)); }
+.nst-product-buybar__btn:disabled { opacity: .6; cursor: not-allowed; }
+@media (min-width: 1024px) { .nst-product-buybar { display: none; } }
+
+@media (max-width: 1023px) {
+  .nst-purchase-popup,
+  .nst-purchase-popup.is-right {
+    left: 10px;
+    right: auto;
+    bottom: calc(var(--nst-floating-base-bottom, 82px) + 2px);
+    width: auto;
+    max-width: calc(100vw - 20px - var(--nst-floating-control-right, 12px) - 52px);
+    padding: 8px 28px 8px 8px;
+  }
+  .nst-purchase-popup__media { width: 36px; height: 36px; }
+  .nst-purchase-popup.is-desktop-only { display: none; }
+  /* With the buy bar shown, every floating control starts above it. */
+  body.nst-has-buybar { --nst-floating-base-bottom: calc(82px + 58px); }
+}
+
+/* Phones: compare is hidden, so back-to-top sits right above the chat button */
+@media (max-width: 767px) {
+  .nst-footer-back-to-top { bottom: calc(var(--nst-floating-base-bottom, 82px) + 62px); }
+}
+
+/* NST CUSTOMER SUPPLIER MOTION START */
+
+@property --nst-orbit {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+/* -----------------------------
+   CUSTOMER LOGIN MOTION
+------------------------------ */
+
+@keyframes nst-customer-bg-float-a {
+  0%, 100% {
+    transform: translate3d(-2%, -2%, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(9%, 6%, 0) scale(1.14);
+  }
+}
+
+@keyframes nst-customer-bg-float-b {
+  0%, 100% {
+    transform: translate3d(3%, 4%, 0) scale(1.05);
+  }
+
+  50% {
+    transform: translate3d(-9%, -5%, 0) scale(.92);
+  }
+}
+
+@keyframes nst-customer-card-glow {
+  0%, 100% {
+    box-shadow:
+      0 30px 80px rgba(37,99,235,.12),
+      0 0 0 rgba(59,130,246,0);
+  }
+
+  50% {
+    box-shadow:
+      0 34px 95px rgba(37,99,235,.18),
+      0 0 38px rgba(59,130,246,.10);
+  }
+}
+
+.nst-customer-ambient > div:nth-child(1) {
+  animation:
+    nst-customer-bg-float-a 10s ease-in-out infinite;
+  will-change: transform;
+}
+
+.nst-customer-ambient > div:nth-child(2) {
+  animation:
+    nst-customer-bg-float-b 13s ease-in-out infinite;
+  will-change: transform;
+}
+
+.nst-customer-login-card {
+  position: relative;
+  isolation: isolate;
+
+  animation:
+    nst-customer-card-glow 4.8s ease-in-out infinite;
+}
+
+.nst-customer-login-card::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+
+  background:
+    conic-gradient(
+      from var(--nst-orbit),
+      transparent 0deg,
+      transparent 58deg,
+      rgba(96,165,250,.08) 82deg,
+      rgba(37,99,235,.80) 106deg,
+      rgba(56,189,248,.25) 132deg,
+      transparent 166deg,
+      transparent 360deg
+    );
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  pointer-events: none;
+  z-index: 5;
+
+  animation:
+    nst-customer-border-spin 6s linear infinite;
+}
+
+@keyframes nst-customer-border-spin {
+  to {
+    --nst-orbit: 360deg;
+  }
+}
+
+
+/* -----------------------------
+   SUPPLIER LOGIN MOTION
+------------------------------ */
+
+@keyframes nst-supplier-bg-float-a {
+  0%, 100% {
+    transform: translate3d(-3%, 0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(10%, 7%, 0) scale(1.12);
+  }
+}
+
+@keyframes nst-supplier-bg-float-b {
+  0%, 100% {
+    transform: translate3d(4%, 2%, 0) scale(1.05);
+  }
+
+  50% {
+    transform: translate3d(-10%, -8%, 0) scale(.94);
+  }
+}
+
+@keyframes nst-supplier-wrap-breathe {
+  0%, 100% {
+    filter:
+      drop-shadow(0 0 10px rgba(52,211,153,.08));
+  }
+
+  50% {
+    filter:
+      drop-shadow(0 0 28px rgba(52,211,153,.18));
+  }
+}
+
+.nst-supplier-ambient > div:nth-child(1) {
+  animation:
+    nst-supplier-bg-float-a 11s ease-in-out infinite;
+  will-change: transform;
+}
+
+.nst-supplier-ambient > div:nth-child(2) {
+  animation:
+    nst-supplier-bg-float-b 14s ease-in-out infinite;
+  will-change: transform;
+}
+
+.nst-supplier-login-wrap {
+  isolation: isolate;
+
+  animation:
+    nst-supplier-wrap-breathe 4s ease-in-out infinite;
+}
+
+.nst-supplier-login-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 2rem;
+  padding: 2px;
+
+  background:
+    conic-gradient(
+      from var(--nst-orbit),
+      transparent 0deg,
+      transparent 48deg,
+      rgba(52,211,153,.08) 78deg,
+      rgba(52,211,153,1) 104deg,
+      rgba(45,212,191,.30) 132deg,
+      transparent 170deg,
+      transparent 360deg
+    );
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  pointer-events: none;
+  z-index: 8;
+
+  animation:
+    nst-supplier-border-spin 5s linear infinite;
+}
+
+.nst-supplier-login-wrap::after {
+  content: "";
+  position: absolute;
+  inset: -22px;
+  border-radius: 2.3rem;
+
+  background:
+    conic-gradient(
+      from var(--nst-orbit),
+      transparent 0deg,
+      transparent 62deg,
+      rgba(52,211,153,.06) 82deg,
+      rgba(52,211,153,.22) 108deg,
+      transparent 154deg,
+      transparent 360deg
+    );
+
+  filter: blur(24px);
+  pointer-events: none;
+  z-index: -1;
+
+  animation:
+    nst-supplier-border-spin 5s linear infinite;
+}
+
+@keyframes nst-supplier-border-spin {
+  to {
+    --nst-orbit: 360deg;
+  }
+}
+
+
+/* -----------------------------
+   SAFE REDUCED MOTION
+------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  .nst-customer-ambient > div,
+  .nst-supplier-ambient > div,
+  .nst-customer-login-card,
+  .nst-customer-login-card::before,
+  .nst-supplier-login-wrap,
+  .nst-supplier-login-wrap::before,
+  .nst-supplier-login-wrap::after {
+    animation: none !important;
+  }
+}
+
+/* NST CUSTOMER SUPPLIER MOTION END */
+
+/* NST PHONE CARD EFFECT START */
+
+.nst-customer-phone-card,
+.nst-supplier-phone-card {
+  position: relative;
+  isolation: isolate;
+}
+
+.nst-customer-phone-card::before,
+.nst-supplier-phone-card::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  pointer-events: none;
+  z-index: 5;
+
+  animation: nst-phone-border-spin 5s linear infinite;
+}
+
+.nst-customer-phone-card::before {
+  background:
+    conic-gradient(
+      from var(--nst-orbit),
+      transparent 0deg,
+      transparent 55deg,
+      rgba(96,165,250,.08) 82deg,
+      rgba(37,99,235,.95) 108deg,
+      rgba(56,189,248,.28) 138deg,
+      transparent 175deg,
+      transparent 360deg
+    );
+}
+
+.nst-supplier-phone-card::before {
+  background:
+    conic-gradient(
+      from var(--nst-orbit),
+      transparent 0deg,
+      transparent 55deg,
+      rgba(52,211,153,.08) 82deg,
+      rgba(52,211,153,1) 108deg,
+      rgba(45,212,191,.30) 138deg,
+      transparent 175deg,
+      transparent 360deg
+    );
+}
+
+.nst-customer-phone-card::after,
+.nst-supplier-phone-card::after {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(18px);
+
+  animation: nst-phone-border-spin 5s linear infinite;
+}
+
+.nst-customer-phone-card::after {
+  background:
+    conic-gradient(
+      from var(--nst-orbit),
+      transparent 0deg,
+      transparent 70deg,
+      rgba(37,99,235,.05) 90deg,
+      rgba(37,99,235,.18) 112deg,
+      transparent 150deg,
+      transparent 360deg
+    );
+}
+
+.nst-supplier-phone-card::after {
+  background:
+    conic-gradient(
+      from var(--nst-orbit),
+      transparent 0deg,
+      transparent 70deg,
+      rgba(52,211,153,.05) 90deg,
+      rgba(52,211,153,.20) 112deg,
+      transparent 150deg,
+      transparent 360deg
+    );
+}
+
+@keyframes nst-phone-border-spin {
+  to {
+    --nst-orbit: 360deg;
+  }
+}
+
+/* NST PHONE CARD EFFECT END */
+

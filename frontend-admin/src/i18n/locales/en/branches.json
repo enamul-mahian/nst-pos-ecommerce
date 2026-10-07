@@ -1,0 +1,4 @@
+{
+  "manager_help": "Selecting a manager automatically assigns this user's branch_id.",
+  "stock_empty_help": "Products appear here only when stock is assigned to this branch."
+}

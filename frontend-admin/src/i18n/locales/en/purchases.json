@@ -1,0 +1,13 @@
+{
+  "create_title": "Create Purchase",
+  "create_subtitle": "Add multiple products, IMEIs and barcodes within one supplier invoice.",
+  "same_price_confirm": "Product \"{name}\" is already added with the same purchase price.\n\nDo you want to increase its quantity by +{quantity}?\n\nPress Cancel to add a separate row.",
+  "price_row_help": "The same product at a different price is added as a separate row. At the same price you are asked to confirm a quantity increase.",
+  "manual_add_disabled_title": "Manual product add is not available here.",
+  "manual_add_disabled_body": "Add items to a supplier purchase by scanning the Barcode/SKU of an existing product/variant. If the product is not found, an authorized user must first create the product/variant from the Product/Catalog module.",
+  "device_price_help": "For IMEI-tracked products, each device's purchase price can be edited separately.",
+  "price_visibility_note": "Only Super Admin, Admin and Accountant can see the purchase price and payment amount.",
+  "list_title": "Purchases",
+  "list_subtitle": "Supplier purchase invoices, products, IMEI and barcode history.",
+  "list_price_visibility_note": "Only Super Admin, Admin and Accountant can see purchase price and payment information."
+}

@@ -1,0 +1,12 @@
+{
+  "someone": "একজন কাস্টমার",
+  "from": "থেকে",
+  "purchased": "কিনেছেন",
+  "preordered": "প্রি-অর্ডার করেছেন",
+  "verified": "যাচাইকৃত কেনাকাটা",
+  "just_now": "এইমাত্র",
+  "minutes_ago": "{count} মিনিট আগে",
+  "hours_ago": "{count} ঘণ্টা আগে",
+  "days_ago": "{count} দিন আগে",
+  "close": "বন্ধ করুন"
+}

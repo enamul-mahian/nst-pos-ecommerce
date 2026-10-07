@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/pos/favicon.svg" />
+    
+    <!-- Responsive mobile safe-area viewport cover -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    
+    <title>New Singapur Telecom | Premium Mobile, Gadget & Telecom Store</title>
+    
+    <!-- Dynamic Fonts Integration: Inter Font Family -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" /></noscript>
+    <script>
+      (function () {
+        var neutral = {primary:'#7c3aed',accent:'#a855f7',background:'#f4f0ff',surface:'#ffffff',text:'#111827',muted:'#64748b',border:'rgba(148,163,184,.22)',sidebar:'#ffffff',topbar:'#ffffff',radius:'24px',shadow:'0 10px 32px rgba(15,23,42,.07)',blur:'0px'};
+        try {
+          var envelope = JSON.parse(localStorage.getItem('nst-dashboard-effective-theme:v1') || 'null');
+          var theme = envelope && envelope.theme ? Object.assign({}, neutral, envelope.theme) : neutral;
+          var root = document.documentElement;
+          var values = {
+            '--nst-dashboard-primary':theme.primary,'--nst-dashboard-accent':theme.accent,'--nst-dashboard-bg':theme.background,
+            '--nst-dashboard-surface':theme.surface,'--nst-dashboard-text':theme.text,'--nst-dashboard-muted':theme.muted,
+            '--nst-dashboard-border':theme.border,'--nst-dashboard-sidebar':theme.sidebar,'--nst-dashboard-topbar':theme.topbar,
+            '--nst-dashboard-radius':theme.radius,'--nst-dashboard-shadow':theme.shadow,'--nst-dashboard-blur':theme.blur
+          };
+          Object.keys(values).forEach(function (key) { if (values[key]) root.style.setProperty(key, values[key]); });
+          root.style.backgroundColor = theme.background;
+          root.style.color = theme.text;
+          root.dataset.dashboardTheme = theme.id || 'nst-prehydrated';
+        } catch (error) {}
+      })();
+    </script>
+  <script type="module" crossorigin src="/pos/assets/index-DdeRuJo9.js"></script>
+  <link rel="modulepreload" crossorigin href="/pos/assets/page-Login-jsx-DNGELc03.js">
+  <link rel="modulepreload" crossorigin href="/pos/assets/page-products-JMJFF3Mc.js">
+  <link rel="modulepreload" crossorigin href="/pos/assets/page-purchases-CFcXfRdg.js">
+  <link rel="modulepreload" crossorigin href="/pos/assets/page-reports-D4w9crbC.js">
+  <link rel="modulepreload" crossorigin href="/pos/assets/page-sales-B-nrk-2M.js">
+  <link rel="modulepreload" crossorigin href="/pos/assets/page-dashboard-CqcpZWRN.js">
+  <link rel="modulepreload" crossorigin href="/pos/assets/page-device-history-DKQUnoPG.js">
+  <link rel="stylesheet" crossorigin href="/pos/assets/index-p10-1791059654.css">
+</head>
+  <body>
+    <!-- The primary mounting point for the React application -->
+    <div id="root"></div>
+    
+    <!-- Entry script module referencing the React bootstrap file -->
+</body>
+</html>

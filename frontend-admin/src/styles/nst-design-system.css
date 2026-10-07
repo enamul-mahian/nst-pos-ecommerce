@@ -1,0 +1,966 @@
+/* =====================================================================
+   NST DESIGN SYSTEM - single source of truth for Admin UI
+   Implements: NST_ADMIN_UI_CONFIRMED_HEADER_STANDARD.md (LOCKED)
+   Change values ONLY here. Pages supply content, never styles.
+   ===================================================================== */
+
+.nst-business-shell {
+  /* ---- Header (locked values) ---- */
+  --nst-h-icon: 50px;               /* LOCKED: icon box 50 x 50 */
+  --nst-h-gap: 13px;                /* LOCKED: icon -> text gap */
+  --nst-h-radius: 8px;              /* reduced radius */
+  --nst-h-icon-radius: 10px;
+  --nst-h-icon-glyph: 24px;
+  --nst-h-pad-y: 16px;
+  --nst-h-pad-x: 20px;
+  --nst-h-min-h: 84px;              /* 50px icon + padding */
+  --nst-h-margin: 16px;
+  --nst-h-title-size: 22px;
+  --nst-h-title-weight: 700;
+  --nst-h-title-lh: 1.25;
+  --nst-h-sub-size: 13.5px;
+  --nst-h-sub-weight: 500;
+  --nst-h-sub-lh: 1.45;
+  --nst-h-sub-gap: 4px;             /* fixed title -> subtitle spacing */
+  --nst-h-section-title-size: 16px;
+  --nst-h-section-sub-size: 12.5px;
+  --nst-h-actions-gap: 8px;
+  --nst-h-border: 1px solid var(--nst-dashboard-border);
+  --nst-h-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .035),
+    0 2px 4px rgba(2, 6, 23, .28),
+    0 12px 28px rgba(2, 6, 23, .36);
+
+  /* ---- Buttons (solid, NO gradients) ---- */
+  --nst-btn-h: 40px;
+  --nst-btn-h-sm: 34px;
+  --nst-btn-px: 16px;
+  --nst-btn-radius: 8px;
+  --nst-btn-gap: 8px;
+  --nst-btn-font: 13px;
+  --nst-btn-weight: 700;
+  --nst-btn-icon: 16px;
+  --nst-btn-success: #15803d;
+  --nst-btn-danger: #dc2626;
+  --nst-btn-neutral: #475569;
+
+  /* ---- Fields inside headers ---- */
+  --nst-field-h: 40px;
+  --nst-field-radius: 8px;
+}
+
+/* A4 light mode: same sizes, only shadow contrast changes */
+body.nst-admin-theme-light .nst-business-shell {
+  --nst-h-shadow:
+    0 1px 2px rgba(15, 23, 42, .06),
+    0 8px 24px rgba(15, 23, 42, .08);
+}
+
+/* =====================================================================
+   PAGE / SECTION HEADER  (.nst-ph)
+   [50px icon] -13px- [Title + Subtitle]      [Filters] [Actions]
+   ===================================================================== */
+.nst-business-shell .nst-ph {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--nst-h-min-h);
+  margin: 0 0 var(--nst-h-margin) 0;
+  padding: var(--nst-h-pad-y) var(--nst-h-pad-x) !important;
+  background: var(--nst-dashboard-surface) !important;
+  background-image: none !important;
+  border: var(--nst-h-border) !important;
+  border-radius: var(--nst-h-radius) !important;
+  box-shadow: var(--nst-h-shadow) !important;
+  color: var(--nst-dashboard-text);
+  text-align: left;
+}
+.nst-business-shell .nst-ph__lead {
+  display: flex;
+  align-items: center;
+  gap: var(--nst-h-gap) !important;
+  flex: 1 1 320px;
+  min-width: 0;
+}
+.nst-business-shell .nst-ph__icon {
+  flex: 0 0 var(--nst-h-icon);
+  width: var(--nst-h-icon) !important;
+  height: var(--nst-h-icon) !important;
+  display: grid;
+  place-items: center;
+  border-radius: var(--nst-h-icon-radius);
+  background: color-mix(in srgb, var(--nst-dashboard-primary) 16%, transparent);
+  color: var(--nst-dashboard-primary);
+}
+.nst-business-shell .nst-ph__icon svg {
+  width: var(--nst-h-icon-glyph);
+  height: var(--nst-h-icon-glyph);
+}
+.nst-business-shell .nst-ph__text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+.nst-business-shell .nst-ph__title {
+  margin: 0 !important;
+  font-size: var(--nst-h-title-size) !important;
+  font-weight: var(--nst-h-title-weight) !important;
+  line-height: var(--nst-h-title-lh) !important;
+  letter-spacing: -.01em;
+  color: var(--nst-dashboard-text) !important;
+  text-transform: none !important;
+}
+.nst-business-shell .nst-ph__subtitle {
+  margin: var(--nst-h-sub-gap) 0 0 0 !important;
+  font-size: var(--nst-h-sub-size) !important;
+  font-weight: var(--nst-h-sub-weight) !important;
+  line-height: var(--nst-h-sub-lh) !important;
+  color: var(--nst-dashboard-muted) !important;
+  max-width: 78ch;
+}
+.nst-business-shell .nst-ph__extra {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  font-size: 12px;
+  color: var(--nst-dashboard-muted);
+}
+.nst-business-shell .nst-ph__filters,
+.nst-business-shell .nst-ph__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--nst-h-actions-gap);
+}
+.nst-business-shell .nst-ph__actions {
+  justify-content: flex-end;
+  margin-left: auto;
+}
+.nst-business-shell .nst-ph__filters + .nst-ph__actions {
+  margin-left: 0;
+}
+
+/* Compact: same system, tighter padding */
+.nst-business-shell .nst-ph--compact {
+  --nst-h-pad-y: 14px;
+  --nst-h-min-h: 78px;
+}
+/* Section header: same alignment, smaller hierarchy */
+.nst-business-shell .nst-ph--section {
+  --nst-h-min-h: 78px;
+  --nst-h-pad-y: 14px;
+  margin-bottom: 0;
+}
+.nst-business-shell .nst-ph--section .nst-ph__title {
+  font-size: var(--nst-h-section-title-size) !important;
+}
+.nst-business-shell .nst-ph--section .nst-ph__subtitle {
+  font-size: var(--nst-h-section-sub-size) !important;
+}
+
+@media (max-width: 767px) {
+  .nst-business-shell .nst-ph__filters,
+  .nst-business-shell .nst-ph__actions {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-start;
+  }
+}
+
+/* Header field (date / select filters) */
+.nst-business-shell .nst-ph-field {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  color: var(--nst-dashboard-muted);
+}
+.nst-business-shell .nst-ph-field :is(input, select) {
+  height: var(--nst-field-h) !important;
+  min-width: 150px;
+  padding: 0 12px !important;
+  border-radius: var(--nst-field-radius) !important;
+  border: 1px solid var(--nst-dashboard-border) !important;
+  background: var(--nst-dashboard-input, var(--nst-dashboard-surface)) !important;
+  color: var(--nst-dashboard-text) !important;
+  font-size: 13px !important;
+  font-weight: 600;
+}
+.nst-business-shell .nst-ph__filters .nst-ph-field + .nst-btn,
+.nst-business-shell .nst-ph__filters:has(.nst-ph-field) ~ .nst-ph__actions {
+  align-self: flex-end;
+}
+
+/* =====================================================================
+   BUTTONS (.nst-btn) - solid, consistent, NO gradients
+   ===================================================================== */
+.nst-business-shell .nst-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--nst-btn-gap) !important;
+  height: var(--nst-btn-h) !important;
+  min-height: 0 !important;
+  padding: 0 var(--nst-btn-px) !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--nst-btn-radius) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  font-size: var(--nst-btn-font) !important;
+  font-weight: var(--nst-btn-weight) !important;
+  line-height: 1 !important;
+  white-space: nowrap;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: background-color .12s ease, border-color .12s ease, color .12s ease !important;
+}
+.nst-business-shell .nst-btn svg {
+  width: var(--nst-btn-icon);
+  height: var(--nst-btn-icon);
+  flex-shrink: 0;
+}
+.nst-business-shell .nst-btn--sm { height: var(--nst-btn-h-sm) !important; padding: 0 12px !important; font-size: 12px !important; }
+.nst-business-shell .nst-btn--lg { height: 44px !important; padding: 0 20px !important; }
+.nst-business-shell .nst-btn--icon { width: var(--nst-btn-h) !important; padding: 0 !important; }
+.nst-business-shell .nst-btn--sm.nst-btn--icon { width: var(--nst-btn-h-sm) !important; }
+
+.nst-business-shell .nst-btn--primary {
+  background-color: var(--nst-dashboard-primary) !important;
+  color: #fff !important;
+}
+.nst-business-shell .nst-btn--primary:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--nst-dashboard-primary) 86%, #000) !important;
+}
+.nst-business-shell .nst-btn--secondary {
+  background-color: var(--nst-dashboard-surface) !important;
+  border-color: var(--nst-dashboard-border) !important;
+  color: var(--nst-dashboard-text) !important;
+}
+.nst-business-shell .nst-btn--secondary:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--nst-dashboard-primary) 55%, var(--nst-dashboard-border)) !important;
+  background-color: color-mix(in srgb, var(--nst-dashboard-primary) 6%, var(--nst-dashboard-surface)) !important;
+}
+.nst-business-shell .nst-btn--ghost {
+  background-color: transparent !important;
+  color: var(--nst-dashboard-text) !important;
+}
+.nst-business-shell .nst-btn--ghost:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--nst-dashboard-primary) 10%, transparent) !important;
+}
+.nst-business-shell .nst-btn--success { background-color: var(--nst-btn-success) !important; color: #fff !important; }
+.nst-business-shell .nst-btn--danger  { background-color: var(--nst-btn-danger) !important;  color: #fff !important; }
+.nst-business-shell .nst-btn--neutral { background-color: var(--nst-btn-neutral) !important; color: #fff !important; }
+.nst-business-shell :is(.nst-btn--success, .nst-btn--danger, .nst-btn--neutral):hover:not(:disabled) {
+  filter: brightness(.92);
+}
+.nst-business-shell .nst-btn:disabled,
+.nst-business-shell .nst-btn[aria-disabled="true"] {
+  opacity: .55 !important;
+  cursor: not-allowed !important;
+}
+.nst-business-shell .nst-btn:focus-visible {
+  outline: 2px solid var(--nst-dashboard-primary) !important;
+  outline-offset: 2px !important;
+}
+
+/* filter/action boxes that pages placed inside a header: no second card */
+.nst-business-shell .nst-ph :is(.nst-ph__actions, .nst-ph__filters) > [class*="rounded"]:is([class*="border"], [class*="shadow"], [class*="bg-"]):not(button):not(a):not(input):not(select) {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+.nst-business-shell .nst-ph :is(.nst-ph__actions, .nst-ph__filters) :is(input, select):not([type="checkbox"]):not([type="radio"]) {
+  height: var(--nst-field-h) !important;
+  border-radius: var(--nst-field-radius) !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* =====================================================================
+   DASHBOARD - A1 CLEAN ELEVATED (dark) / A4 (light = same component)
+   ===================================================================== */
+.nst-business-shell {
+  --nst-card-radius: var(--nst-custom-card-radius, 8px);
+  --nst-card-pad: var(--nst-custom-card-padding, 16px);
+  --nst-card-shadow-a1:
+    inset 0 1px 0 rgba(255, 255, 255, .03),
+    0 1px 2px rgba(2, 6, 23, .30),
+    0 8px 22px rgba(2, 6, 23, .30);
+  --nst-card-icon: 36px;
+  --nst-kpi-label: 12px;
+  --nst-kpi-value: 26px;
+}
+body.nst-admin-theme-light .nst-business-shell {
+  --nst-card-shadow-a1:
+    0 1px 2px rgba(15, 23, 42, .06),
+    0 6px 18px rgba(15, 23, 42, .07);
+}
+/* the widget wrapper is only a positioner - NOT a second card layer */
+.nst-business-shell .nst-business-dashboard .nst-dashboard-widget {
+  border-radius: var(--nst-card-radius) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+/* single card surface */
+.nst-business-shell .nst-business-dashboard :is(.nst-premium-card, .nst-dashboard-surface) {
+  border: var(--nst-custom-border-width, 1px) solid var(--nst-dashboard-border) !important;
+  border-radius: var(--nst-card-radius) !important;
+  background: var(--nst-dashboard-surface) !important;
+  background-image: none !important;
+  box-shadow: var(--nst-card-shadow-a1) !important;
+}
+.nst-business-shell .nst-business-dashboard .nst-premium-card::before { display: none !important; }
+.nst-business-shell .nst-business-dashboard .nst-premium-card:hover {
+  border-color: color-mix(in srgb, var(--nst-dashboard-primary) 35%, var(--nst-dashboard-border)) !important;
+  box-shadow: var(--nst-card-shadow-a1) !important;
+  transform: none !important;
+}
+/* icon: restrained purple tint, no border (not a card inside the card) */
+.nst-business-shell .nst-business-dashboard :is(.nst-premium-icon, .nst-dashboard-panel-icon, .nst-widget-identity-icon) {
+  width: var(--nst-card-icon) !important;
+  height: var(--nst-card-icon) !important;
+  flex: 0 0 var(--nst-card-icon) !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: color-mix(in srgb, var(--nst-dashboard-primary) 14%, transparent) !important;
+  color: var(--nst-dashboard-primary) !important;
+  box-shadow: none !important;
+}
+/* KPI family: same padding, label, value */
+.nst-business-shell .nst-business-dashboard .nst-metric-card { padding: var(--nst-card-pad) !important; }
+.nst-business-shell .nst-business-dashboard .nst-metric-copy { margin-top: 12px !important; }
+.nst-business-shell .nst-business-dashboard .nst-metric-label {
+  font-size: var(--nst-kpi-label) !important;
+  font-weight: 600 !important;
+  color: var(--nst-dashboard-muted) !important;
+}
+.nst-business-shell .nst-business-dashboard .nst-metric-value {
+  font-size: var(--nst-kpi-value) !important;
+  font-weight: 700 !important;
+  line-height: 1.1 !important;
+  letter-spacing: -.02em !important;
+  color: var(--nst-dashboard-text) !important;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nst-business-shell .nst-business-dashboard .nst-metric-note { font-size: 11px !important; }
+/* inner boxes inside a card: flat tiles, no second border layer */
+.nst-business-shell .nst-business-dashboard .nst-premium-card [class*="rounded"]:is([class*="border"], [class*="shadow"]):not(button):not(a):not(input):not(select):not(.nst-premium-icon):not(.nst-quick-action):not([style*="background"]) {
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 6px !important;
+  background: color-mix(in srgb, var(--nst-dashboard-text) 4%, transparent) !important;
+}
+.nst-business-shell .nst-business-dashboard .nst-quick-action {
+  border-radius: 6px !important;
+  transform: none !important;
+}
+/* no gradients anywhere on the dashboard */
+.nst-business-shell .nst-business-dashboard [class*="bg-gradient"],
+.nst-business-shell .nst-business-dashboard [class*="from-"] {
+  background-image: none !important;
+}
+
+/* =====================================================================
+   NO GRADIENTS on buttons / active navigation (header standard section 5)
+   ===================================================================== */
+.nst-business-shell :is(.nst-nav-link.is-active, .nst-quick-command) {
+  background: var(--nst-dashboard-primary) !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+.nst-business-shell .nst-shell-main :is(button, a)[class*="bg-gradient"],
+.nst-business-shell .nst-shell-main :is(button, a)[class*="from-"][class*="to-"] {
+  background-image: none !important;
+  background-color: var(--nst-dashboard-primary) !important;
+  color: #fff !important;
+}
+
+/* =====================================================================
+   Focus and overlap fixes
+   ===================================================================== */
+/* 1) Top search: ONE glow on the whole box, never an inner input frame */
+.nst-business-shell .nst-global-search:focus-within {
+  border-color: var(--nst-dashboard-primary) !important;
+  box-shadow: 0 0 0 1px var(--nst-dashboard-primary),
+              0 0 0 4px color-mix(in srgb, var(--nst-dashboard-primary) 22%, transparent),
+              0 0 22px color-mix(in srgb, var(--nst-dashboard-primary) 40%, transparent) !important;
+}
+.nst-business-shell .nst-global-search.nst-global-search input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]),
+.nst-business-shell .nst-global-search.nst-global-search input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]):focus {
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* 2) Filters header: title/subtitle keep a readable width; actions wrap below if needed */
+.nst-business-shell .nst-ph--filters .nst-ph__lead { flex: 1 1 440px; }
+
+/* 3) Actions: any wrapper the page passed lays out as ONE row */
+.nst-business-shell .nst-ph__actions > :is(div, span):not(.nst-btn):not(.nst-ph-field) {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: var(--nst-h-actions-gap) !important;
+  width: auto !important;
+}
+/* plain buttons/links inside a header get the standard button size & shape */
+.nst-business-shell .nst-ph :is(.nst-ph__actions, .nst-ph__filters) :is(button, a):not(.nst-btn) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--nst-btn-gap) !important;
+  height: var(--nst-btn-h) !important;
+  min-height: 0 !important;
+  padding: 0 var(--nst-btn-px) !important;
+  border-radius: var(--nst-btn-radius) !important;
+  font-size: var(--nst-btn-font) !important;
+  font-weight: var(--nst-btn-weight) !important;
+  line-height: 1 !important;
+  white-space: nowrap;
+  background-image: none !important;
+}
+.nst-business-shell .nst-ph :is(.nst-ph__actions, .nst-ph__filters) :is(button, a):not(.nst-btn):is([class*="bg-white"], [class*="bg-slate-"], [class*="bg-gray-"], [class*="border"]:not([class*="bg-"])) {
+  background-color: var(--nst-dashboard-surface) !important;
+  border: 1px solid var(--nst-dashboard-border) !important;
+  color: var(--nst-dashboard-text) !important;
+}
+/* stat badges placed in a header: compact, no card look */
+.nst-business-shell .nst-ph__actions :is(div, span)[class*="rounded"]:not(button):not(a) {
+  box-shadow: none !important;
+}
+
+/* 4) One button "feel" everywhere (approved look: solid primary + clean light secondary with soft lift) */
+.nst-business-shell .nst-btn--secondary,
+.nst-business-shell .nst-shell-main :is(button, a[class*="px-"]):not(.nst-btn):not(.rounded-full):not(.nst-inline-edit-button):is([class*="bg-white"], [class*="border"]:not([class*="bg-"]), [class*="bg-slate-50"], [class*="bg-slate-100"], [class*="bg-gray-50"], [class*="bg-gray-100"]) {
+  box-shadow: 0 1px 2px rgba(2, 6, 23, .10), 0 2px 8px rgba(2, 6, 23, .06) !important;
+}
+.nst-business-shell .nst-btn--primary,
+.nst-business-shell .nst-shell-main :is(button, a):not(.nst-btn):not(.rounded-full):is([class*="bg-[var(--nst-dashboard-primary)]"], [class*="bg-purple-6"], [class*="bg-violet-6"]) {
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--nst-dashboard-primary) 30%, transparent) !important;
+}
+
+/* 5) Tab / button rows (e.g. under page headers): the approved chip look
+      inactive = clean light chip with soft lift, active = solid NST primary */
+.nst-business-shell .nst-shell-main :is(div, nav):is([class*="flex"], [class*="grid"]):has(> button + button) > button:not(.nst-btn):not(.nst-inline-edit-button):not([class*=" w-"]):not([class^="w-"]):not([class*=" h-"]):not([class*="inset-0"]):not(td button):not(:has([style*="background"])) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--nst-btn-gap) !important;
+  height: var(--nst-btn-h) !important;
+  min-height: 0 !important;
+  padding: 0 18px !important;
+  border-radius: var(--nst-btn-radius) !important;
+  border: 1px solid var(--nst-dashboard-border) !important;
+  background: var(--nst-dashboard-surface) !important;
+  background-image: none !important;
+  color: var(--nst-dashboard-text) !important;
+  font-size: var(--nst-btn-font) !important;
+  font-weight: var(--nst-btn-weight) !important;
+  line-height: 1 !important;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(2, 6, 23, .10), 0 2px 8px rgba(2, 6, 23, .06) !important;
+}
+.nst-business-shell .nst-shell-main :is(div, nav):is([class*="flex"], [class*="grid"]):has(> button + button) > button:not(.nst-btn):not(.nst-inline-edit-button):not([class*=" w-"]):not([class^="w-"]):not([class*=" h-"]):not([class*="inset-0"]):not(td button):not(:has([style*="background"])):is([class~="text-white"], [aria-selected="true"], [aria-pressed="true"], [aria-current="page"], [class~="bg-[var(--nst-dashboard-primary-soft)]"], [class~="border-[var(--nst-dashboard-primary)]"], [class~="bg-[var(--nst-dashboard-primary)]"], [class~="bg-[var(--nst-dashboard-secondary)]"], [class~="bg-slate-200"], [class~="bg-slate-300"], [class~="bg-slate-400"], [class~="bg-slate-500"], [class~="bg-slate-600"], [class~="bg-slate-700"], [class~="bg-slate-800"], [class~="bg-slate-900"], [class~="bg-gray-200"], [class~="bg-gray-300"], [class~="bg-gray-400"], [class~="bg-gray-500"], [class~="bg-gray-600"], [class~="bg-gray-700"], [class~="bg-gray-800"], [class~="bg-gray-900"], [class~="bg-purple-500"], [class~="bg-purple-600"], [class~="bg-purple-700"], [class~="bg-violet-500"], [class~="bg-violet-600"], [class~="bg-violet-700"], [class~="bg-indigo-500"], [class~="bg-indigo-600"], [class~="bg-indigo-700"]) {
+  background: var(--nst-dashboard-primary) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--nst-dashboard-primary) 32%, transparent) !important;
+}
+.nst-business-shell .nst-shell-main :is(div, nav):is([class*="flex"], [class*="grid"]):has(> button + button) > button:not(.nst-btn):not([class~="text-white"]):not(:has([style*="background"])):hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--nst-dashboard-primary) 50%, var(--nst-dashboard-border)) !important;
+}
+
+/* 6) Full-screen modal backdrops are <button>s in some pages: they must never get
+      button styling (that turned the whole screen into an opaque panel).
+      :is(#nst-never) only raises specificity; it matches nothing. */
+.nst-business-shell button:is([class*="inset-0"], #nst-never)[class*="fixed"] {
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: rgba(2, 6, 23, .55) !important;
+  background-image: none !important;
+  display: block !important;
+}
+
+/* 7) Dashboard header actions (branch, date, themes, customize...) = one aligned row */
+.nst-business-shell .nst-business-dashboard .nst-ph__actions :is(select, label):not(.nst-ph-field) {
+  height: var(--nst-btn-h) !important;
+  min-height: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  border-radius: var(--nst-btn-radius) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  font-size: var(--nst-btn-font) !important;
+}
+.nst-business-shell .nst-business-dashboard .nst-ph__actions button:not(.nst-btn) {
+  height: var(--nst-btn-h) !important;
+  min-height: 0 !important;
+  padding: 0 var(--nst-btn-px) !important;
+  border-radius: var(--nst-btn-radius) !important;
+}
+.nst-business-shell .nst-business-dashboard .nst-ph__actions button:not(.nst-btn)[title="Undo"],
+.nst-business-shell .nst-business-dashboard .nst-ph__actions button:not(.nst-btn)[title="Redo"] {
+  width: var(--nst-btn-h) !important;
+  padding: 0 !important;
+}
+
+/* 8) Tab rows sit directly on the page background - no box behind them (approved Payment Gateway look) */
+.nst-business-shell .nst-shell-main :is(div, nav):is([class*="flex"], [class*="grid"]):has(> button + button) {
+  gap: 8px !important;
+  border-bottom: 0 !important;
+}
+.nst-business-shell .nst-shell-main :is(div, nav):is([class*="rounded"], #nst-never):has(> :is(div, nav):only-child > button + button):not(:has(> :is(div, nav) > :not(button))) {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+/* 9) Sidebar "Find a page" search: one glow on the box, no inner frame */
+.nst-business-shell .nst-sidebar-search-wrap:focus-within,
+.nst-business-shell .nst-sidebar-search:focus-within {
+  border-color: var(--nst-dashboard-primary) !important;
+  box-shadow: 0 0 0 1px var(--nst-dashboard-primary),
+              0 0 0 4px color-mix(in srgb, var(--nst-dashboard-primary) 22%, transparent),
+              0 0 22px color-mix(in srgb, var(--nst-dashboard-primary) 40%, transparent) !important;
+  border-radius: 12px;
+}
+.nst-business-shell :is(.nst-sidebar-search-wrap, .nst-sidebar-search) input:is(:focus, :not(:focus)):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]) {
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* 10) Reports: KPI cards and section cards (A1 language) */
+.nst-business-shell .nst-report-section-stack { display: flex; flex-direction: column; gap: 16px; }
+.nst-business-shell .nst-report-card-grid { gap: 16px !important; }
+.nst-business-shell .nst-report-editable-card {
+  min-width: 0;
+  padding: 16px 18px !important;
+  background: var(--nst-dashboard-surface) !important;
+  border: var(--nst-custom-border-width, 1px) solid var(--nst-dashboard-border) !important;
+  border-radius: var(--nst-card-radius) !important;
+  box-shadow: var(--nst-card-shadow-a1) !important;
+}
+.nst-business-shell .nst-report-card-title { margin: 0 !important; font-size: 12px !important; font-weight: 600 !important; color: var(--nst-dashboard-muted) !important; }
+.nst-business-shell .nst-report-editable-card > h3 {
+  margin: 6px 0 0 !important;
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  line-height: 1.15 !important;
+  color: var(--nst-dashboard-text) !important;
+  font-variant-numeric: tabular-nums;
+}
+.nst-business-shell .nst-report-card-subtitle { margin: 4px 0 0 !important; font-size: 12px !important; color: var(--nst-dashboard-muted) !important; }
+.nst-business-shell .nst-report-editable-section { padding: 16px !important; }
+.nst-business-shell .nst-report-section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 12px 0; }
+.nst-business-shell .nst-report-section-head h2 { margin: 0 !important; font-size: 16px !important; font-weight: 700 !important; color: var(--nst-dashboard-text) !important; }
+.nst-business-shell .nst-report-section-head p { margin: 2px 0 0 !important; font-size: 12px !important; color: var(--nst-dashboard-muted) !important; }
+.nst-business-shell .nst-report-editable-section :is(table, .overflow-x-auto, .overflow-auto) { border-radius: 6px; }
+
+/* 11) KPI cards stay readable at any width (small cards never break text letter by letter) */
+.nst-business-shell .nst-business-dashboard .nst-metric-card { display: flex !important; flex-direction: column !important; justify-content: space-between !important; min-width: 0; }
+.nst-business-shell .nst-business-dashboard .nst-metric-card-top { display: flex !important; flex-direction: row !important; align-items: flex-start !important; }
+.nst-business-shell .nst-business-dashboard .nst-metric-copy { min-width: 0 !important; width: 100%; }
+.nst-business-shell .nst-business-dashboard .nst-metric-label {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+}
+.nst-business-shell .nst-business-dashboard .nst-metric-value {
+  font-size: clamp(16px, 1.55vw, var(--nst-kpi-value)) !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+
+/* 12) Top bar on smaller screens: Quick Command becomes icon-only so it never covers the search */
+@media (max-width: 1440px) {
+  .nst-business-shell .nst-quick-command span { display: none !important; }
+  .nst-business-shell .nst-quick-command { padding-left: 12px !important; padding-right: 12px !important; }
+}
+.nst-business-shell .nst-global-search { min-width: 0 !important; flex: 1 1 auto; }
+
+/* 13) Header title edit (Design mode) */
+.nst-business-shell .nst-ph__title { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.nst-business-shell .nst-ph__edit {
+  display: inline-grid !important; place-items: center !important;
+  width: 28px !important; height: 28px !important; min-height: 0 !important; padding: 0 !important;
+  border: 1px solid var(--nst-dashboard-border) !important; border-radius: 8px !important;
+  background: var(--nst-dashboard-surface) !important; color: var(--nst-dashboard-primary) !important;
+  box-shadow: 0 1px 2px rgba(2, 6, 23, .10) !important; cursor: pointer;
+}
+.nst-business-shell .nst-ph__edit svg { width: 14px; height: 14px; }
+.nst-ph-editor { position: fixed; inset: 0; z-index: 2147482000; display: grid; place-items: center; }
+.nst-ph-editor__backdrop { position: absolute; inset: 0; border: 0; padding: 0; background: rgba(2, 6, 23, .55); cursor: default; }
+.nst-ph-editor__panel {
+  position: relative; width: min(520px, calc(100vw - 32px)); padding: 20px; box-sizing: border-box;
+  background: var(--nst-dashboard-surface, #fff); color: var(--nst-dashboard-text, #0f172a);
+  border: 1px solid var(--nst-dashboard-border, #e2e8f0); border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(2, 6, 23, .35); display: flex; flex-direction: column; gap: 12px;
+  font-family: inherit;
+}
+.nst-ph-editor__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.nst-ph-editor__head h2 { margin: 0; font-size: 18px; font-weight: 700; }
+.nst-ph-editor__head p { margin: 2px 0 0; font-size: 12px; color: var(--nst-dashboard-muted, #64748b); }
+.nst-ph-editor__close { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid var(--nst-dashboard-border, #e2e8f0); border-radius: 8px; background: transparent; color: inherit; cursor: pointer; }
+.nst-ph-editor__close svg { width: 16px; height: 16px; }
+.nst-ph-editor label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: var(--nst-dashboard-muted, #64748b); }
+.nst-ph-editor :is(input, textarea) {
+  width: 100%; box-sizing: border-box; padding: 10px 12px; font: inherit; font-size: 14px; font-weight: 600;
+  border: 1px solid var(--nst-dashboard-border, #e2e8f0); border-radius: 8px;
+  background: var(--nst-dashboard-input, var(--nst-dashboard-surface, #fff)); color: var(--nst-dashboard-text, #0f172a); resize: vertical;
+}
+.nst-ph-editor :is(input, textarea):focus { outline: none; border-color: var(--nst-dashboard-primary, #7c3aed); box-shadow: 0 0 0 3px color-mix(in srgb, var(--nst-dashboard-primary, #7c3aed) 22%, transparent); }
+.nst-ph-editor__hint { margin: 0; font-size: 12px; color: var(--nst-dashboard-muted, #64748b); }
+.nst-ph-editor__msg { margin: 0; padding: 8px 10px; border-radius: 8px; font-size: 13px; font-weight: 700; background: color-mix(in srgb, #16a34a 12%, transparent); color: #15803d; }
+.nst-ph-editor__msg.is-error { background: color-mix(in srgb, #dc2626 12%, transparent); color: #dc2626; }
+.nst-ph-editor__actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+.nst-ph-editor .nst-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px;
+  border-radius: 8px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; border: 1px solid transparent;
+}
+.nst-ph-editor .nst-btn svg { width: 16px; height: 16px; }
+.nst-ph-editor .nst-btn--primary { background: var(--nst-dashboard-primary, #7c3aed); color: #fff; }
+.nst-ph-editor .nst-btn--secondary { background: var(--nst-dashboard-surface, #fff); color: var(--nst-dashboard-text, #0f172a); border-color: var(--nst-dashboard-border, #e2e8f0); }
+.nst-ph-editor .nst-btn:disabled { opacity: .55; cursor: not-allowed; }
+
+/* 14) Color swatch buttons (palettes): keep their own look, just tidy - never filled purple */
+.nst-business-shell .nst-shell-main button:has(> [style*="background"]) {
+  background-image: none !important;
+  border-radius: var(--nst-card-radius) !important;
+}
+.nst-business-shell .nst-shell-main button:has(> [style*="background"]):not([class~="bg-emerald-50"]):not([class*="ring-2"]) {
+  background-color: var(--nst-dashboard-surface) !important;
+  border: 1px solid var(--nst-dashboard-border) !important;
+  color: var(--nst-dashboard-text) !important;
+}
+.nst-business-shell .nst-shell-main button:has(> [style*="background"]):is([class~="bg-emerald-50"], [class*="ring-2"]) {
+  background-color: color-mix(in srgb, var(--nst-dashboard-primary) 8%, var(--nst-dashboard-surface)) !important;
+  border: 2px solid var(--nst-dashboard-primary) !important;
+  color: var(--nst-dashboard-text) !important;
+}
+.nst-business-shell .nst-shell-main button:has(> [style*="background"]) :is(b, small, span) { color: inherit !important; }
+.nst-business-shell .nst-shell-main button:has(> [style*="background"]) small { color: var(--nst-dashboard-muted) !important; }
+
+/* =====================================================================
+   15) SEMANTIC ACTION COLORS (NST palette)
+   Tabs stay purple; ACTION buttons keep a meaning color:
+     primary (NST purple) = main save / submit
+     success (green)  = approve, complete, paid, publish
+     danger  (red)    = reject, delete
+     info    (blue)   = confirm, view, verify
+     warning (amber)  = hold, pending, attention
+     neutral (slate)  = cancel, close, secondary dark
+   Applies to solid buttons that are NOT part of a tab row
+   (a tab row = a row where some buttons are not white-text).
+   ===================================================================== */
+.nst-business-shell {
+  --nst-sem-success: #16a34a;
+  --nst-sem-danger: #dc2626;
+  --nst-sem-info: #2563eb;
+  --nst-sem-warning: #d97706;
+  --nst-sem-neutral: #475569;
+}
+.nst-business-shell .nst-shell-main :is(div, nav, td, form, section, span):not(:has(> button:not([class~="text-white"]):not(.nst-btn))) > :is(button, a):not(.nst-btn):is(#nst-never, [class~="bg-emerald-500"], [class~="bg-emerald-600"], [class~="bg-emerald-700"], [class~="bg-emerald-800"], [class~="bg-emerald-900"], [class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-green-700"], [class~="bg-green-800"], [class~="bg-green-900"], [class~="bg-teal-500"], [class~="bg-teal-600"], [class~="bg-teal-700"], [class~="bg-teal-800"], [class~="bg-teal-900"]) {
+  background: var(--nst-sem-success) !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--nst-sem-success) 28%, transparent) !important;
+}
+.nst-business-shell .nst-shell-main :is(div, nav, td, form, section, span):not(:has(> button:not([class~="text-white"]):not(.nst-btn))) > :is(button, a):not(.nst-btn):is(#nst-never, [class~="bg-red-500"], [class~="bg-red-600"], [class~="bg-red-700"], [class~="bg-red-800"], [class~="bg-red-900"], [class~="bg-rose-500"], [class~="bg-rose-600"], [class~="bg-rose-700"], [class~="bg-rose-800"], [class~="bg-rose-900"]) {
+  background: var(--nst-sem-danger) !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--nst-sem-danger) 28%, transparent) !important;
+}
+.nst-business-shell .nst-shell-main :is(div, nav, td, form, section, span):not(:has(> button:not([class~="text-white"]):not(.nst-btn))) > :is(button, a):not(.nst-btn):is(#nst-never, [class~="bg-blue-500"], [class~="bg-blue-600"], [class~="bg-blue-700"], [class~="bg-blue-800"], [class~="bg-blue-900"], [class~="bg-sky-500"], [class~="bg-sky-600"], [class~="bg-sky-700"], [class~="bg-sky-800"], [class~="bg-sky-900"], [class~="bg-cyan-500"], [class~="bg-cyan-600"], [class~="bg-cyan-700"], [class~="bg-cyan-800"], [class~="bg-cyan-900"]) {
+  background: var(--nst-sem-info) !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--nst-sem-info) 28%, transparent) !important;
+}
+.nst-business-shell .nst-shell-main :is(div, nav, td, form, section, span):not(:has(> button:not([class~="text-white"]):not(.nst-btn))) > :is(button, a):not(.nst-btn):is(#nst-never, [class~="bg-amber-500"], [class~="bg-amber-600"], [class~="bg-amber-700"], [class~="bg-amber-800"], [class~="bg-amber-900"], [class~="bg-orange-500"], [class~="bg-orange-600"], [class~="bg-orange-700"], [class~="bg-orange-800"], [class~="bg-orange-900"], [class~="bg-yellow-500"], [class~="bg-yellow-600"], [class~="bg-yellow-700"], [class~="bg-yellow-800"], [class~="bg-yellow-900"]) {
+  background: var(--nst-sem-warning) !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--nst-sem-warning) 28%, transparent) !important;
+}
+.nst-business-shell .nst-shell-main :is(div, nav, td, form, section, span):not(:has(> button:not([class~="text-white"]):not(.nst-btn))) > :is(button, a):not(.nst-btn):is(#nst-never, [class~="bg-slate-600"], [class~="bg-slate-700"], [class~="bg-slate-800"], [class~="bg-slate-900"], [class~="bg-gray-600"], [class~="bg-gray-700"], [class~="bg-gray-800"], [class~="bg-gray-900"], [class~="bg-zinc-600"], [class~="bg-zinc-700"], [class~="bg-zinc-800"], [class~="bg-zinc-900"]) {
+  background: var(--nst-sem-neutral) !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--nst-sem-neutral) 28%, transparent) !important;
+}
+.nst-business-shell .nst-shell-main :is(div, nav, td, form, section, span):not(:has(> button:not([class~="text-white"]):not(.nst-btn))) > :is(button, a):not(.nst-btn):is(#nst-never, [class~="bg-emerald-600"], [class~="bg-rose-600"], [class~="bg-red-600"], [class~="bg-blue-600"], [class~="bg-slate-700"], [class~="bg-amber-500"], [class~="bg-emerald-700"]):hover:not(:disabled) {
+  filter: brightness(.92);
+}
+
+/* 16) Dashboard on tablet (768-1199px): real 2-column grid (was a squeezed flex row) */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .nst-business-shell .nst-business-dashboard .nst-dashboard-widget-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-auto-rows: auto !important;
+    gap: 14px !important;
+  }
+  .nst-business-shell .nst-business-dashboard .nst-dashboard-widget {
+    grid-column: span 2 !important;
+    grid-row: auto !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 150px;
+  }
+  .nst-business-shell .nst-business-dashboard .nst-dashboard-widget:has(.nst-metric-card) { grid-column: span 1 !important; min-height: 120px; }
+}
+/* 17) Dashboard: no reshuffle after login - cards appear once the saved layout is loaded */
+.nst-business-shell .nst-business-dashboard .nst-dashboard-widget-grid.is-hydrating > * { visibility: hidden; }
+.nst-business-shell .nst-business-dashboard .nst-dashboard-widget-grid.is-hydrating { min-height: 420px; background: repeating-linear-gradient(180deg, transparent 0 132px, color-mix(in srgb, var(--nst-dashboard-text) 4%, transparent) 132px 136px); border-radius: 8px; }
+
+/* 18) Inputs: typed text never sticks to the left border */
+.nst-business-shell .nst-shell-main :is(input, textarea):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]):not([class*="pl-"]):not([class*="px-"]):not([class*=" p-"]):not([class^="p-"]) {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+.nst-business-shell .nst-shell-main select:not([class*="pl-"]):not([class*="px-"]):not([class*=" p-"]):not([class^="p-"]) {
+  padding-left: 12px !important;
+  padding-right: 32px !important;
+}
+.nst-business-shell .nst-shell-main textarea:not([class*="py-"]):not([class*=" p-"]):not([class^="p-"]) { padding-top: 10px !important; padding-bottom: 10px !important; }
+/* icon search boxes: the input inside a bordered box keeps a small gap from the icon */
+.nst-business-shell [class*="border"]:has(> svg) > input:not([class*="pl-"]) { padding-left: 8px !important; }
+
+/* 19) Animation delay: every transition is short, nothing waits */
+.nst-business-shell *, .nst-business-shell *::before, .nst-business-shell *::after {
+  transition-delay: 0s !important;
+  animation-delay: 0s !important;
+}
+.nst-business-shell :is(a, button, input, select, textarea, [class*="transition"], .nst-dashboard-widget, .nst-nav-link, .nst-sidebar-group) {
+  transition-duration: .1s !important;
+}
+
+/* 20) Dashboard: no extra line/border under cards - the card fills its slot, the slot has no border */
+.nst-business-shell .nst-business-dashboard .nst-dashboard-widget {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+.nst-business-shell .nst-business-dashboard .nst-dashboard-widget > .nst-widget-content,
+.nst-business-shell .nst-business-dashboard .nst-widget-content > :is(.nst-premium-card, .nst-dashboard-surface) {
+  height: 100% !important;
+}
+.nst-ph-editor__langs { display: flex; gap: 6px; flex-wrap: wrap; }
+.nst-ph-editor__langs button { min-height: 32px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--nst-dashboard-border, #26364d); background: transparent; color: var(--nst-dashboard-text, #e2e8f0); font-size: 12px; font-weight: 800; cursor: pointer; }
+.nst-ph-editor__langs button.is-active { background: var(--nst-dashboard-primary, #8d39e4); border-color: transparent; color: #fff; }
+
+/* Device History: theme-aware surfaces (dark and light themes) */
+.nst-dh-page { background: var(--nst-dashboard-bg); color: var(--nst-dashboard-text); }
+.nst-dh-strong { font-weight: 900; color: var(--nst-dashboard-text); }
+.nst-dh-muted { color: var(--nst-dashboard-muted); }
+.nst-dh-card { overflow: hidden; border-radius: 2rem; border: 1px solid var(--nst-dashboard-border); background: var(--nst-dashboard-surface); }
+.nst-dh-card__head { padding: 20px; border-bottom: 1px solid var(--nst-dashboard-border); }
+.nst-dh-tile { border-radius: 1.25rem; border: 1px solid var(--nst-dashboard-border); background: color-mix(in srgb, var(--nst-dashboard-text) 4%, var(--nst-dashboard-surface)); padding: 16px; }
+.nst-dh-tile__label { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .05em; color: var(--nst-dashboard-muted); }
+.nst-dh-tile__value { margin-top: 8px; overflow-wrap: anywhere; font-size: 14px; font-weight: 900; color: var(--nst-dashboard-text); }
+.nst-dh-stat { border-radius: 1rem; background: color-mix(in srgb, var(--nst-dashboard-text) 5%, var(--nst-dashboard-surface)); border: 1px solid var(--nst-dashboard-border); padding: 12px 16px; }
+.nst-dh-stat p { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .05em; color: var(--nst-dashboard-muted); }
+.nst-dh-stat strong { font-size: 14px; font-weight: 900; color: var(--nst-dashboard-text); }
+.nst-dh-stat strong.is-positive { color: #10b981; }
+.nst-dh-timeline { border-top: 1px solid var(--nst-dashboard-border); background: color-mix(in srgb, var(--nst-dashboard-text) 3%, var(--nst-dashboard-surface)); padding: 20px; }
+.nst-dh-event { border-radius: 1rem; border: 1px solid var(--nst-dashboard-border); background: var(--nst-dashboard-surface); padding: 16px; }
+.nst-dh-chip { border-radius: .5rem; background: color-mix(in srgb, var(--nst-dashboard-text) 8%, transparent); color: var(--nst-dashboard-text); padding: 4px 8px; font-size: 12px; font-weight: 800; }
+.nst-dh-amount { border-radius: .75rem; background: rgba(16,185,129,.12); color: #10b981; padding: 8px 12px; font-size: 14px; font-weight: 900; }
+.nst-dh-print { display: inline-flex; align-items: center; gap: 6px; border-radius: .75rem; background: var(--nst-dashboard-primary); color: #fff; padding: 6px 12px; font-size: 12px; font-weight: 900; text-decoration: none; }
+.nst-dh-used { border-top: 1px solid var(--nst-dashboard-border); padding: 20px; }
+.nst-dh-used__title { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: .05em; color: var(--nst-dashboard-primary); }
+.nst-dh-empty { border-radius: 2rem; border: 1px dashed var(--nst-dashboard-border); background: var(--nst-dashboard-surface); color: var(--nst-dashboard-muted); padding: 40px; text-align: center; font-weight: 700; }
+.nst-dh-empty.is-small { border-radius: 1rem; padding: 16px; text-align: left; font-size: 14px; }
+.nst-dh-input { border: 1px solid var(--nst-dashboard-border); background: var(--nst-dashboard-surface); color: var(--nst-dashboard-text); }
+.nst-dh-input:focus { border-color: var(--nst-dashboard-primary); }
+.nst-dh-search { display: flex; gap: 8px; width: 100%; min-width: 0; }
+.nst-dh-search__field { position: relative; display: flex; flex: 1 1 auto; min-width: 0; }
+.nst-dh-search__icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+.nst-business-shell .nst-ph .nst-ph__actions .nst-dh-search .nst-dh-input { padding-left: 42px !important; padding-right: 14px !important; min-width: 0; text-overflow: ellipsis; }
+.nst-business-shell .nst-ph .nst-ph__actions .nst-dh-search .nst-dh-input.has-scan { padding-right: 48px !important; }
+.nst-business-shell .nst-ph__actions:has(> .nst-dh-search) { flex: 1 1 460px; max-width: 640px; }
+.nst-business-shell .nst-ph .nst-ph__actions .nst-dh-search .nst-dh-scan {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  width: 34px; height: 34px !important; padding: 0 !important; border-radius: 10px !important;
+  border: 1px solid var(--nst-dashboard-border) !important; background: transparent !important;
+  color: var(--nst-dashboard-muted) !important; box-shadow: none !important;
+}
+.nst-business-shell .nst-ph .nst-ph__actions .nst-dh-search .nst-dh-scan:hover,
+.nst-business-shell .nst-ph .nst-ph__actions .nst-dh-search .nst-dh-scan:focus-visible {
+  color: var(--nst-dashboard-primary) !important; border-color: var(--nst-dashboard-primary) !important;
+}
+@media (max-width: 767px) {
+  .nst-business-shell .nst-ph__actions:has(> .nst-dh-search) { flex-basis: 100%; max-width: none; }
+}
+
+/* Header search field: grows toward the title instead of sitting small at the far edge */
+.nst-business-shell .nst-ph__actions:has(> .nst-ph-search) {
+  flex: 1 1 360px;
+  max-width: 620px;
+}
+.nst-business-shell .nst-ph__actions > .nst-ph-search {
+  width: 100%;
+  flex: 1 1 auto;
+}
+.nst-business-shell .nst-ph .nst-ph__actions > .nst-ph-search {
+  padding-inline: 16px !important;
+}
+
+/* Sidebar brand: editable logo tile, title and subtitle */
+.nst-sidebar-brand { position: relative; }
+.nst-business-shell .nst-sidebar-brand[style*="--nst-brand-bg"] .nst-brand-mark,
+.nst-brand-editor__preview[style*="--nst-brand-bg"] .nst-brand-mark {
+  background: var(--nst-brand-bg) !important;
+}
+.nst-business-shell .nst-sidebar-brand[style*="--nst-brand-text"] .nst-brand-mark,
+.nst-brand-editor__preview[style*="--nst-brand-text"] .nst-brand-mark,
+.nst-sidebar-brand[style*="--nst-brand-text"] .nst-brand-copy strong {
+  color: var(--nst-brand-text) !important;
+}
+.nst-sidebar-brand[style*="--nst-brand-subtext"] .nst-brand-copy span {
+  color: var(--nst-brand-subtext) !important;
+}
+.nst-brand-mark.has-logo img { width: 100%; height: 100%; padding: 0; }
+.nst-brand-mark.has-logo img[style*="contain"] { padding: 4px; }
+.nst-brand-edit {
+  margin-left: auto;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  border: 1px solid var(--nst-dashboard-border);
+  background: var(--nst-dashboard-surface);
+  color: var(--nst-dashboard-text);
+  cursor: pointer;
+}
+.nst-brand-editor__preview {
+  height: auto;
+  margin: 4px 0 14px;
+  border: 1px solid var(--nst-dashboard-border);
+  border-radius: 14px;
+  background: var(--nst-dashboard-bg);
+}
+.nst-brand-editor__preview .nst-brand-mark {
+  width: 45px;
+  height: 45px;
+  flex: 0 0 45px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 15px;
+  background: linear-gradient(145deg, var(--nst-dashboard-primary), var(--nst-dashboard-accent));
+  color: #fff;
+  font-weight: 900;
+}
+.nst-brand-editor__logo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.nst-brand-editor__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--nst-dashboard-border);
+  background: var(--nst-dashboard-surface);
+  color: var(--nst-dashboard-text);
+  font-weight: 700;
+  cursor: pointer;
+}
+.nst-brand-editor__inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 !important;
+  font-size: 13px;
+}
+.nst-brand-editor__inline select { min-height: 38px; }
+.nst-brand-editor__favicon {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 12px;
+}
+.nst-brand-editor__favicon small { flex-basis: 100%; color: var(--nst-dashboard-muted); font-size: 12px; }
+.nst-brand-editor__favicon-preview {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid var(--nst-dashboard-border);
+  background: var(--nst-dashboard-surface);
+  font-size: 12px;
+}
+.nst-brand-editor__favicon-preview img { width: 24px; height: 24px; object-fit: contain; }
+.nst-brand-editor__colors {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 4px;
+}
+.nst-brand-editor__color { display: grid; gap: 6px; font-size: 12px; font-weight: 700; }
+.nst-brand-editor__color-row { display: flex; align-items: center; gap: 6px; }
+.nst-brand-editor__color-row input[type="color"] {
+  width: 38px;
+  height: 38px;
+  padding: 2px;
+  border-radius: 10px;
+  border: 1px solid var(--nst-dashboard-border);
+  background: transparent;
+  flex: 0 0 auto;
+}
+.nst-brand-editor__color-row input[type="text"] { min-width: 0; flex: 1 1 auto; }
+.nst-brand-editor__color-row button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--nst-dashboard-muted);
+  cursor: pointer;
+}
+@media (max-width: 640px) {
+  .nst-brand-editor__colors { grid-template-columns: 1fr; }
+}

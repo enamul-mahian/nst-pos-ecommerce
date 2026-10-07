@@ -1,0 +1,10 @@
+{
+  "errors": {
+    "load_failed": "Warranty/Service jobs load করা যায়নি।",
+    "save_failed": "Service job save করা যায়নি।",
+    "status_update_failed": "Status update করা যায়নি।",
+    "payment_failed": "Payment receive করা যায়নি।"
+  },
+  "title": "Warranty & Service Center",
+  "subtitle": "Sold IMEI warranty claim, paid repair, technician note, delivery status এবং payment tracking."
+}

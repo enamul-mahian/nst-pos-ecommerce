@@ -1,0 +1,9 @@
+{
+  "errors": {
+    "load_one_failed": "Could not load the post.",
+    "save_failed": "Could not save the Google Post.",
+    "load_failed": "Could not load Google Post data.",
+    "delete_failed": "Could not delete the Google Post."
+  },
+  "image_help": "JPG, PNG, WEBP supported. Google API integration can easily be added later."
+}

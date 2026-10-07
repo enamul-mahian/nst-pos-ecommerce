@@ -1,0 +1,12 @@
+{
+  "someone": "A customer",
+  "from": "from",
+  "purchased": "just purchased",
+  "preordered": "just pre-ordered",
+  "verified": "Verified purchase",
+  "just_now": "just now",
+  "minutes_ago": "{count} min ago",
+  "hours_ago": "{count} h ago",
+  "days_ago": "{count} days ago",
+  "close": "Close"
+}

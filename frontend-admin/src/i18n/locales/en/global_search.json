@@ -1,0 +1,24 @@
+{
+  "placeholder": "Search products, IMEI, SKU, customers or commands...",
+  "aria": "Global Search",
+  "scan_aria": "Scan QR or barcode",
+  "scan_title": "Scan QR / Barcode",
+  "press_enter": "Scanned code is in the search box. Press Enter to search.",
+  "result_fallback": "Search result",
+  "no_results": "No matching result found",
+  "scanner": {
+    "dialog": "QR and barcode scanner",
+    "title": "Scan QR / Barcode",
+    "subtitle": "IMEI, SKU, barcode and QR values go straight into Central Search.",
+    "close": "Close scanner",
+    "retry": "Retry",
+    "torch": "Torch",
+    "point": "Point the camera at a QR code or barcode.",
+    "starting": "Starting camera...",
+    "unsupported": "Live barcode scanning is not supported by this browser. Use Chrome/Edge on Android or desktop, or type the code manually.",
+    "scanning": "Scanning... hold the code inside the frame.",
+    "denied": "Camera permission was denied.",
+    "failed": "Camera could not be started.",
+    "no_torch": "Torch is not available on this device."
+  }
+}

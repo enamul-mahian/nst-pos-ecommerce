@@ -1,0 +1,550 @@
+/* =====================================================================
+   NST TRANSITION LAYER (Step 1B)
+   Temporary: gives every NOT-YET-CONVERTED page the approved header look
+   and keeps the card/color/button consistency, until each page is moved
+   to the shared components. Delete this file when all pages are converted.
+   Values come from styles/nst-design-system.css (locked header tokens).
+   ===================================================================== */
+
+/* ---- A) Old tagged page headers -> approved header look ---- */
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph) {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px 16px !important;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--nst-h-min-h) !important;
+  margin: 0 0 var(--nst-h-margin) 0 !important;
+  padding: var(--nst-h-pad-y) var(--nst-h-pad-x) !important;
+  background: var(--nst-dashboard-surface) !important;
+  background-image: none !important;
+  border: var(--nst-h-border) !important;
+  border-radius: var(--nst-h-radius) !important;
+  box-shadow: var(--nst-h-shadow) !important;
+  color: var(--nst-dashboard-text) !important;
+  text-align: left !important;
+}
+/* eyebrow labels are removed by the standard */
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph) :is(p, span, small, div):has(~ h1) {
+  display: none !important;
+}
+/* title + subtitle */
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph) h1 {
+  margin: 0 !important;
+  font-size: var(--nst-h-title-size) !important;
+  font-weight: var(--nst-h-title-weight) !important;
+  line-height: var(--nst-h-title-lh) !important;
+  letter-spacing: -.01em !important;
+  color: var(--nst-dashboard-text) !important;
+  text-transform: none !important;
+  display: block !important;
+}
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph) h1 > svg { display: none !important; }
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph) h1 ~ p {
+  margin: var(--nst-h-sub-gap) 0 0 0 !important;
+  font-size: var(--nst-h-sub-size) !important;
+  font-weight: var(--nst-h-sub-weight) !important;
+  line-height: var(--nst-h-sub-lh) !important;
+  color: var(--nst-dashboard-muted) !important;
+  max-width: 78ch;
+}
+/* text column: 50px icon + 13px gap on the left */
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph) .nst-page-header-copy {
+  position: relative !important;
+  flex: 1 1 320px !important;
+  min-width: min(100%, 280px) !important;
+  min-height: var(--nst-h-icon) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  margin: 0 !important;
+  padding: 0 0 0 calc(var(--nst-h-icon) + var(--nst-h-gap)) !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph) .nst-page-header-copy::before,
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph) .nst-page-header-copy::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: var(--nst-h-icon);
+  height: var(--nst-h-icon);
+  transform: translateY(-50%);
+}
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph) .nst-page-header-copy::before {
+  border-radius: var(--nst-h-icon-radius);
+  background: color-mix(in srgb, var(--nst-dashboard-primary) 16%, transparent);
+}
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph) .nst-page-header-copy::after {
+  background: var(--nst-dashboard-primary);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='7' height='7' rx='1'/%3E%3Crect x='14' y='3' width='7' height='7' rx='1'/%3E%3Crect x='14' y='14' width='7' height='7' rx='1'/%3E%3Crect x='3' y='14' width='7' height='7' rx='1'/%3E%3C/svg%3E") center / var(--nst-h-icon-glyph) no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='7' height='7' rx='1'/%3E%3Crect x='14' y='3' width='7' height='7' rx='1'/%3E%3Crect x='14' y='14' width='7' height='7' rx='1'/%3E%3Crect x='3' y='14' width='7' height='7' rx='1'/%3E%3C/svg%3E") center / var(--nst-h-icon-glyph) no-repeat;
+}
+/* page already has its own icon tile -> use it (50px, 13px gap), no generic icon */
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph):has(.nst-page-header-copy):has(:is(span, div):not(.nst-page-header-copy) > svg:only-child) .nst-page-header-copy {
+  padding-left: 0 !important;
+}
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph):has(.nst-page-header-copy):has(:is(span, div):not(.nst-page-header-copy) > svg:only-child) .nst-page-header-copy::before,
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph):has(.nst-page-header-copy):has(:is(span, div):not(.nst-page-header-copy) > svg:only-child) .nst-page-header-copy::after {
+  display: none !important;
+}
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph) :is(span, div):has(> svg:only-child):has(+ .nst-page-header-copy) {
+  flex: 0 0 var(--nst-h-icon) !important;
+  width: var(--nst-h-icon) !important;
+  height: var(--nst-h-icon) !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: var(--nst-h-icon-radius) !important;
+  background: color-mix(in srgb, var(--nst-dashboard-primary) 16%, transparent) !important;
+  color: var(--nst-dashboard-primary) !important;
+}
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph) :is(span, div):has(> svg:only-child):has(+ .nst-page-header-copy) svg {
+  width: var(--nst-h-icon-glyph) !important;
+  height: var(--nst-h-icon-glyph) !important;
+}
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph) :is(span, div):has(> .nst-page-header-copy):has(> :is(span, div) > svg:only-child) {
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--nst-h-gap) !important;
+  flex: 1 1 320px !important;
+  min-width: 0 !important;
+}
+/* own icon tile directly in the header row: exactly 13px to the text */
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph):has(> :is(span, div) > svg:only-child) {
+  column-gap: var(--nst-h-gap) !important;
+}
+/* header without a text column: [icon] [title/subtitle] [actions] as a grid */
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph):has(> h1) {
+  display: grid !important;
+  grid-template-columns: var(--nst-h-icon) minmax(0, 1fr) auto !important;
+  column-gap: var(--nst-h-gap) !important;
+  row-gap: 0 !important;
+  align-items: center !important;
+}
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph):has(> h1)::before,
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph):has(> h1)::after {
+  content: "";
+  grid-column: 1;
+  grid-row: 1 / span 3;
+  width: var(--nst-h-icon);
+  height: var(--nst-h-icon);
+}
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph):has(> h1)::before {
+  border-radius: var(--nst-h-icon-radius);
+  background: color-mix(in srgb, var(--nst-dashboard-primary) 16%, transparent);
+}
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph):has(> h1)::after {
+  background: var(--nst-dashboard-primary);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='7' height='7' rx='1'/%3E%3Crect x='14' y='3' width='7' height='7' rx='1'/%3E%3Crect x='14' y='14' width='7' height='7' rx='1'/%3E%3Crect x='3' y='14' width='7' height='7' rx='1'/%3E%3C/svg%3E") center / var(--nst-h-icon-glyph) no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='7' height='7' rx='1'/%3E%3Crect x='14' y='3' width='7' height='7' rx='1'/%3E%3Crect x='14' y='14' width='7' height='7' rx='1'/%3E%3Crect x='3' y='14' width='7' height='7' rx='1'/%3E%3C/svg%3E") center / var(--nst-h-icon-glyph) no-repeat;
+}
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph):has(> h1) > :is(h1, p) { grid-column: 2 !important; }
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph):has(> h1) > :not(h1):not(p) { grid-column: 3 !important; grid-row: 1 / span 3 !important; }
+/* actions / filters: vertically centered on the right */
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph) > :not(.nst-page-header-copy):not(h1):not(p):not(button):not(a):not(input):not(select):not(:has(> svg:only-child)):not(:has(> .nst-page-header-copy)):not(:has(.nst-page-header-copy)) {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: var(--nst-h-actions-gap) !important;
+  margin-left: auto !important;
+  flex: 0 1 auto !important;
+  max-width: 100%;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph) > :has(.nst-page-header-copy):not(.nst-page-header-copy) {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px 16px !important;
+  flex: 1 1 100% !important;
+  margin: 0 !important;
+}
+/* header buttons: approved size, solid */
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph) :is(button, a[class*="px-"]):not(.nst-btn) {
+  height: var(--nst-btn-h) !important;
+  min-height: 0 !important;
+  padding: 0 var(--nst-btn-px) !important;
+  border-radius: var(--nst-btn-radius) !important;
+  font-size: var(--nst-btn-font) !important;
+  font-weight: var(--nst-btn-weight) !important;
+  background-image: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--nst-btn-gap) !important;
+}
+/* header: non-semantic solid colors (orange/amber/yellow/blue/violet) -> NST primary; grey -> secondary */
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph) :is(button, a):not(.nst-btn):is([class*="bg-orange-"], [class*="bg-amber-"], [class*="bg-yellow-"], [class*="bg-blue-"], [class*="bg-violet-"], [class*="bg-purple-"], [class*="bg-indigo-"], [class*="bg-[var(--nst-dashboard-primary)]"]):not([class*="-50 "]):not([class$="-50"]):not([class*="-100"]) {
+  background: var(--nst-dashboard-primary) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+}
+.nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph) :is(button, a):not(.nst-btn):is([class*="bg-slate-"], [class*="bg-gray-"], [class*="bg-white"], [class*="border"]:not([class*="bg-"])) {
+  background: var(--nst-dashboard-surface) !important;
+  color: var(--nst-dashboard-text) !important;
+  border: 1px solid var(--nst-dashboard-border) !important;
+}
+/* same rule for solid orange/amber "primary" buttons anywhere (no competing accent colors) */
+.nst-business-shell .nst-shell-main :is(button, a):not(.nst-btn):is([class*="bg-orange-5"], [class*="bg-orange-6"], [class*="bg-amber-5"], [class*="bg-amber-6"]) {
+  background: var(--nst-dashboard-primary) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+}
+/* second (sub-module) header lower on a page = section header size */
+.nst-business-shell .nst-shell-main :is(.nst-page-header, .nst-ph) ~ * .nst-page-header:not(.nst-ph) h1 {
+  font-size: var(--nst-h-section-title-size) !important;
+}
+@media (max-width: 767px) {
+  .nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph):has(> h1) { grid-template-columns: var(--nst-h-icon) minmax(0, 1fr) !important; }
+  .nst-business-shell .nst-shell-main .nst-page-header:not(.nst-ph):has(> h1) > :not(h1):not(p) { grid-column: 1 / -1 !important; grid-row: auto !important; }
+}
+
+/* ---- B) Page-local color islands (File Center, Experience & SEO, HRM) follow the ADMIN theme ---- */
+.nst-business-shell .nst-shell-main :is(.nst-file-center, .nst-experience-center, .nst-hrm-center) {
+  --nst-dashboard-primary: inherit;
+  --nst-dashboard-accent: inherit;
+  --nst-dashboard-on-primary: inherit;
+  --nst-dashboard-bg: inherit;
+  --nst-dashboard-surface: inherit;
+  --nst-dashboard-text: inherit;
+  --nst-dashboard-muted: inherit;
+  --nst-dashboard-border: inherit;
+  --nst-dashboard-primary-soft: inherit;
+  --nst-dashboard-hover: inherit;
+  --nst-dashboard-selected: inherit;
+  --nst-dashboard-selected-border: inherit;
+  color: var(--nst-dashboard-text) !important;
+}
+
+/* ---- C) Neon focus: ONE glow only (box OR input, never both) ---- */
+.nst-business-shell [class*="border"]:has(> svg):has(input:focus) {
+  border-color: var(--nst-u-neon, var(--nst-dashboard-primary)) !important;
+  box-shadow: var(--nst-u-neon-ring) !important;
+}
+.nst-business-shell [class*="border"]:has(> svg):has(input:focus) input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]):focus {
+  box-shadow: none !important;
+  border-color: transparent !important;
+  outline: none !important;
+}
+
+/* ---- D) Cards, colors, buttons, spacing (radius = 8px) ---- */
+.nst-business-shell {
+  /* card radius, border, gaps and padding follow Settings > UI & Layout > Design Defaults */
+  --nst-u-r: 8px;
+  --nst-u-r-card: var(--nst-custom-card-radius, 8px);
+  --nst-u-r-md: 8px;
+  --nst-u-r-sm: 6px;
+  --nst-u-r-control: 8px;
+  --nst-u-page-pad: clamp(14px, 1.6vw, 24px);
+  --nst-u-border-w: var(--nst-custom-border-width, 1px);
+  --nst-u-gap: var(--nst-custom-card-gap, 14px);
+  --nst-u-section: var(--nst-custom-section-gap, 18px);
+  --nst-u-card-pad: var(--nst-custom-card-padding, 16px);
+  --nst-u-card-shadow: var(--nst-h-shadow);
+  --nst-u-page-max: 1680px;
+  --nst-u-ok: var(--nst-dashboard-success, #16a34a);
+  --nst-u-bad: var(--nst-dashboard-danger, #e11d48);
+  --nst-u-warn: var(--nst-dashboard-warning, #d97706);
+}
+/* ---------------------------------------------------------------------
+   3) RADIUS - one scale; follows Settings > UI & Layout card radius
+   --------------------------------------------------------------------- */
+.nst-business-shell .nst-shell-main :is(.rounded-3xl, .rounded-\[2rem\], .rounded-\[28px\], .rounded-\[32px\], .rounded-2xl, .rounded-\[24px\], .rounded-\[22px\], .rounded-\[20px\]) {
+  border-radius: var(--nst-u-r-card) !important;
+}
+.nst-business-shell .nst-shell-main :is(.rounded-xl, .rounded-\[18px\], .rounded-\[16px\]) {
+  border-radius: var(--nst-u-r-md) !important;
+}
+.nst-business-shell .nst-shell-main :is(.rounded-lg, .rounded-\[12px\], .rounded-\[10px\]) {
+  border-radius: var(--nst-u-r-sm) !important;
+}
+/* controls (buttons, links styled as buttons, inputs) share one radius */
+.nst-business-shell .nst-shell-main :is(button:not(.nst-btn), a:not(.nst-btn), input, select, textarea):is(.rounded-lg, .rounded-xl, .rounded-2xl, .rounded-3xl, .rounded-md) {
+  border-radius: var(--nst-u-r-control) !important;
+}
+.nst-business-shell .nst-shell-main :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]) {
+  border-radius: var(--nst-u-r-control) !important;
+}
+/* tables inside cards follow the card corners */
+.nst-business-shell .nst-shell-main :is([class*="rounded"]):has(> table),
+.nst-business-shell .nst-shell-main :is([class*="rounded"]):has(> div > table) {
+  overflow: hidden;
+}
+/* pills, avatars, dots, toggles keep their round shape */
+.nst-business-shell .nst-shell-main .rounded-full {
+  border-radius: 9999px !important;
+}
+
+/* ---------------------------------------------------------------------
+   4) BUTTONS - aligned icon + text, one font size
+   --------------------------------------------------------------------- */
+.nst-business-shell .nst-shell-main button:not(.nst-btn):not(.rounded-full):has(> svg + span, > span + svg, > svg + *) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+}
+.nst-business-shell .nst-shell-main button:not(.nst-btn):not(.rounded-full) > svg {
+  flex-shrink: 0;
+}
+.nst-business-shell .nst-shell-main button:is([class*="px-"]):not(.rounded-full) {
+  font-size: .8125rem;
+  line-height: 1.2;
+}
+
+
+/* ---------------------------------------------------------------------
+   2) SPACING RHYTHM - same gap between cards/sections on every page
+   --------------------------------------------------------------------- */
+.nst-business-shell .nst-shell-main :is(.gap-4, .gap-5, .gap-6, .gap-7, .gap-8) {
+  gap: var(--nst-u-gap) !important;
+}
+.nst-business-shell .nst-shell-main :is([class~="space-y-4"], [class~="space-y-5"], [class~="space-y-6"], [class~="space-y-8"]) > :not(:first-child) {
+  margin-top: var(--nst-u-section) !important;
+}
+.nst-business-shell .nst-shell-main > :first-child > :is(.mb-4, .mb-5, .mb-6, .mb-8) {
+  margin-bottom: var(--nst-u-section) !important;
+}
+.nst-business-shell .nst-shell-main > :first-child > :is(.mt-4, .mt-5, .mt-6, .mt-8) {
+  margin-top: var(--nst-u-section) !important;
+}
+
+
+/* ---------------------------------------------------------------------
+   4) BUTTONS - icon and text always on one line, centered
+   --------------------------------------------------------------------- */
+.nst-business-shell .nst-shell-main :is(button:not(.nst-btn), a:not(.nst-btn)[class*="bg-"], a[class*="border"]):not(.rounded-full):not(.nst-inline-edit-button) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  line-height: 1.2;
+}
+.nst-business-shell .nst-shell-main :is(button:not(.nst-btn), a:not(.nst-btn)) > svg.inline,
+.nst-business-shell .nst-shell-main :is(button:not(.nst-btn), a:not(.nst-btn)) > svg[class*="mr-"] {
+  margin-right: 0 !important;
+}
+/* table / list action buttons: same height */
+.nst-business-shell .nst-shell-main td :is(button:not(.nst-btn), a:not(.nst-btn)[class*="bg-"], a[class*="border"]) {
+  min-height: 2rem;
+  padding-top: .35rem !important;
+  padding-bottom: .35rem !important;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------
+   5) ONE COLOR SYSTEM for text
+   - headings: theme text color
+   - decorative purple/blue/indigo text: theme primary
+   - status text (green / red / amber): one shade each, from the theme
+   Status BADGES keep their meaning, only the shade is unified.
+   --------------------------------------------------------------------- */
+.nst-business-shell .nst-shell-main :is(h1, h2, h3, h4, legend):not([class*="text-white"]):not(button *):not(a *):not([class*="text-red"]):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-rose"]):not([class*="text-amber"]) {
+  color: var(--nst-dashboard-text) !important;
+}
+.nst-business-shell .nst-shell-main :is(
+  [class*="text-purple-"], [class*="text-violet-"], [class*="text-indigo-"], [class*="text-fuchsia-"],
+  [class*="text-blue-"], [class*="text-sky-"], [class*="text-cyan-"],
+  [class*="text-[#7c3aed]"], [class*="text-[#6d28d9]"], [class*="text-[#138a52]"]
+):not(button[class*="bg-"]):not(a[class*="bg-"]) {
+  color: var(--nst-dashboard-primary) !important;
+}
+.nst-business-shell .nst-shell-main :is([class*="text-emerald-"], [class*="text-green-"], [class*="text-teal-"], [class*="text-lime-"]):not(button[class*="bg-"]):not(a[class*="bg-"]) {
+  color: var(--nst-u-ok) !important;
+}
+.nst-business-shell .nst-shell-main :is([class*="text-red-"], [class*="text-rose-"]):not(button[class*="bg-"]):not(a[class*="bg-"]) {
+  color: var(--nst-u-bad) !important;
+}
+.nst-business-shell .nst-shell-main :is([class*="text-amber-"], [class*="text-orange-"], [class*="text-yellow-"]):not(button[class*="bg-"]):not(a[class*="bg-"]) {
+  color: var(--nst-u-warn) !important;
+}
+/* status badges: soft background of the same status color */
+.nst-business-shell .nst-shell-main :is([class*="bg-emerald-50"], [class*="bg-green-50"], [class*="bg-emerald-100"], [class*="bg-green-100"]) {
+  background-color: color-mix(in srgb, var(--nst-u-ok) 14%, var(--nst-dashboard-surface)) !important;
+}
+.nst-business-shell .nst-shell-main :is([class*="bg-red-50"], [class*="bg-rose-50"], [class*="bg-red-100"], [class*="bg-rose-100"]) {
+  background-color: color-mix(in srgb, var(--nst-u-bad) 14%, var(--nst-dashboard-surface)) !important;
+}
+.nst-business-shell .nst-shell-main :is([class*="bg-amber-50"], [class*="bg-orange-50"], [class*="bg-yellow-50"], [class*="bg-amber-100"], [class*="bg-orange-100"], [class*="bg-yellow-100"]) {
+  background-color: color-mix(in srgb, var(--nst-u-warn) 14%, var(--nst-dashboard-surface)) !important;
+}
+.nst-business-shell .nst-shell-main :is([class*="bg-purple-50"], [class*="bg-violet-50"], [class*="bg-indigo-50"], [class*="bg-blue-50"], [class*="bg-purple-100"], [class*="bg-violet-100"], [class*="bg-indigo-100"], [class*="bg-blue-100"]) {
+  background-color: var(--nst-dashboard-primary-soft) !important;
+}
+/* solid colored buttons: primary actions follow the theme primary */
+.nst-business-shell .nst-shell-main :is(button:not(.nst-btn), a:not(.nst-btn)):is([class*="bg-purple-6"], [class*="bg-violet-6"], [class*="bg-indigo-6"], [class*="bg-blue-6"], [class*="bg-purple-7"], [class*="bg-violet-7"], [class*="bg-indigo-7"], [class*="bg-blue-7"]) {
+  background: var(--nst-dashboard-primary) !important;
+  color: var(--nst-dashboard-on-primary, #fff) !important;
+  border-color: transparent !important;
+}
+.nst-business-shell .nst-shell-main :is(button:not(.nst-btn), a:not(.nst-btn)):is([class*="bg-emerald-6"], [class*="bg-green-6"], [class*="bg-emerald-7"], [class*="bg-green-7"]) {
+  background: var(--nst-u-ok) !important;
+  color: #fff !important;
+}
+.nst-business-shell .nst-shell-main :is(button:not(.nst-btn), a:not(.nst-btn)):is([class*="bg-red-6"], [class*="bg-rose-6"], [class*="bg-red-7"], [class*="bg-rose-7"]) {
+  background: var(--nst-u-bad) !important;
+  color: #fff !important;
+}
+
+/* ---------------------------------------------------------------------
+   6) DESIGN MODE "Edit" buttons: only visible on the hovered card,
+      so they never cover buttons or text
+   --------------------------------------------------------------------- */
+.nst-business-shell .nst-inline-editable-section:not(:hover):not(:focus-within) > .nst-inline-edit-button {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+.nst-business-shell .nst-inline-editable-section > .nst-inline-edit-button {
+  transition: opacity .12s ease !important;
+}
+
+/* ---------------------------------------------------------------------
+   1) SAME PAGE WIDTH on every page (some pages were centered & narrow)
+   --------------------------------------------------------------------- */
+.nst-business-shell .nst-shell-main > :first-child[class*="max-w-"],
+.nst-business-shell .nst-shell-main > :first-child > [class*="mx-auto"][class*="max-w-"] {
+  max-width: var(--nst-u-page-max) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  width: 100% !important;
+}
+
+/* ---------------------------------------------------------------------
+   2) ONE CARD STYLE
+   A "card" = any block with rounded corners plus a border, shadow or a
+   large radius. Same radius, border, shadow and padding everywhere.
+   --------------------------------------------------------------------- */
+.nst-business-shell .nst-shell-main :is(div, section, article, aside, header, form, li, fieldset)[class*="rounded"]:not([class*="rounded-full"]):not([class*="rounded-none"]):is([class*="border"], [class*="shadow"], [class*="rounded-2xl"], [class*="rounded-3xl"], [class*="rounded-["]) {
+  border-radius: var(--nst-u-r-card) !important;
+  border-width: var(--nst-u-border-w) !important;
+  border-style: solid !important;
+  border-color: var(--nst-dashboard-border) !important;
+}
+/* neutral cards: same surface + shadow (colored alert boxes keep their tint) */
+.nst-business-shell .nst-shell-main :is(div, section, article, aside, header, form, fieldset)[class*="rounded"]:not([class*="rounded-full"]):is([class*="border"], [class*="shadow"], [class*="rounded-2xl"], [class*="rounded-3xl"], [class*="rounded-["]):not([class*="bg-red"]):not([class*="bg-rose"]):not([class*="bg-amber"]):not([class*="bg-yellow"]):not([class*="bg-orange"]):not([class*="bg-emerald"]):not([class*="bg-green"]):not([class*="bg-[var(--nst-dashboard-primary)]"]):not([class*="bg-gradient"]):not([class*="from-"]):not([style*="background"]) {
+  background-color: var(--nst-dashboard-surface) !important;
+  box-shadow: var(--nst-u-card-shadow) !important;
+}
+/* a card inside a card: flat (no double shadow) */
+.nst-business-shell .nst-shell-main [class*="rounded"][class*="border"] [class*="rounded"]:is([class*="border"], [class*="shadow"]):not(button):not(a):not(input):not(select):not(textarea) {
+  box-shadow: none !important;
+}
+/* empty-state boxes keep a dashed outline */
+.nst-business-shell .nst-shell-main [class*="border-dashed"] {
+  border-style: dashed !important;
+  box-shadow: none !important;
+}
+/* same inner padding for cards */
+.nst-business-shell .nst-shell-main :is(div, section, article, aside, form, fieldset)[class*="rounded"]:is(.p-4, .p-5, .p-6, .p-7, .p-8, .p-10, [class*="md:p-6"], [class*="md:p-8"], [class*="sm:p-6"], [class*="lg:p-8"]) {
+  padding: var(--nst-u-card-pad) !important;
+}
+/* gaps (floor keeps cards from touching even if UI & Layout gap is tiny) */
+.nst-business-shell .nst-shell-main :is(.gap-3, .gap-4, .gap-5, .gap-6, .gap-7, .gap-8) {
+  gap: var(--nst-u-gap) !important;
+}
+
+/* ---------------------------------------------------------------------
+   3) ONE BUTTON SYSTEM: primary (solid) / secondary (outline) / danger
+   --------------------------------------------------------------------- */
+/* same height for text buttons (icon-only square buttons keep their size) */
+.nst-business-shell .nst-shell-main button:not(.nst-btn):not(td button):not(.rounded-full):not([class*=" w-"]):not([class^="w-"]):not([class*=" h-"]):not(.nst-inline-edit-button):not([role="switch"]):not([type="checkbox"]) {
+  min-height: 2.5rem !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-radius: var(--nst-u-r-control) !important;
+  font-size: .8125rem !important;
+  font-weight: 800 !important;
+}
+/* secondary = everything that is not a solid colored button:
+   outline, white, pastel (bg-*-50/100/200) -> one calm style */
+.nst-business-shell .nst-shell-main :is(button:not(.nst-btn), a:not(.nst-btn)[class*="px-"]):not(.nst-inline-edit-button):not(.rounded-full):is(
+  [class*="bg-white"], [class*="border"]:not([class*="bg-"]),
+  [class*="-50 "], [class$="-50"], [class*="-100 "], [class$="-100"], [class*="-200 "], [class$="-200"],
+  [class*="bg-slate-"], [class*="bg-gray-"], [class*="bg-[var(--nst-dashboard-surface)]"], [class*="bg-[var(--nst-dashboard-bg)]"]
+):not([class*="bg-[var(--nst-dashboard-primary)]"]) {
+  background: var(--nst-dashboard-surface) !important;
+  color: var(--nst-dashboard-text) !important;
+  border: var(--nst-u-border-w) solid var(--nst-dashboard-border) !important;
+  box-shadow: none !important;
+}
+.nst-business-shell .nst-shell-main :is(button:not(.nst-btn), a:not(.nst-btn)[class*="px-"]):not(.nst-inline-edit-button):not(.rounded-full):is(
+  [class*="bg-white"], [class*="border"]:not([class*="bg-"]),
+  [class*="-50 "], [class$="-50"], [class*="-100 "], [class$="-100"], [class*="-200 "], [class$="-200"],
+  [class*="bg-slate-"], [class*="bg-gray-"]
+):not([class*="bg-[var(--nst-dashboard-primary)]"]):hover {
+  background: var(--nst-dashboard-hover) !important;
+  border-color: var(--nst-dashboard-selected-border) !important;
+}
+/* pastel "danger" buttons (Delete, Reject) keep red text as a warning */
+.nst-business-shell .nst-shell-main :is(button:not(.nst-btn), a:not(.nst-btn)[class*="px-"]):is([class*="bg-red-50"], [class*="bg-red-100"], [class*="bg-rose-50"], [class*="bg-rose-100"]) {
+  color: var(--nst-u-bad) !important;
+}
+/* primary buttons: theme primary, same for all */
+.nst-business-shell .nst-shell-main :is(button:not(.nst-btn), a:not(.nst-btn)):is([class*="bg-[var(--nst-dashboard-primary)]"], [class*="bg-purple-6"], [class*="bg-violet-6"], [class*="bg-indigo-6"], [class*="bg-blue-6"]) {
+  background: var(--nst-dashboard-primary) !important;
+  color: var(--nst-dashboard-on-primary, #fff) !important;
+  border: var(--nst-u-border-w) solid transparent !important;
+}
+.nst-business-shell .nst-shell-main button:disabled {
+  opacity: .55 !important;
+  cursor: not-allowed;
+}
+
+/* ---------------------------------------------------------------------
+   4) CALM LABELS: small labels / captions are never rainbow colored.
+   Colors stay only on badges, table amounts and real status text.
+   --------------------------------------------------------------------- */
+.nst-business-shell .nst-shell-main :is(p, span, div, small, dt, label):is([class*="text-xs"], [class*="text-[11px]"], [class*="text-[10px]"], [class*="uppercase"]):is(
+  [class*="text-emerald"], [class*="text-green"], [class*="text-teal"], [class*="text-red"], [class*="text-rose"],
+  [class*="text-amber"], [class*="text-orange"], [class*="text-yellow"], [class*="text-purple"], [class*="text-violet"],
+  [class*="text-blue"], [class*="text-indigo"], [class*="text-sky"]
+):not([class*="bg-"]):not(td):not(td *):not(button *):not(a *):not(.nst-page-header-copy > *):not(.nst-system-page-eyebrow) {
+  color: var(--nst-dashboard-muted) !important;
+}
+
+
+/* 1) A box that CONTAINS the page header is only a wrapper: no card look */
+.nst-business-shell .nst-shell-main [class*="rounded"]:has(.nst-page-header, .nst-system-page-hero, .nst-ph):not(.nst-page-header):not(.nst-system-page-hero) {
+  background: transparent !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  border-width: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+
+/* 4) Full-width / list / accordion buttons stay left aligned */
+.nst-business-shell .nst-shell-main button:is([class*="w-full"], [class*="text-left"], [class*="justify-between"], [class*="justify-start"]) {
+  justify-content: flex-start !important;
+  text-align: left !important;
+}
+.nst-business-shell .nst-shell-main button[class*="justify-between"] {
+  justify-content: space-between !important;
+}
+.nst-business-shell .nst-shell-main button[class*="w-full"]:not([class*="text-left"]):not([class*="justify-"]):is([class*="bg-[var(--nst-dashboard-primary)]"], [class*="bg-purple"], [class*="bg-violet"]) {
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+/* 5) Cards inside cards: flat tiles (one level of card only) */
+.nst-business-shell .nst-shell-main [class*="rounded"][class*="border"] [class*="rounded"][class*="border"]:not(button):not(a):not(input):not(select):not(textarea):not(.nst-page-header):not(.nst-system-page-hero):not([style*="background"]) {
+  box-shadow: none !important;
+  background-color: color-mix(in srgb, var(--nst-dashboard-surface) 70%, var(--nst-dashboard-bg) 30%) !important;
+}

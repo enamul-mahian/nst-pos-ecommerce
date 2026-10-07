@@ -1,0 +1,19 @@
+{
+  "subtitle": "Database backup, CSV/PDF/XLSX export and table health overview.",
+  "errors": {
+    "load_failed": "Could not load data maintenance information.",
+    "select_option": "Select at least one option for the Danger Zone action.",
+    "confirmation_required": "Enter the password and the confirmation text correctly: DELETE BUSINESS DATA",
+    "danger_failed": "Could not complete the Danger Zone action.",
+    "backup_create_failed": "Could not create backup.",
+    "backup_download_failed": "Could not download backup.",
+    "backup_delete_failed": "Could not delete backup.",
+    "export_failed": "Could not export {format}."
+  },
+  "confirm_danger": "Selected business data and uploaded business files will be permanently deleted. Continue?",
+  "confirm_delete_backup": "Delete this backup file?",
+  "backup_help": "A SQL backup will be created from the selected tables. A fresh migration is recommended before restoring.",
+  "export_help": "Table-wise CSV, PDF, XLSX download for reporting/sharing.",
+  "danger_help": "Only business data and uploaded business files will be deleted. Users, roles, permissions, branches, company settings and access control will be kept.",
+  "danger_options_missing": "Danger Zone options did not load. Check the backend route."
+}

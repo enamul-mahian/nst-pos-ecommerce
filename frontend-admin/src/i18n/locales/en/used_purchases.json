@@ -1,0 +1,16 @@
+{
+  "errors": {
+    "options_load_failed": "Could not load branch, brand, salesman, customer and supplier options. Check the used-purchases/options route."
+  },
+  "add_title": "Add Used / Pre-Owned Purchase",
+  "edit_title": "Edit Used / Pre-Owned Purchase",
+  "form_subtitle": "Select a Customer/Supplier seller, assign a salesman and optionally upload images.",
+  "basic_info_subtitle": "Select the seller type, branch and salesman.",
+  "seller_info_subtitle": "If no existing profile is selected, a new Customer/Supplier is created from this information.",
+  "purchase_price_placeholder": "The price the customer/supplier sold it to us for",
+  "images_help": "Up to 5 product images can be uploaded, one at a time.",
+  "list_title": "Used / Pre-Owned Purchase",
+  "list_subtitle": "Customer/Supplier seller type, salesman assignment, document status and Ready For Sale stock conversion. Images are not shown in the list/profile.",
+  "update_ready": "Update Ready",
+  "prepare_for_sale": "Prepare For Sale"
+}

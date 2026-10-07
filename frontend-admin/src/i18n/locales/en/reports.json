@@ -1,0 +1,14 @@
+{
+  "load_failed": "Could not load report data. Check the backend report API.",
+  "export": {
+    "subtitle": "CSV, PDF and XLSX formats supported."
+  },
+  "salesman": {
+    "subtitle": "Salesman-wise daily sales, monthly sales and performance. The monthly report automatically starts from the 1st of the month.",
+    "load_failed": "Could not load the salesman report. Check the backend /reports/sales route.",
+    "empty": "No salesman sales found in this period.",
+    "trend_empty": "No daily trend yet.",
+    "performance_help": "All 8 seeded salesmen are shown here, even with 0 sales.",
+    "trend_help": "In monthly mode, day-wise totals are shown from the 1st of the month until today."
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "tab": "Tamper Guard",
+  "title": "Tamper Guard (website + admin/POS)",
+  "subtitle": "Blocks right-click, F12, Ctrl+Shift+I / J / C, Ctrl+U and Ctrl+S, watches for open developer tools, and logs every attempt here as a CRITICAL event with user, IP, page and time. Super Admins see each one in Notifications.",
+  "blocked": "This action is turned off in NST.",
+  "save": "Save Tamper Guard",
+  "saving": "Saving...",
+  "saved": "Tamper guard settings saved.",
+  "save_failed": "Settings could not be saved.",
+  "load_failed": "Tamper guard settings could not be loaded.",
+  "limits": "A browser can never be locked 100%: a skilled person can still open developer tools. The real protection is on the server: prices, discounts, amounts and permissions are checked again on every order and sale, and a changed request is stopped and logged as a CRITICAL event.",
+  "fields": {
+    "enabled": "Tamper guard on",
+    "website": "Protect the customer website",
+    "admin": "Protect the admin panel / POS",
+    "detect_devtools": "Detect open developer tools",
+    "whitelist_super_admin": "Do not block Super Admins"
+  },
+  "help": {
+    "enabled": "Master switch. Off = nothing is blocked or logged.",
+    "website": "Storefront, customer portal and supplier portal.",
+    "admin": "Every admin and POS screen, including the login page.",
+    "detect_devtools": "Logs an event when developer tools are opened next to the page (desktop browsers).",
+    "whitelist_super_admin": "Signed-in Super Admins can use right-click and developer tools, and their actions are not logged."
+  }
+}

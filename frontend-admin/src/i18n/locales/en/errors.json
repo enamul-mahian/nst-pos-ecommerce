@@ -1,0 +1,12 @@
+{
+  "unknown": "Something went wrong. Please try again.",
+  "timeout": "The server took too long to answer. Please try again.",
+  "network": "Cannot reach the server ({url}). Make sure the backend is running and this address is allowed.",
+  "unauthorized": "Wrong login details. Please check and try again.",
+  "forbidden": "You are not allowed to do this.",
+  "not_found": "The server address was not found ({url}). Check the API address setting.",
+  "session_expired": "Your session expired. Refresh the page and try again.",
+  "validation": "Some fields are not valid. Please check them.",
+  "too_many": "Too many attempts. Please wait a minute and try again.",
+  "server": "Server error ({status}).{detail} Check the backend log (storage/logs/laravel.log)."
+}

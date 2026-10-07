@@ -1,0 +1,13 @@
+{
+  "title": "ওয়ারেন্টি চেক",
+  "subtitle": "ওয়ারেন্টি স্ট্যাটাস দেখতে IMEI / Barcode / Invoice নম্বর দিন।",
+  "placeholder": "IMEI / Barcode / Invoice",
+  "check": "চেক করুন",
+  "not_found": "পাওয়া যায়নি",
+  "imei": "IMEI",
+  "warranty": "ওয়ারেন্টি",
+  "start": "শুরু",
+  "end": "শেষ",
+  "status": "অবস্থা",
+  "days_remaining": "({days} দিন বাকি)"
+}

@@ -1,0 +1,103 @@
+/*
+  NST Website ChatBox Final
+  iMessage-inspired, NST branded, Android 4.4-17 adaptive.
+  Keep this file in: /nst-chatbox/nst-imessage-chatbox.css
+*/
+#nstChatWidgetRoot{position:fixed;right:22px;bottom:92px;z-index:999999;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,"Noto Sans Bengali",sans-serif}
+#nstChatWidgetRoot *{box-sizing:border-box}
+.nst-chat-box{position:absolute;right:0;bottom:74px;width:390px;max-width:calc(100vw - 24px);height:640px;max-height:calc(100vh - 120px);display:flex;flex-direction:column;overflow:hidden;border-radius:30px;background:#f2f2f7;color:#111827;box-shadow:0 26px 80px rgba(15,23,42,.24);border:1px solid rgba(209,213,219,.85);transform:translateY(16px) scale(.96);opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease}
+.nst-chat-box.is-open{transform:translateY(0) scale(1);opacity:1;pointer-events:auto}
+.nst-chat-header{min-height:76px;padding:14px 14px 12px;display:flex;align-items:center;gap:11px;background:#fafafa;border-bottom:1px solid rgba(209,213,219,.75)}
+.nst-chat-title{min-width:0;flex:1;display:flex;flex-direction:column}
+.nst-chat-title strong{font-size:15px;font-weight:800;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nst-chat-title span{margin-top:3px;font-size:12px;color:#6b7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nst-chat-close{width:34px;height:34px;border:0;cursor:pointer;border-radius:50%;background:#e5e5ea;color:#374151;font-size:24px;line-height:1;flex:0 0 auto}
+.nst-chat-body{flex:1;overflow-y:auto;padding:14px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+.nst-chat-date{width:max-content;margin:0 auto 14px;padding:5px 10px;border-radius:999px;background:#e5e5ea;color:#6b7280;font-size:11px;font-weight:700}
+.nst-msg{display:flex;margin:9px 0}.nst-msg-agent{justify-content:flex-start}.nst-msg-user{justify-content:flex-end}
+.nst-bubble{max-width:82%;padding:10px 13px;border-radius:20px;font-size:14px;line-height:1.42;word-wrap:break-word;white-space:pre-wrap}
+.nst-msg-agent .nst-bubble{background:#e5e5ea;color:#111827;border-bottom-left-radius:7px}
+.nst-msg-user .nst-bubble{background:var(--nst-chat-ink);color:#fff;border-bottom-right-radius:7px}
+.nst-visitor-form{margin-top:12px;padding:13px;border-radius:24px;background:#fff;border:1px solid rgba(229,231,235,.95)}
+.nst-visitor-form label{display:block;margin-bottom:11px}.nst-visitor-form label span{display:block;margin-bottom:5px;color:#374151;font-size:12px;font-weight:800}
+.nst-visitor-form input,.nst-visitor-form textarea{width:100%;border:1px solid #d1d5db;outline:none;border-radius:15px;padding:11px 12px;background:#fff;color:#111827;font-size:14px;font-family:inherit}
+.nst-visitor-form textarea{resize:vertical;min-height:78px}.nst-visitor-form input:focus,.nst-visitor-form textarea:focus{border-color:var(--nst-chat-ink);box-shadow:0 0 0 3px rgba(11,31,58,.14)}
+.nst-help-text{display:block;margin-top:5px;color:#6b7280;font-size:11.5px;line-height:1.35}.nst-check{display:flex!important;align-items:flex-start;gap:8px}.nst-check input{width:16px!important;height:16px;margin-top:2px}.nst-check span{margin:0!important;color:#374151!important;font-weight:600!important;line-height:1.35}
+.nst-start-btn{width:100%;border:0;cursor:pointer;margin-top:3px;padding:12px 14px;border-radius:17px;background:var(--nst-chat-ink);color:#fff;font-size:14px;font-weight:900;box-shadow:0 12px 28px rgba(11,31,58,.22)}
+.nst-conversation{padding-bottom:4px}.nst-chat-footer{padding:10px;display:flex;align-items:center;gap:8px;background:#fafafa;border-top:1px solid rgba(209,213,219,.75)}
+.nst-icon-btn,.nst-send-btn{flex:0 0 auto;width:34px;height:34px;border:0;cursor:pointer;border-radius:50%;display:block;text-align:center;line-height:34px;font-weight:900}.nst-icon-btn{background:#e5e5ea;color:#374151;font-size:22px}.nst-reply-input{flex:1;min-width:0;height:38px;border:1px solid #d1d5db;outline:none;border-radius:999px;padding:0 14px;background:#fff;color:#111827;font-size:14px}.nst-send-btn{background:var(--nst-chat-ink);color:#fff;font-size:20px}.nst-send-btn:disabled{background:#c7c7cc;cursor:not-allowed}
+.nst-chat-warning{margin:8px 0;padding:9px 11px;border-radius:15px;background:#fff7ed;color:#9a3412;font-size:12px;line-height:1.4}.nst-chat-success{margin:8px 0;padding:9px 11px;border-radius:15px;background:#ecfdf5;color:#166534;font-size:12px;line-height:1.4}.nst-hidden{display:none!important}
+@media(max-width:520px){#nstChatWidgetRoot{right:14px!important;bottom:88px!important}.nst-chat-box{position:fixed;left:8px!important;right:8px!important;bottom:8px!important;width:auto;height:min(720px,calc(100vh - 16px));max-height:calc(100vh - 16px);border-radius:24px}.nst-bubble{max-width:88%}}
+@media(max-width:340px){#nstChatWidgetRoot{right:10px!important;bottom:82px!important}.nst-chat-box{left:0!important;right:0!important;bottom:0!important;height:100vh;max-height:100vh;border-radius:0}.nst-chat-header{min-height:68px}.nst-chat-title span{display:none}}
+
+/* NST shared floating-control position.
+   Chat is the lowest item in the right-side control stack. */
+#nstChatWidgetRoot {
+  right: var(--nst-floating-control-right, 18px);
+  bottom: var(--nst-floating-base-bottom, 22px);
+}
+
+@media (max-width: 1023px) {
+  #nstChatWidgetRoot {
+    right: var(--nst-floating-control-right, 12px) !important;
+    bottom: var(--nst-floating-base-bottom, 82px) !important;
+  }
+}
+
+@media (max-width: 520px) {
+  #nstChatWidgetRoot {
+    right: var(--nst-floating-control-right, 12px) !important;
+    bottom: var(--nst-floating-base-bottom, 82px) !important;
+  }
+}
+
+@media (max-width: 340px) {
+  #nstChatWidgetRoot {
+    right: 10px !important;
+    bottom: var(--nst-floating-base-bottom, 82px) !important;
+  }
+}
+
+
+
+/* Floating stack: WhatsApp (secondary, external) above NST Live Support (primary, on-site). */
+#nstChatWidgetRoot{--nst-chat-ink:#0b1f3a;--nst-chat-ink-2:#13294b;--nst-chat-accent:var(--nst-primary,#15803d);--nst-wa:#25D366;--nst-wa-dark:#128C7E}
+.nst-float-stack{display:flex;flex-direction:column;align-items:flex-end;gap:14px}
+#nstChatWidgetRoot.is-chat-open .nst-float-stack{gap:0}
+#nstChatWidgetRoot.is-chat-open .nst-wa-button{display:none}
+.nst-chat-launcher{position:relative;border:1px solid rgba(255,255,255,.08);cursor:pointer;display:flex;align-items:center;gap:10px;min-height:56px;padding:7px 18px 7px 7px;border-radius:999px;background:linear-gradient(135deg,var(--nst-chat-ink),var(--nst-chat-ink-2));color:#fff;box-shadow:0 14px 34px rgba(11,31,58,.32);font-family:inherit;transition:transform .18s ease,box-shadow .18s ease}
+.nst-chat-launcher:hover{transform:translateY(-2px);box-shadow:0 18px 40px rgba(11,31,58,.38)}
+.nst-chat-launcher-icon{width:42px;height:42px;flex:0 0 auto;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:#fff;color:var(--nst-chat-ink)}
+.nst-chat-launcher-icon svg{width:22px;height:22px}
+.nst-chat-launcher-icon img,.nst-chat-avatar img{width:100%;height:100%;object-fit:contain}
+.nst-chat-launcher-text{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15;text-align:left}
+.nst-chat-launcher-text strong{font-size:14px;font-weight:800;letter-spacing:-.01em}
+.nst-chat-launcher-text small{margin-top:2px;font-size:11.5px;color:rgba(255,255,255,.72)}
+.nst-chat-online{position:absolute;left:39px;top:9px;width:11px;height:11px;border-radius:50%;background:#22c55e;border:2px solid var(--nst-chat-ink)}
+.nst-chat-avatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;overflow:hidden;color:#fff;background:var(--nst-chat-ink);font-size:12px;font-weight:900;letter-spacing:-.03em;flex:0 0 auto}
+.nst-chat-header{background:var(--nst-chat-ink);color:#fff;border-bottom:0}
+.nst-chat-header .nst-chat-avatar{background:#fff;color:var(--nst-chat-ink)}
+.nst-chat-title strong{color:#fff}
+.nst-chat-title span{display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.75)}
+.nst-chat-title em{font-style:normal;overflow:hidden;text-overflow:ellipsis}
+.nst-chat-online-dot{width:8px;height:8px;flex:0 0 auto;border-radius:50%;background:#22c55e}
+.nst-chat-close{background:rgba(255,255,255,.14);color:#fff}
+.nst-wa-button{display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:5px 15px 5px 5px;border-radius:999px;background:var(--nst-wa);color:#fff;text-decoration:none;font-size:13px;font-weight:800;box-shadow:0 10px 26px rgba(18,140,126,.32);transition:transform .18s ease,background .18s ease}
+.nst-wa-button:hover{background:#1ebe5b;transform:translateY(-2px)}
+.nst-wa-icon{width:36px;height:36px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.18)}
+.nst-wa-icon svg{width:22px;height:22px}
+.nst-chat-launcher:focus-visible,.nst-wa-button:focus-visible,.nst-chat-close:focus-visible,.nst-send-btn:focus-visible,.nst-icon-btn:focus-visible,.nst-start-btn:focus-visible{outline:3px solid #f59e0b;outline-offset:3px}
+@media(max-width:1023px){
+  .nst-float-stack{gap:12px}
+  .nst-chat-launcher{width:52px;height:52px;min-height:0;padding:0;justify-content:center}
+  .nst-chat-launcher-icon{width:40px;height:40px}
+  .nst-chat-launcher-text{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .nst-chat-online{left:auto;right:3px;top:3px}
+  .nst-wa-button{width:46px;height:46px;min-height:0;padding:0;justify-content:center;margin-right:3px}
+  .nst-wa-icon{width:46px;height:46px;background:transparent}
+  .nst-wa-icon svg{width:26px;height:26px}
+  .nst-wa-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+}
+@media (prefers-reduced-motion: reduce){.nst-chat-launcher,.nst-wa-button,.nst-chat-box{transition:none}}
+/* The open chat panel covers the phone screen; keep the page's own floating parts out of the way. */
+@media(max-width:520px){#nstChatWidgetRoot.is-chat-open{z-index:1000000}}

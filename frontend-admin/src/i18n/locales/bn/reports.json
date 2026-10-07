@@ -1,0 +1,14 @@
+{
+  "load_failed": "Report data load failed. Backend report API check করুন।",
+  "export": {
+    "subtitle": "CSV, PDF এবং XLSX format supported."
+  },
+  "salesman": {
+    "subtitle": "Salesman-wise daily sales, monthly sales and performance. Monthly report automatically starts from month-এর ১ তারিখ।",
+    "load_failed": "Salesman report load failed. Backend /reports/sales route check করুন।",
+    "empty": "এই period-এ কোনো salesman sales পাওয়া যায়নি।",
+    "trend_empty": "Daily trend এখনো নেই।",
+    "performance_help": "৮ জন salesman seeded থাকলে 0 sales হলেও এখানে দেখা যাবে।",
+    "trend_help": "Monthly mode দিলে ১ তারিখ থেকে আজ পর্যন্ত day-wise total দেখাবে।"
+  }
+}

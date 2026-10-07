@@ -1,0 +1,25 @@
+{
+  "pos_title": "POS Sale",
+  "pos_subtitle": "Scanning an IMEI/device sells that exact device, reduces stock and calculates profit from the device purchase cost.",
+  "errors": {
+    "device_in_cart_or_unavailable": "This IMEI/device is already in the cart or is not available.",
+    "device_stock_not_found": "Branch stock for this device was not found. Sync/check the stock first.",
+    "product_not_found": "Product not found. Check that the barcode/SKU/product name is correct.",
+    "no_branch_stock": "This product has no branch stock.",
+    "no_available_imei": "This product is device/IMEI tracked, but no IMEI is available. Check Device Stock.",
+    "imei_count_mismatch": "The quantity and selected IMEI count of {name} must match."
+  },
+  "search_help": "Type an IMEI, device barcode, product barcode, SKU or product name and press Enter. Scanning an IMEI sells that exact device.",
+  "select_branch_placeholder": "Select a branch first",
+  "no_branch_stock_products": "No sellable stock products were found in this branch. Check Purchase/Branch Stock first.",
+  "device_results_heading": "Available Device / IMEI Result - click to add that exact device to the cart",
+  "product_results_heading": "Product Result - click row / press Add / press Enter to add to cart; for a device-tracked product the first available IMEI is selected automatically",
+  "search_no_results": "Product/IMEI not found. Check the product name, SKU, barcode or IMEI again, and make sure the branch has stock.",
+  "mfs_help": "bKash, Nagad, Rocket, Upay and Other MFS can be added together.",
+  "list_title": "Sales List",
+  "list_subtitle": "Manage POS sale invoices, payments, printing, cancellations and returns.",
+  "cancel_reason_prompt": "Enter the cancel reason for invoice \"{invoice}\":",
+  "return_confirm": "Return invoice \"{invoice}\"? Stock and IMEIs will become available again.",
+  "return_note_placeholder": "Write an extra note...",
+  "return_info": "Confirming the return increases product/branch stock and makes the IMEI devices available again."
+}

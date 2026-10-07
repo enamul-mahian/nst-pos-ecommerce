@@ -1,0 +1,11 @@
+{
+  "edit_aria": "Edit page title and subtitle",
+  "edit_title": "Edit title & subtitle",
+  "editor_title": "Edit page header",
+  "title_label": "Title",
+  "subtitle_label": "Subtitle",
+  "title_placeholder": "Page title",
+  "subtitle_placeholder": "Short description",
+  "hint": "Each language has its own text. Leave a field empty to keep the built-in text.",
+  "reset_done": "Reset to the default text."
+}

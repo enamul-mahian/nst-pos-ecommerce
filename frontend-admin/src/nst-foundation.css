@@ -1,0 +1,147 @@
+/* =====================================================================
+   NST FOUNDATION (Step 0)
+   Kept from the old patch layers ONLY the parts that do not conflict
+   with the locked design standards:
+   - theme coverage (hard-coded light/dark colors follow the theme)
+   - page edge spacing
+   - no animation delays
+   - neon focus on inputs/search boxes
+   Headers, cards, buttons and radius are now controlled ONLY by
+   styles/nst-design-system.css and the shared components.
+   ===================================================================== */
+/* ---------------------------------------------------------------------
+   1) THEME COVERAGE - fill the gaps left by older override layers
+   --------------------------------------------------------------------- */
+.nst-business-shell .nst-shell-main :is(.bg-white, .bg-white\/90, .bg-white\/80, .bg-white\/95):not(.rounded-full):not([style*="background"]) {
+  background-color: var(--nst-dashboard-surface) !important;
+}
+.nst-business-shell .nst-shell-main :is(.bg-gray-50, .bg-slate-50, .bg-zinc-50, .bg-neutral-50):not([style*="background"]) {
+  background-color: var(--nst-dashboard-input) !important;
+}
+.nst-business-shell .nst-shell-main :is(.bg-gray-100, .bg-slate-100, .bg-gray-200, .bg-slate-200):not(.rounded-full):not([style*="background"]) {
+  background-color: var(--nst-dashboard-card-elevated) !important;
+}
+.nst-business-shell .nst-shell-main :is(.hover\:bg-white, .hover\:bg-gray-50, .hover\:bg-slate-50, .hover\:bg-gray-100, .hover\:bg-slate-100):hover {
+  background-color: var(--nst-dashboard-hover) !important;
+}
+/* Translucent light bands (bg-slate-50/70 etc.) used for card headers and action bars. */
+.nst-business-shell .nst-shell-main :is([class^="bg-slate-50/"], [class*=" bg-slate-50/"], [class^="bg-gray-50/"], [class*=" bg-gray-50/"], [class^="bg-zinc-50/"], [class*=" bg-zinc-50/"], [class^="bg-neutral-50/"], [class*=" bg-neutral-50/"], [class^="bg-slate-100/"], [class*=" bg-slate-100/"], [class^="bg-gray-100/"], [class*=" bg-gray-100/"], [class~="bg-[#FAF7FF]"]):not([style*="background"]) {
+  background-color: color-mix(in srgb, var(--nst-dashboard-surface) 92%, var(--nst-dashboard-text) 4%) !important;
+}
+.nst-business-shell .nst-shell-main :is([class*="hover:bg-slate-50/"], [class*="hover:bg-gray-50/"], [class*="hover:bg-emerald-50/"]):hover {
+  background-color: var(--nst-dashboard-hover) !important;
+}
+.nst-business-shell .nst-shell-main :is(
+  .text-slate-950, .text-slate-900, .text-slate-800, .text-slate-700,
+  .text-gray-950, .text-gray-900, .text-gray-800, .text-gray-700,
+  .text-zinc-900, .text-zinc-800, .text-neutral-900, .text-neutral-800, .text-black
+) {
+  color: var(--nst-dashboard-text) !important;
+}
+.nst-business-shell .nst-shell-main :is(
+  .text-slate-600, .text-slate-500, .text-slate-400, .text-slate-300,
+  .text-gray-600, .text-gray-500, .text-gray-400, .text-gray-300,
+  .text-zinc-500, .text-neutral-500
+) {
+  color: var(--nst-dashboard-muted) !important;
+}
+.nst-business-shell .nst-shell-main :is(
+  .border-gray-50, .border-gray-100, .border-gray-150, .border-gray-200, .border-gray-300,
+  .border-slate-100, .border-slate-200, .border-slate-300, .border-zinc-200, .border-neutral-200
+) {
+  border-color: var(--nst-dashboard-border) !important;
+}
+.nst-business-shell .nst-shell-main :is(.divide-gray-100, .divide-gray-200, .divide-slate-100, .divide-slate-200) > :not(:last-child) {
+  border-color: var(--nst-dashboard-border) !important;
+}
+.nst-business-shell .nst-shell-main :is(table thead, thead tr, th) {
+  background-color: color-mix(in srgb, var(--nst-dashboard-surface) 88%, var(--nst-dashboard-text) 12%);
+}
+.nst-business-shell .nst-shell-main :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]) {
+  background-color: var(--nst-dashboard-input) !important;
+  color: var(--nst-dashboard-text) !important;
+  border-color: var(--nst-dashboard-border) !important;
+}
+.nst-business-shell .nst-shell-main :is(input, textarea)::placeholder {
+  color: var(--nst-dashboard-muted) !important;
+  opacity: .8;
+}
+.nst-business-shell .nst-shell-main :is(input, select, textarea):focus {
+  border-color: var(--nst-dashboard-selected-border) !important;
+  box-shadow: 0 0 0 3px var(--nst-dashboard-focus-ring) !important;
+  outline: none;
+}
+.nst-business-shell .nst-shell-main select option {
+  background-color: var(--nst-dashboard-surface);
+  color: var(--nst-dashboard-text);
+}
+
+
+/* page edge: no page touches the sidebar */
+.nst-business-shell .nst-shell-main > :first-child {
+  padding: clamp(14px, 1.6vw, 24px) !important;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ---------------------------------------------------------------------
+   5) MOTION - no delays, short transitions (page opens instantly)
+   Loading spinners / skeleton pulses keep their own speed.
+   --------------------------------------------------------------------- */
+.nst-business-shell *,
+.nst-business-shell *::before,
+.nst-business-shell *::after {
+  transition-delay: 0s !important;
+  animation-delay: 0s !important;
+}
+.nst-business-shell :is([class*="duration-300"], [class*="duration-500"], [class*="duration-700"], [class*="duration-1000"]) {
+  transition-duration: .14s !important;
+}
+.nst-business-shell :is([class*="animate-in"], [class*="fade-in"], [class*="slide-in"], [class*="zoom-in"]) {
+  animation-duration: .16s !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nst-business-shell *:not(.animate-spin):not(.animate-pulse),
+  .nst-business-shell *::before,
+  .nst-business-shell *::after {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+  }
+}
+
+/* =====================================================================
+   NST PATCH 06 - NEON FOCUS ("entering" glow) for every search box,
+   input, select and textarea in the Admin/POS - same as the top search.
+   Color follows the theme primary color.
+   ===================================================================== */
+.nst-business-shell {
+  --nst-u-neon: var(--nst-dashboard-primary, #7c3aed);
+  --nst-u-neon-ring: 0 0 0 1px var(--nst-u-neon),
+                     0 0 0 4px color-mix(in srgb, var(--nst-u-neon) 22%, transparent),
+                     0 0 22px color-mix(in srgb, var(--nst-u-neon) 45%, transparent);
+}
+.nst-business-shell :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]) {
+  transition: border-color .15s ease, box-shadow .18s ease, background-color .15s ease !important;
+}
+.nst-business-shell :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]):focus {
+  outline: none !important;
+  border-color: var(--nst-u-neon) !important;
+  box-shadow: var(--nst-u-neon-ring) !important;
+}
+/* search boxes built as a bordered wrapper with an icon + input:
+   the WHOLE box glows, not only the inner input */
+.nst-business-shell :is(div, label, form)[class*="border"]:has(> input:focus, > span > input:focus, > div > input:focus):not(:has(input:focus ~ input)):not([class*="grid"]) {
+  border-color: var(--nst-u-neon) !important;
+  box-shadow: var(--nst-u-neon-ring) !important;
+  transition: border-color .15s ease, box-shadow .18s ease !important;
+}
+.nst-business-shell :is(div, label, form)[class*="border"]:has(> input:focus, > span > input:focus, > div > input:focus):not(:has(input:focus ~ input)):not([class*="grid"]) input:focus {
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+.nst-business-shell :is(div, label, form)[class*="border"]:has(> input:focus) svg {
+  color: var(--nst-u-neon) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nst-business-shell :is(input, select, textarea, div, label, form) { transition: none !important; }
+}

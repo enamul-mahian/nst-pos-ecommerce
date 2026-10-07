@@ -1,0 +1,10 @@
+{
+  "unknown": "Something went wrong. Please try again.",
+  "timeout": "The server took too long to answer. Please try again.",
+  "network": "Cannot connect to the server ({url}). Check your internet connection and try again.",
+  "not_found": "The server address was not found ({url}). Check the API address setting.",
+  "session_expired": "Your session expired. Refresh the page and try again.",
+  "validation": "Some fields are not valid. Please check them.",
+  "too_many": "Too many attempts. Please wait a minute and try again.",
+  "server": "Server error ({status}).{detail} Please try again in a moment."
+}

@@ -1,0 +1,42 @@
+DirectoryIndex index.html index.php
+Options -MultiViews -Indexes
+AddDefaultCharset UTF-8
+
+<IfModule mod_mime.c>
+    AddCharset UTF-8 .html .css .js .mjs .json .svg .txt
+    AddType application/javascript .mjs
+    AddType image/webp .webp
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    <FilesMatch "\.html$">
+        Header set Cache-Control "no-cache, must-revalidate"
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    RewriteRule (^|/)\.(?!well-known/) - [F,L]
+
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Laravel backend
+    RewriteRule ^(api|sanctum|iclock|up|broadcasting)(/.*)?$ index.php [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^storage/ index.php [L]
+
+    # Real files and folders
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Admin POS app
+    RewriteRule ^pos(/.*)?$ pos/index.html [L]
+
+    # Storefront app
+    RewriteRule ^ index.html [L]
+</IfModule>

@@ -1,0 +1,16 @@
+{
+  "errors": {
+    "options_load_failed": "Branch, Brand, Salesman, Customer, Supplier options load failed. used-purchases/options route check করুন।"
+  },
+  "add_title": "Add Used / Pre-Owned Purchase",
+  "edit_title": "Edit Used / Pre-Owned Purchase",
+  "form_subtitle": "Seller Customer/Supplier select, salesman assign এবং optional image upload করুন।",
+  "basic_info_subtitle": "Seller type, branch এবং salesman select করুন।",
+  "seller_info_subtitle": "Existing profile select না করলে এই তথ্য দিয়ে নতুন Customer/Supplier তৈরি হবে।",
+  "purchase_price_placeholder": "Customer/Supplier আমাদের কাছে যে দামে বিক্রি করেছে",
+  "images_help": "একটা একটা করে ৫টা পর্যন্ত product image upload করা যাবে।",
+  "list_title": "Used / Pre-Owned Purchase",
+  "list_subtitle": "Customer/Supplier seller type, salesman assignment, document status এবং Ready For Sale stock convert। Images list/profile এ দেখানো হয় না।",
+  "update_ready": "Ready আপডেট",
+  "prepare_for_sale": "বিক্রির জন্য প্রস্তুত করুন"
+}

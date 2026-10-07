@@ -1,0 +1,5 @@
+{
+  "title": "Bulk Upload Studio",
+  "subtitle": "Choose module → choose fields → generate CSV → upload → preview and validate → import → review history.",
+  "preview_before_commit": "Preview before commit"
+}

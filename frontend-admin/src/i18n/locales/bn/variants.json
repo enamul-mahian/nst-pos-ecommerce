@@ -1,0 +1,4 @@
+{
+  "title": "প্রোডাক্ট ভ্যারিয়েন্ট অপারেশনস",
+  "subtitle": "Variant অনুযায়ী color, region, storage, SIM, দাম, SKU, barcode ও ছবি ম্যানেজার। প্রতি variant-এ সর্বোচ্চ ৫টি ছবি রাখা যাবে; upload-এর পরে variant-wise photo save থাকবে। Gallery থেকে link করলে duplicate physical file হবে না।"
+}

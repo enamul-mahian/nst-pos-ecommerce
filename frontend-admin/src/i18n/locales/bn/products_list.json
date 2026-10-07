@@ -1,0 +1,6 @@
+{
+  "errors": {
+    "no_delete_permission": "আপনার product delete permission নেই।",
+    "no_bulk_delete_permission": "আপনার bulk delete permission নেই।"
+  }
+}

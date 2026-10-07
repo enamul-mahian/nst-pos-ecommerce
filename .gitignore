@@ -1,0 +1,36 @@
+# Secrets / local environment
+**/.env
+**/.env.*
+!**/.env.example
+
+# Dependencies
+**/node_modules/
+**/vendor/
+
+# Frontend generated builds (source is authoritative)
+frontend-admin/dist/
+frontend-customer/dist/
+
+# Laravel runtime
+backend/storage/logs/*
+backend/storage/framework/cache/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/storage/app/public/*
+backend/storage/app/private/*
+!backend/storage/app/public/.gitignore
+!backend/storage/app/private/.gitignore
+backend/bootstrap/cache/*.php
+
+# Local databases / runtime files
+**/database.sqlite
+*.log
+*.tmp
+*.zip
+*.tar.gz
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/

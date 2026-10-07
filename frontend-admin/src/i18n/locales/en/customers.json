@@ -1,0 +1,10 @@
+{
+  "recalc_confirm": "Recalculating will adjust old unapplied customer payments against invoice dues. Continue?",
+  "ledger_title": "Customer Ledger",
+  "ledger_subtitle": "Customer invoices, payment history, due summary and due collection.",
+  "receive_due_help": "Receive the customer's outstanding balance here.",
+  "no_due": "This customer has no due.",
+  "list_title": "Customers",
+  "list_subtitle": "Add, edit and search customers, view their ledgers and see which used/pre-owned devices each customer has sold to us.",
+  "sold_devices_help": "Products {name} has sold to us. Images are not shown here."
+}

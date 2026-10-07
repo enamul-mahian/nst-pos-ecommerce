@@ -1,0 +1,19 @@
+{
+  "subtitle": "Database backup, CSV/PDF/XLSX export এবং table health overview.",
+  "errors": {
+    "load_failed": "Data maintenance তথ্য load করা যায়নি।",
+    "select_option": "Danger Zone action করার জন্য অন্তত একটি option select করুন।",
+    "confirmation_required": "Password এবং confirmation text ঠিকভাবে দিতে হবে: DELETE BUSINESS DATA",
+    "danger_failed": "Danger Zone action complete করা যায়নি।",
+    "backup_create_failed": "Backup create করা যায়নি।",
+    "backup_download_failed": "Backup download করা যায়নি।",
+    "backup_delete_failed": "Backup delete করা যায়নি।",
+    "export_failed": "{format} export করা যায়নি।"
+  },
+  "confirm_danger": "Selected business data এবং uploaded business files permanent delete হবে। Continue?",
+  "confirm_delete_backup": "এই backup file delete করবেন?",
+  "backup_help": "Selected table দিয়ে SQL backup তৈরি হবে। Restore করার আগে fresh migration থাকা ভালো।",
+  "export_help": "Report/share করার জন্য table-wise CSV, PDF, XLSX download.",
+  "danger_help": "শুধু business data এবং uploaded business files delete হবে। Users, roles, permissions, branches, company settings ও access control থাকবে।",
+  "danger_options_missing": "Danger Zone options load হয়নি। Backend route check করুন।"
+}

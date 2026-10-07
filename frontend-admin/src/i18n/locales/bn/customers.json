@@ -1,0 +1,10 @@
+{
+  "recalc_confirm": "Recalculate করলে old unapplied customer payments invoice due-এর সাথে adjust হবে। Continue?",
+  "ledger_title": "Customer Ledger",
+  "ledger_subtitle": "Customer invoice, payment history, due summary এবং due collection.",
+  "receive_due_help": "Customer আগের বাকি টাকা দিলে এখানে receive করুন।",
+  "no_due": "এই customer-এর কোনো due নেই।",
+  "list_title": "Customers",
+  "list_subtitle": "Customer add/edit/search, ledger এবং customer কতগুলো used/pre-owned device আমাদের কাছে বিক্রি করেছে তা দেখা যাবে।",
+  "sold_devices_help": "{name} আমাদের কাছে যেসব product বিক্রি করেছে। Images এখানে দেখানো হচ্ছে না।"
+}

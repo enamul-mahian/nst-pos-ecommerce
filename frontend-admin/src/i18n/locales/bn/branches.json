@@ -1,0 +1,4 @@
+{
+  "manager_help": "Manager select করলে এই user-এর branch_id auto assign হবে।",
+  "stock_empty_help": "এই branch-এ stock assign করা না থাকলে এখানে product দেখাবে না।"
+}

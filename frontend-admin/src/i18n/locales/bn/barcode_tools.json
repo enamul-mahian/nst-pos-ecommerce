@@ -1,0 +1,49 @@
+{
+  "title": "বারকোড লেবেল",
+  "subtitle": "পণ্যের নাম, SKU, NST বারকোড, IMEI 1 বা IMEI 2 দিয়ে খুঁজুন। CODE128-এ NST বারকোড এনকোড হয়; না থাকলে SKU ব্যবহার হয়।",
+  "print": "প্রিন্ট {count}",
+  "step_select": "১. পণ্য / ডিভাইস বাছুন",
+  "search_placeholder": "পণ্য / SKU / বারকোড / IMEI1 / IMEI2",
+  "product_fallback": "পণ্য",
+  "no_code": "কোড নেই",
+  "selected": "বাছাই করা",
+  "step_template": "২. লেবেল টেমপ্লেট",
+  "template": "টেমপ্লেট",
+  "name": "নাম",
+  "width_mm": "প্রস্থ মিমি",
+  "height_mm": "উচ্চতা মিমি",
+  "copies": "কপি",
+  "make_default": "এটিকে ডিফল্ট বারকোড টেমপ্লেট করুন",
+  "text_align": "লেখার অ্যালাইনমেন্ট",
+  "align": {
+    "left": "বামে",
+    "center": "মাঝে",
+    "right": "ডানে"
+  },
+  "fields": {
+    "show_product_name": "পণ্য / ভ্যারিয়েন্ট",
+    "show_sale_price": "বিক্রয় মূল্য",
+    "show_barcode_text": "বারকোড লেখা",
+    "show_imei1": "IMEI 1",
+    "show_imei2": "IMEI 2",
+    "hide_iphone_ram": "iPhone RAM লুকান"
+  },
+  "template_saved": "টেমপ্লেট সেভ হয়েছে।",
+  "reprint_reason": "রিপ্রিন্টের কারণ লিখতে হবে:",
+  "preview_title": "লেবেল প্রিভিউ",
+  "preview_hint": "লেবেল সাইজ: {width}মিমি চওড়া × {height}মিমি উঁচু।",
+  "label": {
+    "sale_price": "Sale Price",
+    "missing": "Barcode/SKU নেই",
+    "document_title": "বারকোড লেবেল"
+  },
+  "errors": {
+    "templates_load": "বারকোড টেমপ্লেট লোড করা যায়নি।",
+    "search": "খোঁজা যায়নি।",
+    "save": "সেভ করা যায়নি।",
+    "no_code": "এই রেকর্ডে Barcode বা SKU নেই।",
+    "select_one": "অন্তত একটি পণ্য/ডিভাইস বাছুন।",
+    "history": "প্রিন্ট হিস্ট্রি সেভ করা যায়নি।",
+    "popup": "লেবেল প্রিন্ট করতে pop-up চালু করুন।"
+  }
+}

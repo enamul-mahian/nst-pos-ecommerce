@@ -1,0 +1,49 @@
+{
+  "title": "Barcode Labels",
+  "subtitle": "Search by product name, SKU, NST barcode, IMEI 1 or IMEI 2. CODE128 encodes the NST barcode, with the SKU as fallback.",
+  "print": "Print {count}",
+  "step_select": "1. Select Product / Device",
+  "search_placeholder": "Product / SKU / Barcode / IMEI1 / IMEI2",
+  "product_fallback": "Product",
+  "no_code": "No code",
+  "selected": "Selected",
+  "step_template": "2. Label Template",
+  "template": "Template",
+  "name": "Name",
+  "width_mm": "Width mm",
+  "height_mm": "Height mm",
+  "copies": "Copies",
+  "make_default": "Make this the default barcode template",
+  "text_align": "Text alignment",
+  "align": {
+    "left": "Left",
+    "center": "Center",
+    "right": "Right"
+  },
+  "fields": {
+    "show_product_name": "Product / Variant",
+    "show_sale_price": "Sale Price",
+    "show_barcode_text": "Barcode Text",
+    "show_imei1": "IMEI 1",
+    "show_imei2": "IMEI 2",
+    "hide_iphone_ram": "Hide iPhone RAM"
+  },
+  "template_saved": "Template saved.",
+  "reprint_reason": "Reprint reason is required:",
+  "preview_title": "Label preview",
+  "preview_hint": "Label size: {width}mm wide × {height}mm high.",
+  "label": {
+    "sale_price": "Sale Price",
+    "missing": "Barcode/SKU missing",
+    "document_title": "Barcode Labels"
+  },
+  "errors": {
+    "templates_load": "Barcode templates could not be loaded.",
+    "search": "Search failed.",
+    "save": "Save failed.",
+    "no_code": "This record has no Barcode or SKU.",
+    "select_one": "Select at least one product/device.",
+    "history": "Print history could not be saved.",
+    "popup": "Allow pop-ups to print labels."
+  }
+}

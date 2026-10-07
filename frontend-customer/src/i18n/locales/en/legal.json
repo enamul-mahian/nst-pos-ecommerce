@@ -1,0 +1,28 @@
+{
+  "terms": {
+    "general_heading": "1. General Terms",
+    "general_body": "Welcome to the New Singapur Telecom website. By using this website, you are deemed to accept our terms and conditions and privacy policy.",
+    "stock_heading": "2. Order Validation and Stock",
+    "stock_body": "Product stock shown on the website is synced with our live POS system. If a product goes out of stock for any reason, our support team will contact the buyer within 24 hours.",
+    "cod_heading": "3. Cash on Delivery (COD) Policy",
+    "cod_body": "For cash on delivery orders, our own delivery charge of ৳200 is added to the order automatically. The full amount must be paid to the courier agent when the product is received."
+  },
+  "privacy": {
+    "collection_heading": "1. Information Collection",
+    "collection_body": "We collect your name, phone number, email and delivery address to create your customer portal account and make checkout easier.",
+    "protection_heading": "2. Information Protection",
+    "protection_body": "Your personal information is stored encrypted and highly secured in our database. Your information is never sold or transferred to any third party or outside organization."
+  },
+  "refund": {
+    "replacement_heading": "1. 7-Day Replacement Guarantee",
+    "replacement_body": "All our original and used devices come with a 7-day replacement facility (in case of any manufacturing defect or hardware fault).",
+    "condition_heading": "2. Refund Conditions",
+    "condition_body": "To process a refund or return, the original cash memo, box and all included accessories must be returned to our showroom in intact condition."
+  },
+  "emi": {
+    "easy_heading": "1. 0% Easy Installment Facility",
+    "easy_body": "New Singapur Telecom offers 0% EMI installments through 24 leading banks in Bangladesh. Installments can be activated for 3, 6, 9 and 12 month terms.",
+    "fee_heading": "2. EMI Processing Fee",
+    "fee_body": "Depending on the bank's rules, a processing or conversion fee may apply based on the EMI term, which will be shown on the payment checkout page."
+  }
+}

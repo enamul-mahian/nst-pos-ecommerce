@@ -1,0 +1,14 @@
+{
+  "customer": {
+    "subtitle": "Customer due receive করলে open sales invoice-এর due amount কমবে এবং Accounts Cashbook-এ cash-in দেখাবে।",
+    "load_failed": "Customer due list load করা যায়নি। Backend route /api/accounts/due-center check করুন।",
+    "received": "{name} থেকে {amount} receive করা হয়েছে।",
+    "receive_failed": "Payment receive করা যায়নি। Amount/Customer due check করুন।"
+  },
+  "supplier": {
+    "subtitle": "Supplier due pay করলে purchase due কমবে, supplier balance update হবে এবং Accounts Cashbook-এ cash-out দেখাবে।",
+    "load_failed": "Supplier due list load করা যায়নি। Backend route /api/accounts/due-center check করুন।",
+    "paid": "{name} supplier-কে {amount} payment করা হয়েছে।",
+    "pay_failed": "Supplier payment save করা যায়নি। Role permission/amount check করুন।"
+  }
+}

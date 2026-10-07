@@ -1,0 +1,14 @@
+{
+  "subtitle": "Cashbook, customer due collection, supplier payment, expense and net profit in one place. If the monthly report date is empty, it starts from the 1st of the month.",
+  "load_failed": "Could not load the accounts report. Check the backend report API.",
+  "empty": {
+    "cashbook_transactions": "No cashbook transactions found.",
+    "accounts_users": "No accounts users found. Running the seeder creates the default accounts user.",
+    "payment_methods": "No payment method summary.",
+    "customer_due": "No customer due found.",
+    "supplier_due": "No supplier due found."
+  },
+  "cashbook_transactions_subtitle": "Actual cash movement list. Customer due is not double counted.",
+  "customer_due_subtitle": "Open the customer ledger to receive payment.",
+  "supplier_payment_subtitle": "Open the supplier ledger to make a payment."
+}

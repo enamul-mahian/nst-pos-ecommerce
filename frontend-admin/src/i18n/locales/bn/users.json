@@ -1,0 +1,39 @@
+{
+  "subtitle": "Super Admin এখান থেকে user-wise Dashboard, Sidebar, Column, Branch এবং Financial access control করতে পারবেন।",
+  "not_super_admin_notice": "আপনি Super Admin না হলে user-wise Access Control button কাজ করবে না। User create/edit করা role permission অনুযায়ী থাকবে।",
+  "dashboard_options": {
+    "show_financial_cards": "Financial cards দেখবে",
+    "show_stock_cards": "Stock cards দেখবে",
+    "show_sales_cards": "Sales cards দেখবে",
+    "show_branch_summary": "Branch summary দেখবে",
+    "show_dashboard_search": "Dashboard product search দেখবে"
+  },
+  "financial_options": {
+    "view_purchase_price": "Purchase Price দেখতে পারবে",
+    "view_used_purchase_buying_price": "Used Purchase Buying Price দেখতে পারবে",
+    "view_profit": "Profit দেখতে পারবে",
+    "view_supplier_due": "Supplier due দেখতে পারবে",
+    "update_supplier_due": "Supplier due/payment update করতে পারবে",
+    "view_customer_due": "Customer due দেখতে পারবে",
+    "accounting_global_scope": "All branch accounting scope পাবে"
+  },
+  "errors": {
+    "options_load_failed": "User options load করা যায়নি।",
+    "load_failed": "Users load করা যায়নি।",
+    "access_super_admin_only": "শুধু Super Admin user-wise sidebar/dashboard/column access control করতে পারবেন।",
+    "access_load_failed": "Access control load করা যায়নি।",
+    "access_save_failed": "Access control save করা যায়নি।",
+    "save_failed": "User save করা যায়নি।",
+    "password_reset_failed": "Password reset করা যায়নি।",
+    "delete_failed": "User delete করা যায়নি।"
+  },
+  "access_updated": "{name} এর access control updated হয়েছে। User-কে logout/login বা page refresh করতে বলুন।",
+  "confirm_delete": "{name} user delete করবেন?",
+  "access_panel_intro": "এখান থেকে নির্দিষ্ট user-এর Sidebar, Dashboard, Column, Branch এবং Financial permission নির্ধারণ করবেন। Danger Zone সবসময় Super Admin only থাকবে।",
+  "sidebar_access_help": "কোন menu/sidebar option user দেখবে তা select করুন।",
+  "dashboard_access_help": "Dashboard-এর কোন card/search/summary দেখা যাবে তা select করুন।",
+  "column_access_help": "Sensitive column যেমন Purchase Price, Buying Price, Profit ইত্যাদি control করুন।",
+  "financial_access_help": "Due/payment/accounting permission control করুন।",
+  "branch_access_help": "কোন branch data user দেখতে পারবে তা select করুন। Empty রাখলে role/default branch rule apply হবে।",
+  "new_password_label": "New Password (blank রাখলে auto generate হবে)"
+}

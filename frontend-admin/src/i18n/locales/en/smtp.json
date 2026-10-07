@@ -1,0 +1,18 @@
+{
+  "subtitle": "Configure the SMTP host, port, login and sender profile used to send invoice emails, manual emails and future customer notifications.",
+  "errors": {
+    "load_failed": "Could not load SMTP settings.",
+    "save_failed": "Could not save SMTP settings.",
+    "port_range": "SMTP Port must be between 1 and 65535.",
+    "from_email_invalid": "From Email must be a valid email address.",
+    "username_spaces": "SMTP Username cannot start or end with a space."
+  },
+  "preset_applied": "{name} preset applied. Enter the username, password and From Email, then Save.",
+  "saved": "SMTP settings saved successfully.",
+  "server_login_help": "Enter the SMTP details from your hosting/mail provider here. The password field stays masked.",
+  "sender_profile_help": "The sender name/email that customers or suppliers see when they receive an email.",
+  "invoice_template_help": "The subject and body template are used when sending an invoice PDF. Placeholders: {invoice_no}, {total}, {paid}, {due}, {invoice_link}.",
+  "presets_help": "Selecting a common SMTP provider fills in host/port/encryption automatically.",
+  "important_note": "For Gmail/Google Workspace, use an App Password, not your normal password. On the production server, confirm that SMTP permission is enabled by your mail provider.",
+  "used_by_system_note": "These settings are used by the invoice email and manual email flows, because the backend communication service reads the same SMTP keys."
+}

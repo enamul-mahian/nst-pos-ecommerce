@@ -1,0 +1,6 @@
+{
+  "errors": {
+    "no_delete_permission": "You do not have permission to delete products.",
+    "no_bulk_delete_permission": "You do not have bulk delete permission."
+  }
+}

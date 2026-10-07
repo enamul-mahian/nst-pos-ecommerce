@@ -1,0 +1,18 @@
+{
+  "subtitle": "Invoice email, manual email এবং future customer notification পাঠানোর জন্য SMTP host, port, login এবং sender profile configure করুন।",
+  "errors": {
+    "load_failed": "SMTP settings load করা যায়নি।",
+    "save_failed": "SMTP settings save করা যায়নি।",
+    "port_range": "SMTP Port 1 থেকে 65535 এর মধ্যে হতে হবে।",
+    "from_email_invalid": "From Email valid email address হতে হবে।",
+    "username_spaces": "SMTP Username এর শুরু/শেষে space রাখা যাবে না।"
+  },
+  "preset_applied": "{name} preset applied. Username, password and From Email বসিয়ে Save করুন।",
+  "saved": "SMTP সেটিংস সেভ হয়েছে।",
+  "server_login_help": "আপনার hosting/mail provider থেকে পাওয়া SMTP details এখানে বসান। Password field masked থাকবে।",
+  "sender_profile_help": "Customer বা supplier email পেলে যে sender name/email দেখাবে।",
+  "invoice_template_help": "Invoice PDF পাঠানোর সময় subject এবং body template ব্যবহার হবে। Placeholders: {invoice_no}, {total}, {paid}, {due}, {invoice_link}.",
+  "presets_help": "Common SMTP provider select করলে host/port/encryption auto fill হবে।",
+  "important_note": "Gmail/Google Workspace হলে normal password নয়, App Password ব্যবহার করবেন। Production server-এ mail provider থেকে SMTP permission enabled কিনা confirm করবেন।",
+  "used_by_system_note": "এই settings invoice email/manual email flow-এ ব্যবহার হবে, কারণ backend communication service একই SMTP keys read করে।"
+}

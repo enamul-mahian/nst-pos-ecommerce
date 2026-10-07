@@ -1,0 +1,11 @@
+{
+  "recalc_confirm": "Supplier due recalculation করলে purchase invoice থেকে due আবার calculate হবে। Continue?",
+  "ledger_title": "Supplier Ledger",
+  "ledger_subtitle": "Supplier purchase history, due payment, advance payment, pay slip এবং ledger summary.",
+  "payment_help_due": "Supplier-কে due payment করলে এখানে amount, method এবং pay slip upload করুন।",
+  "payment_help_advance": "এই supplier-এর due নেই। এখন payment করলে সেটা Advance Payment হিসেবে save হবে।",
+  "no_due_notice": "এই supplier-এর কোনো due নেই। এখন payment করলে সেটা Advance Payment হিসেবে count হবে।",
+  "list_title": "Suppliers",
+  "list_subtitle": "Supplier create, edit, delete এবং ledger manage করুন।",
+  "form_help": "Supplier information fill করুন।"
+}

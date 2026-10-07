@@ -1,0 +1,13 @@
+{
+  "title": "Warranty Check",
+  "subtitle": "Enter IMEI / Barcode / Invoice No to check warranty status.",
+  "placeholder": "IMEI / Barcode / Invoice",
+  "check": "Check",
+  "not_found": "Not found",
+  "imei": "IMEI",
+  "warranty": "Warranty",
+  "start": "Start",
+  "end": "End",
+  "status": "Status",
+  "days_remaining": "({days} days remaining)"
+}

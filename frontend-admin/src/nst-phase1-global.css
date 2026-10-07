@@ -1,0 +1,216 @@
+/* =====================================================================
+   GLOBAL DESIGN FOUNDATION
+   Scope: authenticated Admin/POS shell only.
+   Goals: one palette contract, compact premium spacing, remove decorative
+   module dots, preserve semantic statuses and the approved expand button.
+   ===================================================================== */
+
+/* Theme aliases must follow the selected runtime palette. */
+:root {
+  --nst-brand-green: var(--dashboard-primary, var(--nst-dashboard-primary, #047857));
+  --nst-brand-green-strong: color-mix(in srgb, var(--dashboard-primary, var(--nst-dashboard-primary, #047857)) 84%, #000 16%);
+  --nst-brand-green-soft: color-mix(in srgb, var(--dashboard-primary, var(--nst-dashboard-primary, #047857)) 10%, var(--nst-dashboard-surface, #fff));
+
+  --nst-ui-success: var(--nst-dashboard-success, #16a34a);
+  --nst-ui-warning: var(--nst-dashboard-warning, #d97706);
+  --nst-ui-danger: var(--nst-dashboard-danger, #e11d48);
+  --nst-ui-info: var(--nst-dashboard-info, #0284c7);
+
+  --nst-ui-space-1: 4px;
+  --nst-ui-space-2: 8px;
+  --nst-ui-space-3: 12px;
+  --nst-ui-space-4: 16px;
+  --nst-ui-space-5: 20px;
+  --nst-ui-space-6: 24px;
+  --nst-ui-control-height: 42px;
+  --nst-ui-card-pad: clamp(14px, 1.2vw, 20px);
+}
+
+/* 1) Remove decorative sidebar readiness dots requested by the user. */
+.nst-business-shell .nst-module-status-dot {
+  display: none !important;
+}
+
+/* 2) Shell navigation must use the currently selected palette, not a
+      hard-coded green/purple page-specific color. */
+.nst-business-shell .nst-nav-link.is-active,
+.nst-business-shell .nst-quick-command,
+.nst-business-shell .nst-brand-mark {
+  background: var(--nst-dashboard-active, linear-gradient(135deg, var(--nst-dashboard-primary), var(--nst-dashboard-accent))) !important;
+  color: var(--nst-dashboard-on-primary, #fff) !important;
+  border-color: transparent !important;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--nst-dashboard-primary) 18%, transparent) !important;
+}
+
+.nst-business-shell .nst-nav-link:hover,
+.nst-business-shell .nst-nav-link:focus-visible {
+  background: var(--nst-dashboard-hover) !important;
+  border-color: var(--nst-dashboard-selected-border) !important;
+  color: var(--nst-dashboard-text) !important;
+}
+
+.nst-business-shell .nst-global-search:focus-within {
+  border-color: var(--nst-dashboard-selected-border) !important;
+  box-shadow: 0 0 0 4px var(--nst-dashboard-focus-ring) !important;
+}
+
+/* 3) Remove page-local forced-green palette islands. These legacy modules
+      now inherit the global theme via the concrete legacy aliases that the
+      runtime theme engine already writes on :root. */
+.nst-business-shell :where(.nst-file-center,.nst-experience-center,.nst-hrm-center) {
+  --nst-dashboard-primary: var(--dashboard-primary);
+  --nst-dashboard-accent: var(--dashboard-accent);
+  --nst-dashboard-bg: var(--dashboard-bg);
+  --nst-dashboard-surface: var(--dashboard-card);
+  --nst-dashboard-text: var(--dashboard-text);
+  --nst-dashboard-primary-soft: color-mix(in srgb, var(--dashboard-primary) 12%, var(--dashboard-card));
+  --nst-dashboard-hover: color-mix(in srgb, var(--dashboard-primary) 10%, var(--dashboard-card));
+  --nst-dashboard-selected: color-mix(in srgb, var(--dashboard-primary) 20%, var(--dashboard-card));
+  --nst-dashboard-selected-border: color-mix(in srgb, var(--dashboard-primary) 62%, var(--nst-dashboard-border));
+  color: var(--dashboard-text) !important;
+}
+
+/* 4) Premium but compact card rhythm. Dashboard cards no longer keep a
+      forced minimum height that creates dead areas. */
+.nst-business-dashboard article,
+.nst-business-dashboard .nst-dashboard-surface {
+  min-height: 0 !important;
+}
+
+.nst-business-dashboard .nst-dashboard-surface {
+  padding: var(--nst-ui-card-pad);
+}
+
+.nst-business-shell .nst-shell-main :where(article,section)[class*="rounded"][class*="border"] {
+  border-color: var(--nst-dashboard-border) !important;
+  box-shadow: 0 8px 28px color-mix(in srgb, var(--nst-dashboard-text) 7%, transparent);
+}
+
+/* Preserve deliberately large editors/canvases. Only ordinary cards receive
+   tighter visual rhythm through child spacing. */
+.nst-business-shell .nst-shell-main :where(article,section)[class*="rounded"][class*="border"] > :where(h1,h2,h3,h4,p):first-child {
+  margin-top: 0;
+}
+
+/* 5) Consistent form controls. */
+.nst-business-shell .nst-shell-main :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+  select,textarea
+) {
+  min-height: var(--nst-ui-control-height);
+  border-radius: 12px;
+  transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
+}
+
+.nst-business-shell .nst-shell-main textarea {
+  min-height: 96px;
+}
+
+/* 6) Tables: clearer hierarchy without adding height. */
+.nst-business-shell .nst-shell-main table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.nst-business-shell .nst-shell-main :where(th) {
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .035em;
+  text-transform: uppercase;
+  color: var(--nst-dashboard-muted) !important;
+}
+
+.nst-business-shell .nst-shell-main :where(th,td) {
+  vertical-align: middle;
+}
+
+/* 7) Generic button polish. The user's approved .nst-expand-action effect is
+      intentionally NOT replaced. */
+.nst-business-shell .nst-shell-main :where(button,a,[role="button"]):not(.nst-expand-action) {
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease,
+              background-color .16s ease, color .16s ease, opacity .16s ease;
+}
+
+@media (hover:hover) and (pointer:fine) {
+  .nst-business-shell .nst-shell-main :where(button,a,[role="button"]):not(.nst-expand-action):not(:disabled):active {
+    transform: translateY(1px);
+  }
+}
+
+/* 8) Standard operation progress contract for Save/Update/Publish/Upload.
+      Components can bind real API state to data-state and --nst-progress. */
+.nst-operation-progress {
+  --nst-progress: 0%;
+  position: relative;
+  width: 100%;
+  height: 5px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--nst-dashboard-muted) 16%, transparent);
+}
+
+.nst-operation-progress::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--nst-progress);
+  border-radius: inherit;
+  background: var(--nst-ui-warning);
+  transition: width .24s ease, background-color .2s ease;
+}
+
+.nst-operation-progress[data-state="processing"]::after,
+.nst-operation-progress[data-state="partial"]::after {
+  background: var(--nst-ui-warning);
+}
+
+.nst-operation-progress[data-state="success"] {
+  --nst-progress: 100%;
+}
+.nst-operation-progress[data-state="success"]::after {
+  background: var(--nst-ui-success);
+}
+
+.nst-operation-progress[data-state="error"]::after {
+  background: var(--nst-ui-danger);
+}
+
+.nst-operation-feedback {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  color: var(--nst-dashboard-muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+.nst-operation-feedback[data-state="success"] { color: var(--nst-ui-success); }
+.nst-operation-feedback[data-state="partial"],
+.nst-operation-feedback[data-state="processing"] { color: var(--nst-ui-warning); }
+.nst-operation-feedback[data-state="error"] { color: var(--nst-ui-danger); }
+
+/* 9) Keep content responsive and remove avoidable horizontal page overflow. */
+.nst-business-shell .nst-shell-main {
+  min-width: 0;
+}
+.nst-business-shell .nst-shell-main :where(.overflow-x-auto,[class*="overflow-x-auto"]) {
+  max-width: 100%;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --nst-ui-card-pad: 14px;
+    --nst-ui-control-height: 44px;
+  }
+  .nst-business-shell .nst-shell-main :where(th,td) {
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nst-operation-progress::after,
+  .nst-business-shell .nst-shell-main :where(button,a,[role="button"],input,select,textarea) {
+    transition: none !important;
+  }
+}

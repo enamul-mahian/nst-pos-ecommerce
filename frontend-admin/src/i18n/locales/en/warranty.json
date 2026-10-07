@@ -1,0 +1,10 @@
+{
+  "errors": {
+    "load_failed": "Could not load warranty/service jobs.",
+    "save_failed": "Could not save the service job.",
+    "status_update_failed": "Could not update the status.",
+    "payment_failed": "Could not receive the payment."
+  },
+  "title": "Warranty & Service Center",
+  "subtitle": "Sold IMEI warranty claims, paid repairs, technician notes, delivery status and payment tracking."
+}

@@ -1,0 +1,53 @@
+{
+  "loading": "Settings loading...",
+  "load_failed": "Settings could not load.",
+  "saved": "Settings saved. Changes are applied now.",
+  "save_failed": "Settings could not save.",
+  "saving": "Saving...",
+  "save": "Save Settings",
+  "tabs": {
+    "general": "General",
+    "design": "Design Defaults"
+  },
+  "general": {
+    "title": "General Settings",
+    "subtitle": "Company information, invoice & print settings and inventory defaults.",
+    "company": "Company Information",
+    "company_name": "Company Name",
+    "legal_name": "Legal Name",
+    "phone": "Phone",
+    "email": "Email",
+    "website": "Website",
+    "logo_url": "Logo URL",
+    "address": "Address",
+    "invoice": "Invoice & Print Settings",
+    "invoice_prefix": "Invoice Prefix",
+    "currency_code": "Currency Code",
+    "currency_symbol": "Currency Symbol",
+    "vat": "VAT %",
+    "invoice_terms": "Invoice Terms",
+    "print_footer": "Print Footer",
+    "auto_print": "Auto print prompt after Save & Print",
+    "inventory": "Inventory & System",
+    "default_branch": "Default Branch ID",
+    "low_stock": "Low Stock Alert Qty",
+    "timezone": "Timezone",
+    "timezone_active": "Server time now uses {zone} ({offset}). Save to change it for dates, reports and \"today\" totals."
+  },
+  "design": {
+    "title": "Design Defaults",
+    "subtitle": "Card radius, padding, gaps and border for every admin page and the dashboard.",
+    "card_title": "Cards & spacing",
+    "card_help": "These values apply to all admin cards and sections as soon as you save.",
+    "radius": "Card radius",
+    "gap": "Card gap",
+    "padding": "Card padding",
+    "section_gap": "Section gap",
+    "border_width": "Border width"
+  },
+  "scanner": {
+    "title": "Central Search Scanner",
+    "enabled": "Show the camera scan button in Central Search",
+    "auto_search": "Search immediately after a scan (off: the code is filled in and Enter searches)"
+  }
+}

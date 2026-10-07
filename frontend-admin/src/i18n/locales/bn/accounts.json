@@ -1,0 +1,14 @@
+{
+  "subtitle": "Cashbook, customer due collection, supplier payment, expense এবং net profit এক জায়গায়। Monthly report date empty হলে মাসের ১ তারিখ থেকে শুরু হবে।",
+  "load_failed": "Accounts report load failed. Backend report API check করুন।",
+  "empty": {
+    "cashbook_transactions": "Cashbook transaction পাওয়া যায়নি।",
+    "accounts_users": "Accounts user পাওয়া যায়নি। Seeder run করলে default accounts user তৈরি হবে।",
+    "payment_methods": "Payment method summary নেই।",
+    "customer_due": "Customer due পাওয়া যায়নি।",
+    "supplier_due": "Supplier due পাওয়া যায়নি।"
+  },
+  "cashbook_transactions_subtitle": "Actual cash movement list. Customer due double count হয় না।",
+  "customer_due_subtitle": "Receive করতে customer ledger open করুন।",
+  "supplier_payment_subtitle": "Pay করতে supplier ledger open করুন।"
+}

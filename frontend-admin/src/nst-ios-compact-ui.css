@@ -1,0 +1,200 @@
+/* Compact iPhone-style adaptive UI
+   Scope: Admin/POS shell only. No business/accounting logic changes. */
+
+.nst-ios-compact-ui {
+  --nst-ui-page-pad: clamp(12px, 1.3vw, 20px);
+  --nst-ui-gap: clamp(10px, 1vw, 14px);
+  --nst-ui-card-pad: clamp(14px, 1.2vw, 18px);
+  --nst-ui-radius: 14px;
+  --nst-ui-radius-sm: 10px;
+  --nst-ui-control-h: 40px;
+  --nst-ui-surface: var(--nst-dashboard-surface, #0d192a);
+  --nst-ui-bg: var(--nst-dashboard-bg, #07111f);
+  --nst-ui-text: var(--nst-dashboard-text, #f8fafc);
+  --nst-ui-muted: var(--nst-dashboard-muted, #94a3b8);
+  --nst-ui-border: var(--nst-dashboard-border, rgba(148,163,184,.16));
+  --nst-ui-primary: var(--nst-dashboard-primary, #7c3aed);
+  --nst-ui-accent: var(--nst-dashboard-accent, #a855f7);
+  min-height: calc(100dvh - var(--nst-header-height));
+  background: var(--nst-ui-bg);
+  color: var(--nst-ui-text);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", Inter, system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  text-rendering: optimizeLegibility;
+}
+
+/* Remove fake full-screen/dead-space page heights inside the app shell. */
+.nst-ios-compact-ui .min-h-screen { min-height: auto !important; }
+.nst-ios-compact-ui article:not(.nst-dashboard-widget),
+.nst-ios-compact-ui section:not(.nst-dashboard-widget) { min-height: 0 !important; }
+
+/* Global page rhythm. */
+.nst-ios-compact-ui > :first-child {
+  width: 100%;
+  max-width: none;
+}
+.nst-ios-compact-ui > :first-child[class*="p-4"],
+.nst-ios-compact-ui > :first-child[class*="p-5"],
+.nst-ios-compact-ui > :first-child[class*="p-6"] {
+  padding: var(--nst-ui-page-pad) !important;
+}
+.nst-ios-compact-ui [class*="mb-6"] { margin-bottom: 16px !important; }
+.nst-ios-compact-ui [class*="mb-5"] { margin-bottom: 14px !important; }
+.nst-ios-compact-ui [class*="gap-6"] { gap: 16px !important; }
+.nst-ios-compact-ui [class*="gap-5"] { gap: 14px !important; }
+
+/* Unify light hard-coded page surfaces into active dark theme tokens. */
+.nst-ios-compact-ui :is(.bg-white,[class*="bg-[#f7f7fb]"],[class*="bg-[#f8f9fc]"],.bg-gray-50,.bg-slate-50,.bg-slate-100) {
+  background-color: var(--nst-ui-surface) !important;
+  color: var(--nst-ui-text) !important;
+}
+.nst-ios-compact-ui :is(.border-gray-100,.border-gray-200,.border-slate-100,.border-slate-200,.border-white\/80) {
+  border-color: var(--nst-ui-border) !important;
+}
+.nst-ios-compact-ui :is(.text-slate-950,.text-slate-900,.text-slate-800,.text-gray-900,.text-gray-800,.text-gray-700) {
+  color: var(--nst-ui-text) !important;
+}
+.nst-ios-compact-ui :is(.text-slate-600,.text-slate-500,.text-slate-400,.text-gray-600,.text-gray-500,.text-gray-400) {
+  color: var(--nst-ui-muted) !important;
+}
+
+/* One readable heading hierarchy. */
+.nst-ios-compact-ui h1 {
+  color: var(--nst-ui-text) !important;
+  font-size: clamp(22px, 2vw, 30px) !important;
+  line-height: 1.12 !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.025em;
+}
+.nst-ios-compact-ui h2 { color: var(--nst-ui-text) !important; font-size: clamp(17px, 1.4vw, 20px) !important; line-height: 1.2; font-weight: 760 !important; letter-spacing: -0.015em; }
+.nst-ios-compact-ui h3 { color: var(--nst-ui-text) !important; font-size: 16px !important; line-height: 1.25; font-weight: 740 !important; }
+.nst-ios-compact-ui p { line-height: 1.48; }
+
+/* Convert oversized/random hero headers to the same compact premium header surface. */
+.nst-ios-compact-ui :is(div,section,header)[class*="bg-gradient-to-r"]:has(h1),
+.nst-ios-compact-ui :is(div,section,header)[class*="bg-gradient-to-br"]:has(h1),
+.nst-ios-compact-ui div[class*="mb-6"][class*="flex"]:has(h1) {
+  background: color-mix(in srgb, var(--nst-ui-surface) 94%, var(--nst-ui-primary) 6%) !important;
+  border: 1px solid var(--nst-ui-border) !important;
+  border-radius: var(--nst-ui-radius) !important;
+  box-shadow: 0 8px 28px rgba(0,0,0,.14) !important;
+  padding: 15px 17px !important;
+  margin-bottom: 14px !important;
+}
+.nst-ios-compact-ui :is(div,section)[class*="rounded-[2rem]"]:has(h1) {
+  border-radius: var(--nst-ui-radius) !important;
+  border-color: var(--nst-ui-border) !important;
+  box-shadow: none !important;
+  background: var(--nst-ui-surface) !important;
+}
+.nst-ios-compact-ui :is(div,span)[class*="h-14"][class*="w-14"] { width: 42px !important; height: 42px !important; border-radius: 12px !important; }
+
+/* Premium compact cards, no dead pixels. */
+.nst-ios-compact-ui :is(div,section,article,aside)[class*="rounded-2xl"][class*="border"],
+.nst-ios-compact-ui :is(div,section,article,aside)[class*="rounded-3xl"][class*="border"] {
+  border-color: var(--nst-ui-border) !important;
+  border-radius: var(--nst-ui-radius) !important;
+  background-color: var(--nst-ui-surface) !important;
+  box-shadow: 0 6px 22px rgba(0,0,0,.10) !important;
+}
+.nst-ios-compact-ui :is(div,section,article,aside)[class*="rounded-2xl"][class*="p-6"],
+.nst-ios-compact-ui :is(div,section,article,aside)[class*="rounded-3xl"][class*="p-6"] { padding: var(--nst-ui-card-pad) !important; }
+.nst-ios-compact-ui :is(div,section,article,aside)[class*="rounded-2xl"][class*="p-8"],
+.nst-ios-compact-ui :is(div,section,article,aside)[class*="rounded-3xl"][class*="p-8"] { padding: 18px !important; }
+.nst-ios-compact-ui :is(div,section,article,aside)[class*="p-10"] { padding: 24px !important; }
+
+/* Forms: consistent height, contrast and touch targets. */
+.nst-ios-compact-ui :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea) {
+  border-color: var(--nst-ui-border) !important;
+  background: color-mix(in srgb, var(--nst-ui-surface) 88%, black 12%) !important;
+  color: var(--nst-ui-text) !important;
+  border-radius: var(--nst-ui-radius-sm) !important;
+  outline: none;
+  box-shadow: none;
+}
+.nst-ios-compact-ui :is(input:not([type="checkbox"]):not([type="radio"]),select) { min-height: var(--nst-ui-control-h); }
+.nst-ios-compact-ui textarea { min-height: 88px; }
+.nst-ios-compact-ui :is(input,select,textarea):focus {
+  border-color: color-mix(in srgb, var(--nst-ui-primary) 72%, white 8%) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--nst-ui-primary) 16%, transparent) !important;
+}
+.nst-ios-compact-ui ::placeholder { color: color-mix(in srgb, var(--nst-ui-muted) 82%, transparent) !important; opacity: 1; }
+
+/* Buttons: keep approved effect available; normalize shape/readability. */
+.nst-ios-compact-ui button,
+.nst-ios-compact-ui a[class*="rounded"] {
+  border-radius: 11px !important;
+}
+.nst-ios-compact-ui button:not(.nst-nav-group-button):not(.nst-mobile-close):not(.nst-icon-action):not(.nst-desktop-sidebar-action):not(.nst-mobile-menu) {
+  min-height: 36px;
+  font-weight: 720;
+}
+.nst-ios-compact-ui button[class*="bg-[var(--nst-dashboard-primary)]"],
+.nst-ios-compact-ui a[class*="bg-[var(--nst-dashboard-primary)]"] {
+  background: var(--nst-ui-primary) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+}
+
+/* Tables: compact/readable and adaptive; keep horizontal scroll only when genuinely needed. */
+.nst-ios-compact-ui div[class*="overflow-x-auto"] {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb,var(--nst-ui-primary) 45%,transparent) transparent;
+}
+.nst-ios-compact-ui table {
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--nst-ui-text);
+}
+.nst-ios-compact-ui thead { background: color-mix(in srgb,var(--nst-ui-surface) 84%,white 4%) !important; color: var(--nst-ui-muted) !important; }
+.nst-ios-compact-ui th { padding-top: 10px !important; padding-bottom: 10px !important; font-size: 11px !important; letter-spacing: .035em; }
+.nst-ios-compact-ui td { padding-top: 10px !important; padding-bottom: 10px !important; vertical-align: middle; }
+.nst-ios-compact-ui tbody tr { border-color: var(--nst-ui-border) !important; }
+.nst-ios-compact-ui tbody tr:hover { background: color-mix(in srgb,var(--nst-ui-primary) 5%,transparent) !important; }
+.nst-ios-compact-ui table[class*="min-w-[1700px]"] { min-width: 1240px !important; }
+.nst-ios-compact-ui table[class*="min-w-[1280px]"] { min-width: 1120px !important; }
+
+/* Sidebar decorative status dots requested for removal. */
+.nst-business-sidebar .nst-module-status-dot { display: none !important; }
+
+/* Business health is a real feature, but avoid decorative glowing dot. */
+.nst-business-sidebar .nst-health-dot { box-shadow: none !important; width: 7px !important; height: 7px !important; }
+
+/* QA tracker should not cover production content. Keep functionality accessible only when explicitly opened via class override. */
+body:not(.nst-qa-visible) .nst-qa-root { display: none !important; }
+
+/* Real operation feedback contract. */
+.nst-operation-progress {
+  position: relative;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb,var(--nst-ui-border) 72%,transparent);
+}
+.nst-operation-progress > span { display:block;height:100%;width:var(--nst-progress,0%);border-radius:inherit;transition:width .24s ease,background-color .2s ease; }
+.nst-operation-progress.is-processing > span { background:#f59e0b; }
+.nst-operation-progress.is-success > span { width:100%;background:#22c55e; }
+.nst-operation-progress.is-error > span { background:#ef4444; }
+
+/* Tablet */
+@media (max-width: 1180px) {
+  .nst-ios-compact-ui { --nst-ui-page-pad: 14px; --nst-ui-card-pad: 14px; }
+  .nst-ios-compact-ui h1 { font-size: 24px !important; }
+  .nst-ios-compact-ui table[class*="min-w-[1700px]"],
+  .nst-ios-compact-ui table[class*="min-w-[1280px]"] { min-width: 1060px !important; }
+}
+
+/* Mobile: readable, touch-friendly, no pointless desktop spacing. */
+@media (max-width: 767px) {
+  .nst-ios-compact-ui { --nst-ui-page-pad: 10px; --nst-ui-gap: 10px; --nst-ui-card-pad: 12px; --nst-ui-control-h: 42px; font-size: 14px; }
+  .nst-ios-compact-ui h1 { font-size: 21px !important; }
+  .nst-ios-compact-ui h2 { font-size: 17px !important; }
+  .nst-ios-compact-ui :is(div,section,header)[class*="bg-gradient-to-r"]:has(h1),
+  .nst-ios-compact-ui :is(div,section,header)[class*="bg-gradient-to-br"]:has(h1),
+  .nst-ios-compact-ui div[class*="mb-6"][class*="flex"]:has(h1) { padding: 12px !important; border-radius: 13px !important; }
+  .nst-ios-compact-ui :is(button,a)[class*="px-5"], .nst-ios-compact-ui :is(button,a)[class*="px-6"] { padding-left: 14px !important; padding-right: 14px !important; }
+  .nst-ios-compact-ui th,.nst-ios-compact-ui td { padding-left: 10px !important; padding-right: 10px !important; }
+  .nst-ios-compact-ui table[class*="min-w-[1700px]"],
+  .nst-ios-compact-ui table[class*="min-w-[1280px]"] { min-width: 980px !important; }
+}

@@ -1,0 +1,39 @@
+{
+  "subtitle": "Super Admin can control user-wise Dashboard, Sidebar, Column, Branch and Financial access from here.",
+  "not_super_admin_notice": "The user-wise Access Control button only works for Super Admin. Creating and editing users follows role permissions.",
+  "dashboard_options": {
+    "show_financial_cards": "Can see financial cards",
+    "show_stock_cards": "Can see stock cards",
+    "show_sales_cards": "Can see sales cards",
+    "show_branch_summary": "Can see branch summary",
+    "show_dashboard_search": "Can see dashboard product search"
+  },
+  "financial_options": {
+    "view_purchase_price": "Can view purchase price",
+    "view_used_purchase_buying_price": "Can view used purchase buying price",
+    "view_profit": "Can view profit",
+    "view_supplier_due": "Can view supplier due",
+    "update_supplier_due": "Can update supplier due/payment",
+    "view_customer_due": "Can view customer due",
+    "accounting_global_scope": "Gets all-branch accounting scope"
+  },
+  "errors": {
+    "options_load_failed": "Could not load user options.",
+    "load_failed": "Could not load users.",
+    "access_super_admin_only": "Only Super Admin can control user-wise sidebar/dashboard/column access.",
+    "access_load_failed": "Could not load access control.",
+    "access_save_failed": "Could not save access control.",
+    "save_failed": "Could not save user.",
+    "password_reset_failed": "Could not reset password.",
+    "delete_failed": "Could not delete user."
+  },
+  "access_updated": "{name}'s access control has been updated. Ask the user to log out and back in, or refresh the page.",
+  "confirm_delete": "Delete user {name}?",
+  "access_panel_intro": "Set a specific user's Sidebar, Dashboard, Column, Branch and Financial permissions here. The Danger Zone always stays Super Admin only.",
+  "sidebar_access_help": "Select which menu/sidebar options the user can see.",
+  "dashboard_access_help": "Select which dashboard cards/search/summary are visible.",
+  "column_access_help": "Control sensitive columns such as Purchase Price, Buying Price, Profit, etc.",
+  "financial_access_help": "Control due/payment/accounting permissions.",
+  "branch_access_help": "Select which branch data the user can see. If left empty, the role/default branch rule applies.",
+  "new_password_label": "New Password (leave blank to generate automatically)"
+}

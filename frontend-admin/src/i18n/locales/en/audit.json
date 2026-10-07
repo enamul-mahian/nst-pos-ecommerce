@@ -1,0 +1,7 @@
+{
+  "subtitle": "Write actions related to Purchase, Sale, Payment, Expense, Return, Cancel, Stock and Settings are shown here.",
+  "stats": {
+    "filtered_subtitle": "Based on the selected filter",
+    "today_subtitle": "Today's total activity"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "customer": {
+    "subtitle": "Receiving a customer due reduces the due amount on open sales invoices and shows as cash-in in the Accounts Cashbook.",
+    "load_failed": "Could not load the customer due list. Check the backend route /api/accounts/due-center.",
+    "received": "Received {amount} from {name}.",
+    "receive_failed": "Could not receive payment. Check the amount/customer due."
+  },
+  "supplier": {
+    "subtitle": "Paying a supplier due reduces the purchase due, updates the supplier balance and shows as cash-out in the Accounts Cashbook.",
+    "load_failed": "Could not load the supplier due list. Check the backend route /api/accounts/due-center.",
+    "paid": "Paid {amount} to supplier {name}.",
+    "pay_failed": "Could not save the supplier payment. Check the role permission/amount."
+  }
+}
