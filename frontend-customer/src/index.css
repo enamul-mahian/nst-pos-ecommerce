@@ -1,4 +1,4 @@
-﻿/* ==========================================
+/* ==========================================
    1. Tailwind CSS v4 Core Directive
    ========================================== */
 @import "tailwindcss";
@@ -255,7 +255,7 @@ body {
 
 .nst-floating-compare {
   right: var(--nst-floating-control-right, 18px);
-  bottom: calc(var(--nst-floating-base-bottom, 22px) + 74px);
+  bottom: calc(var(--nst-floating-base-bottom, 22px) + var(--nst-chat-stack-h, 56px) + 14px);
   z-index: 90;
   max-width: calc(100vw - 32px);
 }
@@ -263,7 +263,7 @@ body {
 .nst-footer-back-to-top {
   position: fixed;
   right: var(--nst-floating-control-right, 18px);
-  bottom: calc(var(--nst-floating-base-bottom, 22px) + 136px);
+  bottom: calc(var(--nst-floating-base-bottom, 22px) + var(--nst-chat-stack-h, 56px) + 74px);
   z-index: 85;
   border: 0;
   cursor: pointer;
@@ -288,13 +288,13 @@ body {
 
   .nst-floating-compare {
     right: var(--nst-floating-control-right);
-    bottom: calc(var(--nst-floating-base-bottom) + 74px);
+    bottom: calc(var(--nst-floating-base-bottom) + var(--nst-chat-stack-h, 56px) + 14px);
     padding: 10px 12px;
   }
 
   .nst-footer-back-to-top {
     right: var(--nst-floating-control-right);
-    bottom: calc(var(--nst-floating-base-bottom) + 136px);
+    bottom: calc(var(--nst-floating-base-bottom) + var(--nst-chat-stack-h, 56px) + 74px);
   }
 }
 
