@@ -6,7 +6,7 @@ import { useWebsiteStore } from '../../store/cms/useWebsiteStore';
 import { useAuthStore } from '../../store/auth/useAuthStore';
 import { useCartStore } from '../../store/cart/useCartStore';
 import { useCompareStore } from '../../store/compare/useCompareStore';
-import { useWishlistStore } from '../../pages/wishlist/WishlistPage';
+import { useWishlistStore } from '../../store/wishlist/useWishlistStore';
 import { apiClient } from '../../api/client';
 import { useI18n } from '../../i18n';
 import { inEditorPreview, selectInEditor, usePageText } from '../../cms/pageTexts';

@@ -1,68 +1,23 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { 
-  ChevronRight, 
-  Heart, 
-  Trash2, 
-  ShoppingCart, 
-  ShieldCheck, 
-  ArrowRight, 
-  Sparkles, 
-  X, 
-  ShieldAlert 
+import {
+  ChevronRight,
+  Heart,
+  Trash2,
+  ShoppingCart,
+  ShieldCheck,
+  ArrowRight,
+  Sparkles,
+  X,
+  ShieldAlert
 } from 'lucide-react';
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import toast from 'react-hot-toast';
 
 import { Product } from '../../types';
 import { useCartStore } from '../../store/cart/useCartStore';
+import { useWishlistStore } from '../../store/wishlist/useWishlistStore';
 
-// ==========================================
-// 1. Persisted Global Wishlist Store
-// ==========================================
-interface WishlistStore {
-  items: Product[];
-  addItem: (product: Product) => void;
-  removeItem: (productId: number) => void;
-  clear: () => void;
-}
-
-export const useWishlistStore = create<WishlistStore>()(
-  persist(
-    (set, get) => ({
-      items: [],
-
-      addItem: (product) => {
-        const currentItems = [...get().items];
-        if (currentItems.some((item) => item.id === product.id)) {
-          toast.error(`"${product.name}" is already in your wishlist.`);
-          return;
-        }
-        set({ items: [...currentItems, product] });
-        toast.success(`"${product.name}" added to wishlist.`);
-      },
-
-      removeItem: (productId) => {
-        const updated = get().items.filter((item) => item.id !== productId);
-        set({ items: updated });
-        toast.success('Product removed from wishlist.');
-      },
-
-      clear: () => {
-        set({ items: [] });
-      },
-    }),
-    {
-      name: 'nst_customer_wishlist', // LocalStorage cache key
-    }
-  )
-);
-
-// ==========================================
-// 2. Main Wishlist Page Component
-// ==========================================
 export const WishlistPage: React.FC = () => {
   const { items, removeItem, clear } = useWishlistStore();
   const addItemToCart = useCartStore((state) => state.addItem);
@@ -85,7 +40,7 @@ export const WishlistPage: React.FC = () => {
 
   return (
     <div className="w-full bg-[#f8fafc] min-h-screen pb-16 text-left select-none">
-      
+
       {/* Dynamic SEO metadata */}
       <Helmet>
         <title>My Wishlist | New Singapur Telecom</title>
@@ -103,7 +58,7 @@ export const WishlistPage: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 mt-8 flex flex-col gap-8">
-        
+
         {/* Header Title with Clear List trigger */}
         <div className="flex items-center justify-between border-b border-gray-150 pb-3">
           <div className="flex items-center gap-2 font-black text-slate-800 text-lg sm:text-2xl tracking-tight">
@@ -147,7 +102,7 @@ export const WishlistPage: React.FC = () => {
                   </button>
 
                   <Link to={`/product/${prod.slug}`} className="flex flex-col cursor-pointer">
-                    
+
                     {/* Visual Card Top Header Badge */}
                     <div className="flex items-start mb-3.5">
                       {prod.condition && (

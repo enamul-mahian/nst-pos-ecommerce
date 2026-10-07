@@ -7,7 +7,7 @@ import {
 
 import { apiClient } from '../../api/client';
 import { useWebsiteStore } from '../../store/cms/useWebsiteStore';
-import { useWishlistStore } from '../../pages/wishlist/WishlistPage';
+import { useWishlistStore } from '../../store/wishlist/useWishlistStore';
 import type { Product } from '../../types';
 import { BRAND_STYLES, CATEGORY_PRESETS, categoryIcon } from './catalogPresets';
 import { PromoTicker, TICKER_ICONS } from './PromoTicker';

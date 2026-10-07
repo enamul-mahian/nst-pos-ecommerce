@@ -11,7 +11,7 @@ import { apiClient, handleApiError } from '../../api/client';
 import { useCartStore } from '../../store/cart/useCartStore';
 import { useCompareStore } from '../../store/compare/useCompareStore';
 import { useWebsiteStore } from '../../store/cms/useWebsiteStore';
-import { useWishlistStore } from '../wishlist/WishlistPage';
+import { useWishlistStore } from '../../store/wishlist/useWishlistStore';
 import { Product, ProductVariant } from '../../types';
 import SocialShareBar from '../../components/common/SocialShareBar';
 import { inEditorPreview, usePageText } from '../../cms/pageTexts';
