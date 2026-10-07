@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Setting;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -200,30 +201,114 @@ class ProductMediaService
             return;
         }
 
-        $fontSize = 5;
-        $padding = 14;
+        $logo = $this->loadCentralBrandLogo();
 
-        $textWidth = imagefontwidth($fontSize) * strlen($this->watermarkText);
-        $textHeight = imagefontheight($fontSize);
+        if (!$logo) {
+            return;
+        }
 
-        $x = max($padding, $width - $textWidth - $padding);
-        $y = max($padding, $height - $textHeight - $padding);
+        $logoWidth = imagesx($logo);
+        $logoHeight = imagesy($logo);
 
-        $bgColor = imagecolorallocatealpha($image, 0, 0, 0, 70);
-        $textColor = imagecolorallocatealpha($image, 255, 255, 255, 10);
+        if ($logoWidth <= 0 || $logoHeight <= 0) {
+            imagedestroy($logo);
+            return;
+        }
 
-        imagefilledrectangle(
-            $image,
-            $x - 8,
-            $y - 6,
-            $x + $textWidth + 8,
-            $y + $textHeight + 6,
-            $bgColor
+        $targetWidth = (int) min(260, max(80, round($width * 0.18)));
+        $targetHeight = (int) round(($logoHeight / $logoWidth) * $targetWidth);
+
+        $maxHeight = (int) round($height * 0.16);
+
+        if ($targetHeight > $maxHeight && $targetHeight > 0) {
+            $targetHeight = $maxHeight;
+            $targetWidth = (int) round(($logoWidth / $logoHeight) * $targetHeight);
+        }
+
+        $watermark = imagecreatetruecolor($targetWidth, $targetHeight);
+
+        imagealphablending($watermark, false);
+        imagesavealpha($watermark, true);
+
+        $transparent = imagecolorallocatealpha($watermark, 255, 255, 255, 127);
+        imagefilledrectangle($watermark, 0, 0, $targetWidth, $targetHeight, $transparent);
+
+        imagecopyresampled(
+            $watermark,
+            $logo,
+            0,
+            0,
+            0,
+            0,
+            $targetWidth,
+            $targetHeight,
+            $logoWidth,
+            $logoHeight
         );
 
-        imagestring($image, $fontSize, $x, $y, $this->watermarkText, $textColor);
+        imagealphablending($image, true);
+        imagesavealpha($image, true);
+
+        $padding = max(12, (int) round(min($width, $height) * 0.02));
+        $x = max(0, $width - $targetWidth - $padding);
+        $y = max(0, $height - $targetHeight - $padding);
+
+        imagecopy(
+            $image,
+            $watermark,
+            $x,
+            $y,
+            0,
+            0,
+            $targetWidth,
+            $targetHeight
+        );
+
+        imagedestroy($watermark);
+        imagedestroy($logo);
     }
 
+    private function loadCentralBrandLogo()
+    {
+        try {
+            $raw = Setting::query()
+                ->where('key', 'ui_brand')
+                ->value('value');
+
+            if (!$raw) {
+                return null;
+            }
+
+            $brand = json_decode($raw, true);
+
+            if (!is_array($brand)) {
+                return null;
+            }
+
+            $logoUrl = trim((string) ($brand['logoUrl'] ?? ''));
+
+            if (
+                $logoUrl === '' ||
+                !str_starts_with($logoUrl, 'data:image/') ||
+                !str_contains($logoUrl, ',')
+            ) {
+                return null;
+            }
+
+            [, $encoded] = explode(',', $logoUrl, 2);
+
+            $binary = base64_decode($encoded, true);
+
+            if ($binary === false || $binary === '') {
+                return null;
+            }
+
+            return @imagecreatefromstring($binary) ?: null;
+        } catch (\Throwable $e) {
+            report($e);
+            return null;
+        }
+    }
     private function storeOptimizedImage($image, string $path, int $quality = 82): array
     {
         if (!$image) {
