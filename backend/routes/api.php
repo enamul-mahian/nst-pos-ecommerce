@@ -162,7 +162,6 @@ Route::get('/google-drive-backup/callback', [\App\Http\Controllers\Api\GoogleDri
 
 Route::get('/public/categories', [CategoryController::class, 'publicIndex']);
 Route::get('/public/brands', [BrandController::class, 'publicIndex']);
-Route::get('/public/home-feed', [\App\Http\Controllers\Api\HomeFeedController::class, 'index'])->middleware('throttle:120,1');
 Route::get('/public/brands/{brand:slug}', [BrandController::class, 'publicShowBySlug'])->middleware('throttle:60,1');
 Route::get('/public/coupons/validate', [CouponController::class, 'validateCoupon'])->middleware('throttle:30,1');
 Route::get('/public/recent-purchases', [\App\Http\Controllers\Api\RecentPurchaseController::class, 'index'])->middleware('throttle:60,1');
