@@ -84,12 +84,11 @@ const DeviceArt: React.FC<{ className?: string }> = ({ className = '' }) => (
   </svg>
 );
 
-const ProductImage: React.FC<{ product: any; className?: string; priority?: boolean }> = ({ product, className = '', priority = false }) => {
+const ProductImage: React.FC<{ product: any; className?: string }> = ({ product, className = '' }) => {
   const [failed, setFailed] = useState(false);
   const src = imageOf(product);
-  if (!product && !src) return null;
   return src && !failed
-    ? <img src={src} alt={product?.name || ''} loading={priority ? 'eager' : 'lazy'} decoding="async" onError={() => setFailed(true)} className={`object-contain ${className}`} />
+    ? <img src={src} alt={product?.name || ''} loading="lazy" onError={() => setFailed(true)} className={`object-contain ${className}`} />
     : <DeviceArt className={className} />;
 };
 
@@ -104,26 +103,17 @@ function useStorefrontData(enabled = true) {
   useEffect(() => {
     if (!enabled) return undefined;
     let alive = true;
-    apiClient.get('/public/products')
-      .then((response) => {
-        if (alive) setProducts(rowsOf(response.data));
-      })
-      .catch(() => undefined)
-      .finally(() => {
-        if (alive) setLoading(false);
-      });
-
-    apiClient.get('/public/categories')
-      .then((response) => {
-        if (alive) setCategories(rowsOf(response.data));
-      })
-      .catch(() => undefined);
-
-    apiClient.get('/public/brands')
-      .then((response) => {
-        if (alive) setBrands(rowsOf(response.data));
-      })
-      .catch(() => undefined);
+    Promise.allSettled([
+      apiClient.get('/public/products', { params: { limit: 48 } }),
+      apiClient.get('/public/categories'),
+      apiClient.get('/public/brands'),
+    ]).then(([p, c, b]) => {
+      if (!alive) return;
+      if (p.status === 'fulfilled') setProducts(rowsOf(p.value.data));
+      if (c.status === 'fulfilled') setCategories(rowsOf(c.value.data));
+      if (b.status === 'fulfilled') setBrands(rowsOf(b.value.data));
+      setLoading(false);
+    });
     return () => { alive = false; };
   }, [enabled]);
 
@@ -270,7 +260,7 @@ const PromoCard: React.FC<{ title: string; lines: string[]; highlight?: string; 
       <span className="mt-auto inline-flex items-center gap-1 pt-3 text-xs font-semibold text-[var(--nst-primary)] group-hover:gap-2">Shop Now <ArrowRight className="h-3.5 w-3.5" /></span>
     </div>
     <div className="absolute inset-y-2 right-2 flex w-[42%] items-center justify-center">
-      <ProductImage product={product} priority className="max-h-full max-w-full drop-shadow-xl transition group-hover:scale-105" />
+      <ProductImage product={product} className="max-h-full max-w-full drop-shadow-xl transition group-hover:scale-105" />
     </div>
   </Link>
 );
