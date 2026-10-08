@@ -84,12 +84,12 @@ const DeviceArt: React.FC<{ className?: string }> = ({ className = '' }) => (
   </svg>
 );
 
-const ProductImage: React.FC<{ product: any; className?: string }> = ({ product, className = '' }) => {
+const ProductImage: React.FC<{ product: any; className?: string; priority?: boolean }> = ({ product, className = '', priority = false }) => {
   const [failed, setFailed] = useState(false);
-  const src = imageOf(product);
+  const src = priority ? (product?.full_image_url || imageOf(product)) : imageOf(product);
   if (!product && !src) return null;
   return src && !failed
-    ? <img src={src} alt={product?.name || ''} loading="lazy" onError={() => setFailed(true)} className={`object-contain ${className}`} />
+    ? <img src={src} alt={product?.name || ''} loading={priority ? 'eager' : 'lazy'} decoding="async" onError={() => setFailed(true)} className={`object-contain ${className}`} />
     : <DeviceArt className={className} />;
 };
 
@@ -103,19 +103,48 @@ function useStorefrontData(enabled = true) {
 
   useEffect(() => {
     if (!enabled) return undefined;
+
     let alive = true;
-    Promise.allSettled([
+    setLoading(true);
+
+    const loadLegacy = () => Promise.allSettled([
       apiClient.get('/public/products', { params: { limit: 48 } }),
       apiClient.get('/public/categories'),
       apiClient.get('/public/brands'),
     ]).then(([p, c, b]) => {
       if (!alive) return;
+
       if (p.status === 'fulfilled') setProducts(rowsOf(p.value.data));
       if (c.status === 'fulfilled') setCategories(rowsOf(c.value.data));
       if (b.status === 'fulfilled') setBrands(rowsOf(b.value.data));
-      setLoading(false);
     });
-    return () => { alive = false; };
+
+    apiClient.get('/public/home-feed')
+      .then((response) => {
+        if (!alive) return;
+
+        const feed = response.data?.data;
+
+        if (!feed || !Array.isArray(feed.products)) {
+          throw new Error('Invalid homepage feed');
+        }
+
+        setProducts(feed.products);
+        setCategories(
+          Array.isArray(feed.categories) ? feed.categories : []
+        );
+        setBrands(
+          Array.isArray(feed.brands) ? feed.brands : []
+        );
+      })
+      .catch(() => loadLegacy())
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+
+    return () => {
+      alive = false;
+    };
   }, [enabled]);
 
   return { products, categories, brands, loading };
@@ -237,7 +266,7 @@ const HeroSlider: React.FC<{ slides: Slide[]; autoplay?: boolean; interval?: num
       <div className="absolute inset-y-0 right-0 flex w-[48%] items-center justify-center p-3 sm:p-6">
         {slide.image
           ? <img src={slide.image} alt={slide.title} className="max-h-full max-w-full object-contain drop-shadow-2xl" />
-          : <ProductImage product={slide.product} className="h-[92%] max-w-full drop-shadow-2xl" />}
+          : <ProductImage product={slide.product} priority className="h-[92%] max-w-full drop-shadow-2xl" />}
       </div>
       {count > 1 && (
         <>

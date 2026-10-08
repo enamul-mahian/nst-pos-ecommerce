@@ -880,6 +880,7 @@ Route::middleware(['auth:sanctum', \App\Http\Middleware\EnsurePosStaff::class])-
 // NST eCommerce Product Sync routes
 Route::get('/site/website/home', [\App\Http\Controllers\Api\SiteProductSyncController::class, 'home']);
 Route::get('/public/website/home', [\App\Http\Controllers\Api\SiteProductSyncController::class, 'home']);
+Route::get('/public/home-feed', [\App\Http\Controllers\Api\HomeFeedController::class, 'index'])->middleware('throttle:120,1');
 
 Route::get('/site/products/slug/{slug}', [\App\Http\Controllers\Api\SiteProductSyncController::class, 'bySlug']);
 Route::get('/site/products/{product}', [\App\Http\Controllers\Api\SiteProductSyncController::class, 'show']);
