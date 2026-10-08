@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useWebsiteStore } from '../../store/cms/useWebsiteStore';
 import { useCompareStore } from '../../store/compare/useCompareStore';
@@ -48,6 +48,7 @@ const StorefrontBootstrap = () => (
 );
 
 export const PublicLayout: React.FC = () => {
+  const [nonCriticalReady, setNonCriticalReady] = useState(false);
   const cms = useWebsiteStore((state) => state.cms);
   const hasLoaded = useWebsiteStore((state) => state.hasLoaded);
   const isPreviewMode = useWebsiteStore((state) => state.isPreviewMode);
@@ -59,6 +60,28 @@ export const PublicLayout: React.FC = () => {
   const compareCount = useCompareStore((state) => state.items.length);
   const pageId = pageIdForPath(cms, location.pathname);
   const sectionPage = pageId.startsWith('page-') ? '' : pageId;
+
+  // Non-critical network work is idle-mounted so all current/future public pages keep a fast critical path.
+  useEffect(() => {
+    const browserWindow = window as any;
+    let timerId = 0;
+    let idleId: number | null = null;
+
+    const markReady = () => setNonCriticalReady(true);
+
+    if (typeof browserWindow.requestIdleCallback === 'function') {
+      idleId = browserWindow.requestIdleCallback(markReady, { timeout: 1500 });
+    } else {
+      timerId = window.setTimeout(markReady, 900);
+    }
+
+    return () => {
+      if (idleId !== null && typeof browserWindow.cancelIdleCallback === 'function') {
+        browserWindow.cancelIdleCallback(idleId);
+      }
+      if (timerId) window.clearTimeout(timerId);
+    };
+  }, []);
 
   useEffect(() => {
     if (editorPreview) return;
@@ -118,7 +141,7 @@ export const PublicLayout: React.FC = () => {
       <Navbar />
 
       <main className="safe-area-bottom flex-grow pb-12 pt-0">
-        <NstTracking />
+        {nonCriticalReady ? <NstTracking /> : null}
         <NstCustomCode />
         {sectionPage ? <StorefrontSections pageId={sectionPage} placement="top" /> : null}
         <Outlet />
@@ -136,9 +159,11 @@ export const PublicLayout: React.FC = () => {
         <b>{compareCount}</b>
       </Link>
 
-      <Suspense fallback={null}>
-        <LivePurchasePopup />
-      </Suspense>
+      {nonCriticalReady ? (
+        <Suspense fallback={null}>
+          <LivePurchasePopup />
+        </Suspense>
+      ) : null}
 
       <Footer />
       {/* Spacer so the footer is not hidden behind the phone bottom bar */}

@@ -8,33 +8,60 @@ import type { Product } from '../../types';
 
 export const SearchPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [query, setQuery] = useState(searchParams.get('q') || searchParams.get('search') || '');
-  const [category, setCategory] = useState(searchParams.get('category') || '');
-  const [condition, setCondition] = useState(searchParams.get('condition') || '');
+
+  const appliedQuery = searchParams.get('q') || searchParams.get('search') || '';
+  const appliedCategory = searchParams.get('category') || '';
+  const appliedCondition = searchParams.get('condition') || '';
+
+  const [query, setQuery] = useState(appliedQuery);
+  const [category, setCategory] = useState(appliedCategory);
+  const [condition, setCondition] = useState(appliedCondition);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    setQuery(searchParams.get('q') || searchParams.get('search') || '');
-    setCategory(searchParams.get('category') || '');
-    setCondition(searchParams.get('condition') || '');
-  }, [searchParams]);
+    setQuery(appliedQuery);
+    setCategory(appliedCategory);
+    setCondition(appliedCondition);
+  }, [appliedQuery, appliedCategory, appliedCondition]);
 
   useEffect(() => {
     let active = true;
-    const timer = window.setTimeout(async () => {
+
+    const load = async () => {
       try {
         setLoading(true);
         setError('');
+
+        const hasFilters = Boolean(
+          appliedQuery.trim() ||
+          appliedCategory ||
+          appliedCondition
+        );
+
+        if (!hasFilters) {
+          const response = await apiClient.get('/public/home-feed', {
+            timeout: 8000,
+          });
+
+          const rows = response.data?.data?.products;
+          if (active) {
+            setProducts(Array.isArray(rows) ? rows.slice(0, 24) : []);
+          }
+          return;
+        }
+
         const response = await apiClient.get('/public/products', {
           params: {
-            search: query.trim() || undefined,
-            category: category || undefined,
-            condition: condition || undefined,
-            limit: 100,
+            search: appliedQuery.trim() || undefined,
+            category: appliedCategory || undefined,
+            condition: appliedCondition || undefined,
+            limit: 24,
           },
+          timeout: 8000,
         });
+
         const rows = response.data?.data;
         if (active) setProducts(Array.isArray(rows) ? rows : []);
       } catch (requestError) {
@@ -45,13 +72,14 @@ export const SearchPage: React.FC = () => {
       } finally {
         if (active) setLoading(false);
       }
-    }, 250);
+    };
+
+    load();
 
     return () => {
       active = false;
-      window.clearTimeout(timer);
     };
-  }, [category, condition, query]);
+  }, [appliedQuery, appliedCategory, appliedCondition]);
 
   const categories = useMemo(
     () => Array.from(new Set(products.map((product) => product.category).filter(Boolean))),
@@ -60,17 +88,19 @@ export const SearchPage: React.FC = () => {
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
+
     const next: Record<string, string> = {};
     if (query.trim()) next.q = query.trim();
     if (category) next.category = category;
     if (condition) next.condition = condition;
+
     setSearchParams(next);
   };
 
   return (
     <div className="min-h-screen bg-[#f8fafc] pb-16">
       <Helmet>
-        <title>{query ? `Search: ${query}` : 'Product Search'} | New Singapur Telecom</title>
+        <title>{appliedQuery ? `Search: ${appliedQuery}` : 'Product Search'} | New Singapur Telecom</title>
         <meta name="description" content="Search active New Singapur Telecom products from the live POS catalog." />
       </Helmet>
 
@@ -88,10 +118,12 @@ export const SearchPage: React.FC = () => {
             <Search className="h-4 w-4 text-gray-400" />
             <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Product, brand or model" className="min-w-0 flex-1 bg-transparent py-3 text-sm text-slate-800 outline-none" />
           </label>
+
           <select value={category} onChange={(event) => setCategory(event.target.value)} className="rounded-xl border border-gray-200 px-3 py-3 text-sm text-slate-800">
             <option value="">All categories</option>
             {categories.map((item) => <option key={item} value={item}>{item}</option>)}
           </select>
+
           <select value={condition} onChange={(event) => setCondition(event.target.value)} className="rounded-xl border border-gray-200 px-3 py-3 text-sm text-slate-800">
             <option value="">All conditions</option>
             <option value="new">New</option>
@@ -99,20 +131,32 @@ export const SearchPage: React.FC = () => {
             <option value="pre_owned">Pre-Owned</option>
             <option value="refurbished">Refurbished</option>
           </select>
-          <button type="submit" className="rounded-xl bg-[var(--nst-primary)] px-6 py-3 text-sm font-black text-white">Search</button>
+
+          <button type="submit" className="rounded-xl bg-[var(--nst-primary)] px-6 py-3 text-sm font-black text-white">
+            Search
+          </button>
         </form>
 
         <div className="mt-7 flex items-end justify-between">
           <div>
             <p className="text-xs font-black uppercase tracking-wider text-[var(--nst-primary)]">Live POS catalog</p>
-            <h1 className="mt-1 text-2xl font-black text-slate-800">{query ? `Results for “${query}”` : 'All Products'}</h1>
+            <h1 className="mt-1 text-2xl font-black text-slate-800">
+              {appliedQuery ? `Results for “${appliedQuery}”` : 'All Products'}
+            </h1>
           </div>
-          {!loading && !error && <span className="text-xs font-bold text-gray-400">{products.length} result(s)</span>}
+
+          {!loading && !error && (
+            <span className="text-xs font-bold text-gray-400">
+              {products.length} result(s)
+            </span>
+          )}
         </div>
 
         {loading ? (
           <div className="grid grid-cols-2 gap-4 pt-6 md:grid-cols-3 lg:grid-cols-5">
-            {Array.from({ length: 10 }).map((_, index) => <div key={index} className="h-72 animate-pulse rounded-2xl bg-white" />)}
+            {Array.from({ length: 10 }).map((_, index) => (
+              <div key={index} className="h-72 animate-pulse rounded-2xl bg-white" />
+            ))}
           </div>
         ) : error ? (
           <div className="mt-6 rounded-2xl border border-red-200 bg-white p-8 text-center">
@@ -122,13 +166,17 @@ export const SearchPage: React.FC = () => {
           </div>
         ) : products.length > 0 ? (
           <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
-            {products.map((product) => <ProductCard key={product.id} product={product} />)}
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
         ) : (
           <div className="mt-6 rounded-2xl border border-dashed border-gray-300 bg-white p-10 text-center">
             <Search className="mx-auto h-10 w-10 text-gray-300" />
             <h2 className="mt-3 font-black text-slate-800">No matching products</h2>
-            <p className="mt-2 text-sm text-slate-500">Try a different product name, brand, category or condition.</p>
+            <p className="mt-2 text-sm text-slate-500">
+              Try a different product name, brand, category or condition.
+            </p>
           </div>
         )}
       </div>

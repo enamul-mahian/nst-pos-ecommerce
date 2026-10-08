@@ -114,7 +114,7 @@ export const WishlistPage: React.FC = () => {
 
                     {/* Image Wrapper */}
                     <div className="w-full h-32 flex items-center justify-center mb-3.5 select-none bg-white rounded-lg">
-                      <img src={prod.image || '/images/product-placeholder.svg'} alt={prod.name} className="h-full object-contain group-hover:scale-103 transition-transform duration-500" />
+                      <img src={prod.image || '/images/product-placeholder.svg'} alt={prod.name} loading="lazy" decoding="async" className="h-full object-contain group-hover:scale-103 transition-transform duration-500" />
                     </div>
 
                     {/* Meta Info */}

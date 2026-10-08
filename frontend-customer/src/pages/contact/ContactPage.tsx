@@ -29,6 +29,7 @@ export const ContactPage: React.FC = () => {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showMap, setShowMap] = useState(false);
 
   // Sync logged-in customer data if available on mount
   useEffect(() => {
@@ -161,16 +162,27 @@ export const ContactPage: React.FC = () => {
 
           {/* Embedded responsive Google Map of Bogura, Bangladesh */}
           <div className="w-full h-[250px] sm:h-[320px] rounded-3xl overflow-hidden border border-gray-150 shadow-inner">
-            <iframe
-              title="New Singapur Telecom Showroom Google Map Location"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3618.6657930198083!2d89.370503!3d24.847138!2m3!1f0!2m2!1f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39fc545ef20a7b4f%3A0xe3282fc26c7e2f1!2sBogura!5e0!3m2!1sen!2sbd!4v1700000000000!5m2!1sen!2sbd"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
+            {showMap ? (
+              <iframe
+                title="New Singapur Telecom Showroom Google Map Location"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3618.6657930198083!2d89.370503!3d24.847138!2m3!1f0!2m2!1f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39fc545ef20a7b4f%3A0xe3282fc26c7e2f1!2sBogura!5e0!3m2!1sen!2sbd!4v1700000000000!5m2!1sen!2sbd"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowMap(true)}
+                className="flex h-full w-full flex-col items-center justify-center gap-3 bg-slate-50 text-slate-600 transition-colors hover:bg-slate-100"
+              >
+                <MapPin className="h-8 w-8 text-[var(--nst-primary)]" />
+                <span className="text-sm font-extrabold">Load Google Map</span>
+              </button>
+            )}
           </div>
         </div>
 

@@ -171,7 +171,7 @@ export const ComparePage: React.FC = () => {
 
                     {/* Image */}
                     <div className="w-full h-32 flex items-center justify-center mb-3.5 select-none bg-white rounded-lg">
-                      <img src={prod.image || '/images/product-placeholder.svg'} alt={prod.name} className="h-full object-contain" />
+                      <img src={prod.image || '/images/product-placeholder.svg'} alt={prod.name} loading="lazy" decoding="async" className="h-full object-contain" />
                     </div>
 
                     <h3 className="font-extrabold text-slate-800 text-sm sm:text-base line-clamp-1 mb-1 tracking-tight">
