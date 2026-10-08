@@ -87,6 +87,7 @@ const DeviceArt: React.FC<{ className?: string }> = ({ className = '' }) => (
 const ProductImage: React.FC<{ product: any; className?: string }> = ({ product, className = '' }) => {
   const [failed, setFailed] = useState(false);
   const src = imageOf(product);
+  if (!product && !src) return null;
   return src && !failed
     ? <img src={src} alt={product?.name || ''} loading="lazy" onError={() => setFailed(true)} className={`object-contain ${className}`} />
     : <DeviceArt className={className} />;
