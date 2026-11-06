@@ -32,6 +32,9 @@ class AccountsController extends Controller
             ->merge($this->servicePaymentTransactions($request, $dateFrom, $dateTo))
             ->merge($this->supplierPaymentTransactions($request, $dateFrom, $dateTo))
             ->merge($this->expenseTransactions($request, $dateFrom, $dateTo))
+            ->merge($this->purchaseCashTransactions($request, $dateFrom, $dateTo))
+            ->merge($this->usedPurchaseTransactions($request, $dateFrom, $dateTo))
+            ->merge($this->exchangePayoutTransactions($request, $dateFrom, $dateTo))
             ->sortByDesc('sort_date')
             ->take($limit)
             ->values();
@@ -399,6 +402,126 @@ class AccountsController extends Controller
                     'sort_date' => $row->{$dateColumn} ?? null,
                 ];
             });
+    }
+
+    /** Cash paid to the supplier while creating a purchase (later due payments come from supplier_payments). */
+    private function purchaseCashTransactions(Request $request, Carbon $dateFrom, Carbon $dateTo): Collection
+    {
+        if (! Schema::hasTable('purchases') || ! Schema::hasColumn('purchases', 'cash_paid_amount')) {
+            return collect();
+        }
+
+        $dateColumn = $this->firstExistingColumn('purchases', ['purchase_date', 'created_at']);
+        $query = DB::table('purchases')
+            ->leftJoin('suppliers', 'suppliers.id', '=', 'purchases.supplier_id')
+            ->where('purchases.cash_paid_amount', '>', 0)
+            ->whereBetween("purchases.$dateColumn", [$dateFrom->copy()->startOfDay(), $dateTo->copy()->endOfDay()])
+            ->when(Schema::hasColumn('purchases', 'status'), fn ($q) => $q->where(fn ($w) => $w->whereNull('purchases.status')->orWhere('purchases.status', '<>', 'cancelled')))
+            ->when($request->filled('branch_id') && Schema::hasColumn('purchases', 'branch_id'), fn ($q) => $q->where('purchases.branch_id', $request->branch_id))
+            ->when($request->filled('payment_method') && Schema::hasColumn('purchases', 'payment_method'), fn ($q) => $q->where('purchases.payment_method', $request->payment_method));
+
+        return $query
+            ->select('purchases.*', 'suppliers.name as party_name', 'suppliers.phone as party_phone')
+            ->limit(500)
+            ->get()
+            ->map(fn ($row) => $this->cashOutRow(
+                'purchase_cash_' . $row->id,
+                'Purchase Payment',
+                $row->purchase_no ?? ('PUR-' . $row->id),
+                $row->party_name ?? 'Supplier',
+                $row->party_phone ?? null,
+                $row->payment_method ?? 'cash',
+                (float) $row->cash_paid_amount,
+                $row->{$dateColumn},
+                $row->note ?? null
+            ));
+    }
+
+    /** Money paid to a person selling us a used phone. */
+    private function usedPurchaseTransactions(Request $request, Carbon $dateFrom, Carbon $dateTo): Collection
+    {
+        if (! Schema::hasTable('used_purchases') || ! Schema::hasColumn('used_purchases', 'purchase_price')) {
+            return collect();
+        }
+
+        $hasMethod = Schema::hasColumn('used_purchases', 'payment_method');
+        if ($request->filled('payment_method') && ! $hasMethod && $request->payment_method !== 'cash') {
+            return collect();
+        }
+
+        $dateColumn = $this->firstExistingColumn('used_purchases', ['purchase_date', 'created_at']);
+
+        return DB::table('used_purchases')
+            ->where('purchase_price', '>', 0)
+            ->whereBetween($dateColumn, [$dateFrom->copy()->startOfDay(), $dateTo->copy()->endOfDay()])
+            ->when(Schema::hasColumn('used_purchases', 'deleted_at'), fn ($q) => $q->whereNull('deleted_at'))
+            ->when($request->filled('branch_id') && Schema::hasColumn('used_purchases', 'branch_id'), fn ($q) => $q->where('branch_id', $request->branch_id))
+            ->when($request->filled('payment_method') && $hasMethod, fn ($q) => $q->where('payment_method', $request->payment_method))
+            ->limit(500)
+            ->get()
+            ->map(fn ($row) => $this->cashOutRow(
+                'used_purchase_' . $row->id,
+                'Used Phone Purchase',
+                $row->purchase_no ?? ('USED-' . $row->id),
+                $row->customer_name ?? $row->seller_name ?? 'Seller',
+                $row->customer_phone ?? $row->seller_phone ?? null,
+                $hasMethod ? ($row->payment_method ?? 'cash') : 'cash',
+                (float) $row->purchase_price,
+                $row->{$dateColumn},
+                $row->product_name ?? null
+            ));
+    }
+
+    /** Money paid out to customers in cash exchanges. */
+    private function exchangePayoutTransactions(Request $request, Carbon $dateFrom, Carbon $dateTo): Collection
+    {
+        if (! Schema::hasTable('sale_exchange_payouts')) {
+            return collect();
+        }
+
+        return DB::table('sale_exchange_payouts as payouts')
+            ->leftJoin('sale_exchanges as exchanges', 'exchanges.id', '=', 'payouts.sale_exchange_id')
+            ->leftJoin('customers', 'customers.id', '=', 'exchanges.customer_id')
+            ->where('payouts.amount', '>', 0)
+            ->whereBetween(DB::raw('COALESCE(payouts.paid_at, payouts.created_at)'), [$dateFrom->copy()->startOfDay(), $dateTo->copy()->endOfDay()])
+            ->when($request->filled('branch_id'), fn ($q) => $q->where('exchanges.branch_id', $request->branch_id))
+            ->when($request->filled('payment_method'), fn ($q) => $q->where('payouts.payment_method', $request->payment_method))
+            ->select('payouts.*', 'exchanges.exchange_no', 'customers.name as party_name', 'customers.phone as party_phone')
+            ->limit(500)
+            ->get()
+            ->map(fn ($row) => $this->cashOutRow(
+                'exchange_payout_' . $row->id,
+                'Cash Exchange Payout',
+                $row->exchange_no ?? ('EXC-' . $row->sale_exchange_id),
+                $row->party_name ?? 'Customer',
+                $row->party_phone ?? null,
+                $row->payment_method ?? 'cash',
+                (float) $row->amount,
+                $row->paid_at ?? $row->created_at,
+                $row->note ?? null
+            ));
+    }
+
+    private function cashOutRow(string $id, string $source, string $reference, string $party, ?string $phone, string $method, float $amount, $date, ?string $note): array
+    {
+        return [
+            'id' => $id,
+            'raw_id' => $id,
+            'direction' => 'out',
+            'type' => 'cash_out',
+            'source' => $source,
+            'reference_no' => $reference,
+            'party_name' => $party,
+            'party_phone' => $phone,
+            'payment_method' => $method,
+            'provider_name' => null,
+            'transaction_id' => null,
+            'amount' => round($amount, 2),
+            'note' => $note,
+            'user_name' => null,
+            'date' => $date,
+            'sort_date' => $date,
+        ];
     }
 
     private function expenseTransactions(Request $request, Carbon $dateFrom, Carbon $dateTo): Collection
