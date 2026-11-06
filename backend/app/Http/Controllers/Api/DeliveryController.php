@@ -167,10 +167,16 @@ class DeliveryController extends Controller
             $lockedOrder->forceFill($orderPayload)->save();
 
             if ($lockedOrder->sale_id) {
-                Sale::whereKey($lockedOrder->sale_id)->update([
-                    'delivery_status' => $next,
-                    'status' => $next === 'completed' ? 'completed' : 'processing',
-                ]);
+                // Only move a sale forward. A courier "cancelled"/"returned" used to flip even a completed sale back
+                // to processing while its stock and payment stayed booked; the sale must be cancelled/returned
+                // explicitly from Sales so stock and money are reversed.
+                $saleUpdate = ['delivery_status' => $next];
+                if ($next === 'completed') {
+                    $saleUpdate['status'] = 'completed';
+                }
+                Sale::whereKey($lockedOrder->sale_id)
+                    ->whereNotIn('status', ['cancelled', 'canceled', 'returned'])
+                    ->update($saleUpdate);
             }
 
             if (Schema::hasTable('customer_order_timeline_events')) {

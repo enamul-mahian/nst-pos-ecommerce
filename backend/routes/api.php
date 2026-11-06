@@ -1027,7 +1027,7 @@ Route::get('/public/app-center/releases/{release}/download', [\App\Http\Controll
 Route::post('/apk-builder/worker/fetch', [\App\Http\Controllers\Api\AppCenterController::class, 'workerFetch'])->middleware('throttle:10,1');
 Route::post('/apk-builder/worker/{token}/complete', [\App\Http\Controllers\Api\AppCenterController::class, 'workerComplete'])->middleware('throttle:10,1');
 Route::post('/apk-builder/worker/{token}/fail', [\App\Http\Controllers\Api\AppCenterController::class, 'workerFail'])->middleware('throttle:10,1');
-Route::middleware(['auth:sanctum', \App\Http\Middleware\EnsurePosStaff::class, 'audit.log'])->prefix('app-center')->group(function(){
+Route::middleware(['auth:sanctum', \App\Http\Middleware\EnsurePosStaff::class, 'audit.log', 'super.admin'])->prefix('app-center')->group(function(){
  Route::get('/apps',[\App\Http\Controllers\Api\AppCenterController::class,'index']);
  Route::post('/apps',[\App\Http\Controllers\Api\AppCenterController::class,'store']);
  Route::put('/apps/{id}',[\App\Http\Controllers\Api\AppCenterController::class,'update']);
@@ -1038,7 +1038,7 @@ Route::middleware(['auth:sanctum', \App\Http\Middleware\EnsurePosStaff::class, '
  Route::get('/builds',[\App\Http\Controllers\Api\AppCenterController::class,'builds']);
 });
 
-Route::middleware(['auth:sanctum', \App\Http\Middleware\EnsurePosStaff::class, 'audit.log'])->prefix('downloads')->group(function () {
+Route::middleware(['auth:sanctum', \App\Http\Middleware\EnsurePosStaff::class, 'audit.log', 'super.admin'])->prefix('downloads')->group(function () {
     Route::get('/files', [\App\Http\Controllers\Api\NstFileController::class, 'index']);
     Route::post('/files', [\App\Http\Controllers\Api\NstFileController::class, 'store']);
     Route::match(['put', 'patch'], '/files/{file}', [\App\Http\Controllers\Api\NstFileController::class, 'update']);

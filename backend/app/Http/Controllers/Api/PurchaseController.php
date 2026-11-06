@@ -400,6 +400,13 @@ class PurchaseController extends Controller
             $updateData['supplier_invoice_file'] = null;
         }
 
+        if (isset($validated['status']) && strtolower((string) $validated['status']) === 'cancelled' && ($purchase->status ?? null) !== 'cancelled') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Use Cancel Purchase so stock and the supplier balance are reversed.',
+            ], 422);
+        }
+
         foreach ($validated as $key => $value) {
             if (in_array($key, ['supplier_invoice_file', 'remove_supplier_invoice_file'], true)) {
                 continue;
@@ -424,7 +431,7 @@ class PurchaseController extends Controller
         ]);
     }
 
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
         if (!Schema::hasTable('purchases')) {
             return response()->json([
@@ -442,32 +449,32 @@ class PurchaseController extends Controller
             ], 404);
         }
 
-        DB::transaction(function () use ($id) {
-            if (Schema::hasTable('device_units') && Schema::hasColumn('device_units', 'purchase_id')) {
-                $deviceUpdate = [];
-                $this->putIfTableColumnExists('device_units', $deviceUpdate, 'status', 'supplier_return');
+        $kept = DB::transaction(function () use ($request, $id) {
+            $locked = DB::table('purchases')->where('id', $id)->lockForUpdate()->first();
+            if (($locked->status ?? null) !== 'cancelled') {
+                $this->reversePurchase($locked, $request->user()?->id);
+            }
 
-                if (Schema::hasColumn('device_units', 'updated_at')) {
-                    $deviceUpdate['updated_at'] = now();
-                }
-
-                if (!empty($deviceUpdate)) {
-                    DeviceUnit::query()->where('purchase_id', $id)->lockForUpdate()->get()->each(function (DeviceUnit $device) use ($deviceUpdate) {
-                        $device->forceFill($deviceUpdate)->save();
-                    });
-                }
+            // Money already moved for this purchase (cash or supplier advance) stays on record as a cancelled
+            // purchase so the cashbook and supplier ledger keep their history. Only an unpaid purchase is removed.
+            $moneyMoved = (float) ($locked->cash_paid_amount ?? 0) > 0 || (float) ($locked->advance_applied_amount ?? 0) > 0;
+            if ($moneyMoved) {
+                return true;
             }
 
             if (Schema::hasTable('purchase_items') && Schema::hasColumn('purchase_items', 'purchase_id')) {
                 DB::table('purchase_items')->where('purchase_id', $id)->delete();
             }
-
             DB::table('purchases')->where('id', $id)->delete();
+
+            return false;
         });
 
         return response()->json([
             'success' => true,
-            'message' => 'Purchase deleted successfully.',
+            'message' => $kept
+                ? 'Purchase cancelled: stock and supplier balance were reversed. It is kept on record because money was already paid (now supplier advance).'
+                : 'Purchase deleted: stock and supplier balance were reversed.',
         ]);
     }
 
@@ -476,9 +483,146 @@ class PurchaseController extends Controller
         return $this->updatePurchaseStatus($id, 'received', 'Purchase received successfully.');
     }
 
-    public function cancel(string $id)
+    public function cancel(Request $request, string $id)
     {
-        return $this->updatePurchaseStatus($id, 'cancelled', 'Purchase cancelled successfully.');
+        if (!Schema::hasTable('purchases')) {
+            return response()->json(['success' => false, 'message' => 'purchases table not found.'], 404);
+        }
+
+        $purchase = DB::table('purchases')->where('id', $id)->first();
+        if (!$purchase) {
+            return response()->json(['success' => false, 'message' => 'Purchase not found.'], 404);
+        }
+        if (($purchase->status ?? null) === 'cancelled') {
+            return response()->json(['success' => false, 'message' => 'Purchase is already cancelled.'], 422);
+        }
+
+        DB::transaction(function () use ($request, $id) {
+            $locked = DB::table('purchases')->where('id', $id)->lockForUpdate()->first();
+            abort_if(($locked->status ?? null) === 'cancelled', 422, 'Purchase is already cancelled.');
+            $this->reversePurchase($locked, $request->user()?->id);
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Purchase cancelled. Stock was removed and the supplier balance was reversed.',
+            'data' => DB::table('purchases')->where('id', $id)->first(),
+        ]);
+    }
+
+    /**
+     * Undo what store() did: take the purchased stock out again and give the supplier back the due/advance effect.
+     * Refuses when any phone from this purchase was already sold or the plain stock was already used.
+     */
+    private function reversePurchase(object $purchase, ?int $userId): void
+    {
+        $purchaseId = (int) $purchase->id;
+        $branchId = $purchase->branch_id ?? null;
+
+        $devices = collect();
+        if (Schema::hasTable('device_units') && Schema::hasColumn('device_units', 'purchase_id')) {
+            $devices = DeviceUnit::query()->where('purchase_id', $purchaseId)->lockForUpdate()->get();
+            $blocked = $devices->reject(fn ($device) => in_array((string) $device->status, ['awaiting_inspection', 'available', 'ready_for_sale', 'in_stock', 'supplier_return'], true));
+            if ($blocked->isNotEmpty()) {
+                throw ValidationException::withMessages([
+                    'purchase' => 'Some phones from this purchase are already sold, reserved or transferred (' . $blocked->map(fn ($d) => $d->imei_1 ?: $d->barcode)->implode(', ') . '). Return those first.',
+                ]);
+            }
+        }
+
+        $items = Schema::hasTable('purchase_items')
+            ? DB::table('purchase_items')->where('purchase_id', $purchaseId)->get()
+            : collect();
+
+        // Plain (non-IMEI) quantity went straight into branch stock; take it back out.
+        foreach ($items as $item) {
+            $deviceCount = $devices->where('purchase_item_id', $item->id)->count();
+            $plainQuantity = (int) round(max((float) ($item->quantity ?? 0) - $deviceCount, 0));
+            if ($plainQuantity <= 0 || !$branchId || !$item->product_id) {
+                continue;
+            }
+
+            $stock = DB::table('branch_stocks')
+                ->where('branch_id', $branchId)
+                ->where('product_id', $item->product_id)
+                ->when(Schema::hasColumn('branch_stocks', 'product_variant_id'), fn ($q) => $item->product_variant_id
+                    ? $q->where('product_variant_id', $item->product_variant_id)
+                    : $q->whereNull('product_variant_id'))
+                ->lockForUpdate()
+                ->first();
+
+            if (!$stock || (int) $stock->quantity < $plainQuantity) {
+                throw ValidationException::withMessages([
+                    'purchase' => ($item->product_name ?? 'An item') . ' from this purchase has already been sold or moved; branch stock is lower than the purchased quantity.',
+                ]);
+            }
+
+            DB::table('branch_stocks')->where('id', $stock->id)->update(['quantity' => (int) $stock->quantity - $plainQuantity, 'updated_at' => now()]);
+            if (Schema::hasColumn('products', 'stock_quantity')) {
+                DB::table('products')->where('id', $item->product_id)->update(['stock_quantity' => DB::raw('GREATEST(stock_quantity - ' . $plainQuantity . ', 0)')]);
+            }
+            if ($item->product_variant_id && Schema::hasColumn('product_variants', 'stock_quantity')) {
+                DB::table('product_variants')->where('id', $item->product_variant_id)->update(['stock_quantity' => DB::raw('GREATEST(stock_quantity - ' . $plainQuantity . ', 0)')]);
+            }
+        }
+
+        // Phones leave stock; branch and catalog counts are rebuilt from the physical devices.
+        if ($devices->isNotEmpty()) {
+            foreach ($devices as $device) {
+                $update = ['status' => 'supplier_return'];
+                if (Schema::hasColumn('device_units', 'saleable')) {
+                    $update['saleable'] = false;
+                }
+                if (Schema::hasColumn('device_units', 'website_published')) {
+                    $update['website_published'] = false;
+                }
+                $device->forceFill($update)->save();
+            }
+
+            $preparation = app(\App\Services\DeviceSalePreparationService::class);
+            foreach ($devices->pluck('product_variant_id')->filter()->unique() as $variantId) {
+                if ($variant = \App\Models\ProductVariant::find($variantId)) {
+                    $preparation->syncVariantInventory($variant);
+                }
+            }
+            foreach ($devices->pluck('product_id')->filter()->unique() as $productId) {
+                if ($product = \App\Models\Product::find($productId)) {
+                    $preparation->syncProductStock($product);
+                }
+            }
+        }
+
+        // Supplier: the unpaid part is no longer owed, and everything paid (cash + advance used) becomes supplier advance.
+        $supplier = Supplier::where('id', $purchase->supplier_id)->lockForUpdate()->first();
+        if ($supplier) {
+            $finalAmount = (float) ($purchase->final_amount ?? $purchase->total_amount ?? 0);
+            $cashPaid = (float) ($purchase->cash_paid_amount ?? 0);
+            $advanceApplied = (float) ($purchase->advance_applied_amount ?? 0);
+            $purchaseDue = (float) ($purchase->due_amount ?? 0);
+            // Over-payment beyond the bill was already added to the advance when the purchase was saved.
+            $creditBack = min($cashPaid, $finalAmount) + $advanceApplied;
+
+            $this->updateSupplierBalances(
+                supplierId: $supplier->id,
+                dueBalance: max(round($this->getSupplierDueBalance($supplier) - $purchaseDue, 2), 0),
+                advanceBalance: round($this->getSupplierAdvanceBalance($supplier) + $creditBack, 2),
+                userId: $userId
+            );
+        }
+
+        $update = ['status' => 'cancelled'];
+        foreach (['due_amount', 'current_due', 'balance_due'] as $column) {
+            if (Schema::hasColumn('purchases', $column)) {
+                $update[$column] = 0;
+            }
+        }
+        if (Schema::hasColumn('purchases', 'updated_by')) {
+            $update['updated_by'] = $userId;
+        }
+        if (Schema::hasColumn('purchases', 'updated_at')) {
+            $update['updated_at'] = now();
+        }
+        DB::table('purchases')->where('id', $purchaseId)->update($update);
     }
 
     private function updatePurchaseStatus(string $id, string $status, string $message)

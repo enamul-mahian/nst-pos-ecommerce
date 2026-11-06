@@ -467,23 +467,57 @@ class OrderController extends Controller
 
     public function cancel(Request $request, CustomerOrder $order): JsonResponse
     {
+        // Once converted, the sale holds the stock, IMEIs and payment. Cancelling only the order left all of that
+        // behind, so the linked sale has to be cancelled (which also cancels this order).
+        if ($this->hasActiveSale($order)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'This order is already a sale. Cancel the linked sale from the Sales list; the order is cancelled with it.',
+            ], 422);
+        }
+
         return $this->setFixedStatus($request, $order, 'cancelled', 'Order Cancelled');
     }
 
     public function complete(Request $request, CustomerOrder $order): JsonResponse
     {
+        // Completing without a sale skipped stock deduction and never recorded the COD money.
+        if (! $order->sale_id) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Convert the order to a sale (allocate stock) before marking it completed.',
+            ], 422);
+        }
+
         return $this->setFixedStatus($request, $order, 'completed', 'Order Completed');
     }
 
     public function destroy(Request $request, CustomerOrder $order): JsonResponse
     {
         $this->authorizeStaff($request);
+        if ($this->hasActiveSale($order)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'This order is already a sale. Cancel the linked sale before moving the order to Trash.',
+            ], 422);
+        }
         $order->delete();
 
         return response()->json([
             'status' => true,
             'message' => 'Order moved to Trash.',
         ]);
+    }
+
+    private function hasActiveSale(CustomerOrder $order): bool
+    {
+        if (! $order->sale_id) {
+            return false;
+        }
+
+        $status = \App\Models\Sale::query()->whereKey($order->sale_id)->value('status');
+
+        return $status !== null && ! in_array($status, ['cancelled', 'canceled', 'returned'], true);
     }
 
     private function setFixedStatus(Request $request, CustomerOrder $order, string $status, string $customStatus): JsonResponse

@@ -16,20 +16,50 @@ class CorporateSettingsController extends Controller
     ) {
     }
 
-    public function index()
+    /** Sections the settings UI may save. Anything else is refused so arbitrary setting groups cannot be written. */
+    private const WRITABLE_SECTIONS = ['general', 'domain', 'invoice_design', 'communication', 'sms', 'email', 'barcode', 'booking', 'payments', 'dashboard'];
+
+    /** Sections that hold credentials, payment details or public URLs: only Super Admin may change them. */
+    private const SUPER_ADMIN_SECTIONS = ['domain', 'communication', 'sms', 'email', 'payments'];
+
+    public function index(Request $request)
     {
-        return response()->json(['success' => true, 'data' => $this->settings->all()]);
+        $data = $this->settings->all();
+        if (! $this->accessControl->isSuperAdmin($request->user())) {
+            $data = array_map(fn ($values) => is_array($values) ? $this->maskSecrets($values) : $values, $data);
+        }
+
+        return response()->json(['success' => true, 'data' => $data]);
     }
 
-    public function show(string $section)
+    public function show(Request $request, string $section)
     {
-        return response()->json(['success' => true, 'data' => $this->settings->section($section)]);
+        $section = $this->normalizeSection($section);
+        $data = $this->settings->section($section);
+        if (! $this->accessControl->isSuperAdmin($request->user())) {
+            $data = $this->maskSecrets($data);
+        }
+
+        return response()->json(['success' => true, 'data' => $data]);
     }
 
     public function update(Request $request, string $section)
     {
+        // MySQL compares setting groups case-insensitively, so "Payments" would otherwise reach the payments group
+        // without passing the Super Admin check below. Normalise first, then allow only known sections.
+        $section = $this->normalizeSection($section);
+        abort_unless(in_array($section, self::WRITABLE_SECTIONS, true), 404, 'Unknown settings section.');
+
+        $user = $request->user();
+        if (in_array($section, self::SUPER_ADMIN_SECTIONS, true)) {
+            abort_unless($this->accessControl->isSuperAdmin($user), 403, 'Only Super Admin can change this configuration.');
+        } else {
+            abort_unless($this->accessControl->isAdmin($user), 403, 'Only Admin or Super Admin can change corporate settings.');
+        }
+
         $validated = $request->validate(['settings' => ['required', 'array']]);
         $values = $validated['settings'];
+        $this->rejectKeysOwnedByOtherGroups($section, array_keys($values));
 
         if (in_array($section, ['sms', 'email'], true)) {
             $saved = $this->settings->saveSection($section, $values);
@@ -99,6 +129,7 @@ class CorporateSettingsController extends Controller
 
     public function trackingStore(Request $request)
     {
+        $this->requireSuperAdminForScripts($request);
         $validated = $request->validate([
             'platform_name' => ['required', 'string', 'max:120'],
             'platform_key' => ['nullable', 'string', 'max:120'],
@@ -121,6 +152,7 @@ class CorporateSettingsController extends Controller
 
     public function trackingUpdate(Request $request, TrackingIntegration $trackingIntegration)
     {
+        $this->requireSuperAdminForScripts($request);
         $validated = $request->validate([
             'platform_name' => ['sometimes', 'required', 'string', 'max:120'],
             'platform_key' => ['nullable', 'string', 'max:120'],
@@ -139,12 +171,56 @@ class CorporateSettingsController extends Controller
         return response()->json(['success' => true, 'message' => 'Tracking platform updated.', 'data' => $trackingIntegration->fresh()]);
     }
 
-    public function trackingDestroy(TrackingIntegration $trackingIntegration)
+    public function trackingDestroy(Request $request, TrackingIntegration $trackingIntegration)
     {
+        $this->requireSuperAdminForScripts($request);
         if (! $trackingIntegration->is_custom) {
             return response()->json(['success' => false, 'message' => __('messages.tracking.default_platform_delete_blocked')], 422);
         }
         $trackingIntegration->delete();
         return response()->json(['success' => true, 'message' => 'Tracking platform deleted.']);
+    }
+
+    /** Tracking integrations inject header/body scripts into every storefront page. */
+    private function requireSuperAdminForScripts(Request $request): void
+    {
+        abort_unless($this->accessControl->isSuperAdmin($request->user()), 403, 'Only Super Admin can change website tracking scripts.');
+    }
+
+    private function normalizeSection(string $section): string
+    {
+        return strtolower(trim($section));
+    }
+
+    /**
+     * Setting keys are unique across all groups. A key that already belongs to another group (hCaptcha, chatbox,
+     * security settings...) must not be overwritten or shadowed from the corporate settings screen.
+     */
+    private function rejectKeysOwnedByOtherGroups(string $section, array $keys): void
+    {
+        $family = in_array($section, ['sms', 'email', 'communication'], true)
+            ? ['sms', 'email', 'communication']
+            : [$section];
+
+        $foreign = \App\Models\Setting::query()
+            ->whereIn('key', array_map('strval', $keys))
+            ->get(['key', 'group'])
+            ->reject(fn ($row) => in_array(strtolower((string) $row->group), $family, true))
+            ->pluck('key')
+            ->values()
+            ->all();
+
+        abort_if($foreign !== [], 422, 'These settings belong to another module and cannot be changed here: ' . implode(', ', $foreign));
+    }
+
+    private function maskSecrets(array $values): array
+    {
+        foreach ($values as $key => $value) {
+            if (is_string($key) && preg_match('/password|secret|token|api_key|private_key/i', $key) && is_scalar($value) && (string) $value !== '') {
+                $values[$key] = '********';
+            }
+        }
+
+        return $values;
     }
 }

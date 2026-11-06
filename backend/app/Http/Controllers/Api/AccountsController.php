@@ -19,7 +19,8 @@ class AccountsController extends Controller
         $transactions = collect();
 
         $salePayments = $this->salePaymentTransactions($request, $dateFrom, $dateTo);
-        $transactions = $transactions->merge($salePayments);
+        $transactions = $transactions->merge($salePayments)
+            ->merge($this->saleCashBackTransactions($request, $dateFrom, $dateTo));
 
         // Due receive can create both sale_payments and customer_payments. Count
         // invoice-applied money from sale_payments and only the residual/extra
@@ -31,6 +32,9 @@ class AccountsController extends Controller
             ->merge($this->servicePaymentTransactions($request, $dateFrom, $dateTo))
             ->merge($this->supplierPaymentTransactions($request, $dateFrom, $dateTo))
             ->merge($this->expenseTransactions($request, $dateFrom, $dateTo))
+            ->merge($this->purchaseCashTransactions($request, $dateFrom, $dateTo))
+            ->merge($this->usedPurchaseTransactions($request, $dateFrom, $dateTo))
+            ->merge($this->exchangePayoutTransactions($request, $dateFrom, $dateTo))
             ->sortByDesc('sort_date')
             ->take($limit)
             ->values();
@@ -144,25 +148,66 @@ class AccountsController extends Controller
             ->limit(500)
             ->get()
             ->map(function ($row) use ($amountColumn, $dateColumn) {
+                // Refunds on returned/cancelled sales are stored as negative sale payments: they are cash going out.
+                $isRefund = (float) ($row->{$amountColumn} ?? 0) < 0;
+
                 return [
                     'id' => 'sale_payment_' . $row->id,
                     'raw_id' => $row->id,
-                    'direction' => 'in',
-                    'type' => 'cash_in',
-                    'source' => 'Sale Collection',
+                    'direction' => $isRefund ? 'out' : 'in',
+                    'type' => $isRefund ? 'cash_out' : 'cash_in',
+                    'source' => $isRefund ? 'Sale Refund' : 'Sale Collection',
                     'reference_no' => $row->reference_no ?? ('SALE-' . ($row->sale_id ?? $row->id)),
                     'party_name' => $row->party_name ?? 'Walk-in Customer',
                     'party_phone' => $row->party_phone ?? null,
                     'payment_method' => $row->payment_method ?? '-',
                     'provider_name' => $row->provider_name ?? null,
                     'transaction_id' => $row->transaction_id ?? null,
-                    'amount' => round((float) ($row->{$amountColumn} ?? 0), 2),
+                    'amount' => round(abs((float) ($row->{$amountColumn} ?? 0)), 2),
                     'note' => $row->note ?? null,
                     'user_name' => $row->user_name ?? null,
                     'date' => $row->{$dateColumn} ?? null,
                     'sort_date' => $row->{$dateColumn} ?? null,
                 ];
             });
+    }
+
+    /** Change handed back when a customer paid more than the bill (sales.cash_back_amount) is cash going out. */
+    private function saleCashBackTransactions(Request $request, Carbon $dateFrom, Carbon $dateTo): Collection
+    {
+        if (! Schema::hasTable('sales') || ! Schema::hasColumn('sales', 'cash_back_amount')) {
+            return collect();
+        }
+        if ($request->filled('payment_method') && $request->payment_method !== 'cash') {
+            return collect();
+        }
+
+        return DB::table('sales')
+            ->leftJoin('customers', 'customers.id', '=', 'sales.customer_id')
+            ->where('sales.cash_back_amount', '>', 0)
+            ->whereBetween('sales.created_at', [$dateFrom->copy()->startOfDay(), $dateTo->copy()->endOfDay()])
+            ->when($request->filled('branch_id'), fn ($q) => $q->where('sales.branch_id', $request->branch_id))
+            ->select('sales.id', 'sales.invoice_no', 'sales.cash_back_amount', 'sales.created_at', 'customers.name as party_name', 'customers.phone as party_phone')
+            ->limit(500)
+            ->get()
+            ->map(fn ($row) => [
+                'id' => 'sale_cash_back_' . $row->id,
+                'raw_id' => $row->id,
+                'direction' => 'out',
+                'type' => 'cash_out',
+                'source' => 'Sale Change / Cash Back',
+                'reference_no' => $row->invoice_no ?? ('SALE-' . $row->id),
+                'party_name' => $row->party_name ?? 'Walk-in Customer',
+                'party_phone' => $row->party_phone ?? null,
+                'payment_method' => 'cash',
+                'provider_name' => null,
+                'transaction_id' => null,
+                'amount' => round((float) $row->cash_back_amount, 2),
+                'note' => 'Change returned to customer',
+                'user_name' => null,
+                'date' => $row->created_at,
+                'sort_date' => $row->created_at,
+            ]);
     }
 
     private function customerPaymentTransactions(Request $request, Carbon $dateFrom, Carbon $dateTo): Collection
@@ -357,6 +402,128 @@ class AccountsController extends Controller
                     'sort_date' => $row->{$dateColumn} ?? null,
                 ];
             });
+    }
+
+    /**
+     * Cash paid to the supplier while creating a purchase (later due payments come from supplier_payments).
+     * Cancelled purchases stay in: the cash did leave, and it now sits with the supplier as advance.
+     */
+    private function purchaseCashTransactions(Request $request, Carbon $dateFrom, Carbon $dateTo): Collection
+    {
+        if (! Schema::hasTable('purchases') || ! Schema::hasColumn('purchases', 'cash_paid_amount')) {
+            return collect();
+        }
+
+        $dateColumn = $this->firstExistingColumn('purchases', ['purchase_date', 'created_at']);
+        $query = DB::table('purchases')
+            ->leftJoin('suppliers', 'suppliers.id', '=', 'purchases.supplier_id')
+            ->where('purchases.cash_paid_amount', '>', 0)
+            ->whereBetween("purchases.$dateColumn", [$dateFrom->copy()->startOfDay(), $dateTo->copy()->endOfDay()])
+            ->when($request->filled('branch_id') && Schema::hasColumn('purchases', 'branch_id'), fn ($q) => $q->where('purchases.branch_id', $request->branch_id))
+            ->when($request->filled('payment_method') && Schema::hasColumn('purchases', 'payment_method'), fn ($q) => $q->where('purchases.payment_method', $request->payment_method));
+
+        return $query
+            ->select('purchases.*', 'suppliers.name as party_name', 'suppliers.phone as party_phone')
+            ->limit(500)
+            ->get()
+            ->map(fn ($row) => $this->cashOutRow(
+                'purchase_cash_' . $row->id,
+                'Purchase Payment',
+                $row->purchase_no ?? ('PUR-' . $row->id),
+                $row->party_name ?? 'Supplier',
+                $row->party_phone ?? null,
+                $row->payment_method ?? 'cash',
+                (float) $row->cash_paid_amount,
+                $row->{$dateColumn},
+                $row->note ?? null
+            ));
+    }
+
+    /** Money paid to a person selling us a used phone. */
+    private function usedPurchaseTransactions(Request $request, Carbon $dateFrom, Carbon $dateTo): Collection
+    {
+        if (! Schema::hasTable('used_purchases') || ! Schema::hasColumn('used_purchases', 'purchase_price')) {
+            return collect();
+        }
+
+        $hasMethod = Schema::hasColumn('used_purchases', 'payment_method');
+        if ($request->filled('payment_method') && ! $hasMethod && $request->payment_method !== 'cash') {
+            return collect();
+        }
+
+        $dateColumn = $this->firstExistingColumn('used_purchases', ['purchase_date', 'created_at']);
+
+        return DB::table('used_purchases')
+            ->where('purchase_price', '>', 0)
+            ->whereBetween($dateColumn, [$dateFrom->copy()->startOfDay(), $dateTo->copy()->endOfDay()])
+            ->when(Schema::hasColumn('used_purchases', 'deleted_at'), fn ($q) => $q->whereNull('deleted_at'))
+            ->when($request->filled('branch_id') && Schema::hasColumn('used_purchases', 'branch_id'), fn ($q) => $q->where('branch_id', $request->branch_id))
+            ->when($request->filled('payment_method') && $hasMethod, fn ($q) => $q->where('payment_method', $request->payment_method))
+            ->limit(500)
+            ->get()
+            ->map(fn ($row) => $this->cashOutRow(
+                'used_purchase_' . $row->id,
+                'Used Phone Purchase',
+                $row->purchase_no ?? ('USED-' . $row->id),
+                $row->customer_name ?? $row->seller_name ?? 'Seller',
+                $row->customer_phone ?? $row->seller_phone ?? null,
+                $hasMethod ? ($row->payment_method ?? 'cash') : 'cash',
+                (float) $row->purchase_price,
+                $row->{$dateColumn},
+                $row->product_name ?? null
+            ));
+    }
+
+    /** Money paid out to customers in cash exchanges. */
+    private function exchangePayoutTransactions(Request $request, Carbon $dateFrom, Carbon $dateTo): Collection
+    {
+        if (! Schema::hasTable('sale_exchange_payouts')) {
+            return collect();
+        }
+
+        return DB::table('sale_exchange_payouts as payouts')
+            ->leftJoin('sale_exchanges as exchanges', 'exchanges.id', '=', 'payouts.sale_exchange_id')
+            ->leftJoin('customers', 'customers.id', '=', 'exchanges.customer_id')
+            ->where('payouts.amount', '>', 0)
+            ->whereBetween(DB::raw('COALESCE(payouts.paid_at, payouts.created_at)'), [$dateFrom->copy()->startOfDay(), $dateTo->copy()->endOfDay()])
+            ->when($request->filled('branch_id'), fn ($q) => $q->where('exchanges.branch_id', $request->branch_id))
+            ->when($request->filled('payment_method'), fn ($q) => $q->where('payouts.payment_method', $request->payment_method))
+            ->select('payouts.*', 'exchanges.exchange_no', 'customers.name as party_name', 'customers.phone as party_phone')
+            ->limit(500)
+            ->get()
+            ->map(fn ($row) => $this->cashOutRow(
+                'exchange_payout_' . $row->id,
+                'Cash Exchange Payout',
+                $row->exchange_no ?? ('EXC-' . $row->sale_exchange_id),
+                $row->party_name ?? 'Customer',
+                $row->party_phone ?? null,
+                $row->payment_method ?? 'cash',
+                (float) $row->amount,
+                $row->paid_at ?? $row->created_at,
+                $row->note ?? null
+            ));
+    }
+
+    private function cashOutRow(string $id, string $source, string $reference, string $party, ?string $phone, string $method, float $amount, $date, ?string $note): array
+    {
+        return [
+            'id' => $id,
+            'raw_id' => $id,
+            'direction' => 'out',
+            'type' => 'cash_out',
+            'source' => $source,
+            'reference_no' => $reference,
+            'party_name' => $party,
+            'party_phone' => $phone,
+            'payment_method' => $method,
+            'provider_name' => null,
+            'transaction_id' => null,
+            'amount' => round($amount, 2),
+            'note' => $note,
+            'user_name' => null,
+            'date' => $date,
+            'sort_date' => $date,
+        ];
     }
 
     private function expenseTransactions(Request $request, Carbon $dateFrom, Carbon $dateTo): Collection

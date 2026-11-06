@@ -256,6 +256,9 @@ export default function SaleList() {
   };
 
   const canReverse = (sale) => getSaleStatus(sale) === 'completed';
+  // Converted web orders stay "processing" until delivery completes; they can be cancelled but not returned.
+  const canCancel = (sale) => ['completed', 'processing'].includes(getSaleStatus(sale));
+  const canDelete = (sale) => ['cancelled', 'canceled', 'returned'].includes(getSaleStatus(sale));
 
   return (
     <div className="p-4 md:p-6">
@@ -430,7 +433,7 @@ export default function SaleList() {
                             </button>
                           )}
 
-                          {canReverse(sale) && (
+                          {canCancel(sale) && (
                             <button
                               type="button"
                               onClick={() => handleCancel(sale)}
@@ -441,7 +444,7 @@ export default function SaleList() {
                             </button>
                           )}
 
-                          {getSaleStatus(sale) !== 'completed' && (
+                          {canDelete(sale) && (
                             <button
                               type="button"
                               onClick={() => handleDelete(sale)}
@@ -505,7 +508,7 @@ export default function SaleList() {
                       </button>
                     )}
 
-                    {canReverse(sale) && (
+                    {canCancel(sale) && (
                       <button
                         type="button"
                         onClick={() => handleCancel(sale)}
@@ -516,7 +519,7 @@ export default function SaleList() {
                       </button>
                     )}
 
-                    {getSaleStatus(sale) !== 'completed' && (
+                    {canDelete(sale) && (
                       <button
                         type="button"
                         onClick={() => handleDelete(sale)}

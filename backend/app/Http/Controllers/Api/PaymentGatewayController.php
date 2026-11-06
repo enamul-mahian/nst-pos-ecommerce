@@ -145,11 +145,17 @@ class PaymentGatewayController extends Controller
                 'transaction_no' => $locked->transaction_no,
             ];
 
-            $order->forceFill([
+            $orderUpdate = [
                 'payment_status' => 'refunded',
                 'refund_amount' => (float) $order->refund_amount + (float) $locked->amount,
                 'status_history' => $history,
-            ])->save();
+            ];
+            // An order that never became a sale has nothing left to process after a full refund.
+            if (! $order->sale_id && ! in_array($order->status, ['cancelled', 'completed'], true)) {
+                $orderUpdate['status'] = 'cancelled';
+                $orderUpdate['custom_status'] = 'Payment Refunded';
+            }
+            $order->forceFill($orderUpdate)->save();
 
             CustomerOrderTimelineEvent::create([
                 'customer_order_id' => $order->id,
