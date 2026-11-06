@@ -437,7 +437,7 @@ class SaleController extends Controller
             }
             $lineSubtotal = (int) $row['quantity'] * $rate;
             $discount = (float) ($row['discount_amount'] ?? 0) + ($lineSubtotal * (float) ($row['discount_percent'] ?? 0)) / 100;
-            $subtotal += $lineSubtotal;
+            $subtotal += max($lineSubtotal - $discount, 0);
             if ($discount > $lineSubtotal + 0.01) {
                 $this->logTamperedAmount($request, ['product_id' => (int) $row['product_id'], 'line_subtotal' => $lineSubtotal, 'discount' => $discount]);
             }
@@ -512,6 +512,7 @@ class SaleController extends Controller
 
             $calculatedItems = [];
             $subtotal = 0;
+            $grossSubtotal = 0;
             $profitAmount = 0;
 
             foreach ($validated['items'] as $row) {
@@ -567,7 +568,10 @@ class SaleController extends Controller
 
                 $lineProfit = $lineTotal - $purchaseCostTotal;
 
-                $subtotal += $lineSubtotal;
+                // The invoice subtotal is the sum of item totals after item discounts; using the pre-discount
+                // amount charged the customer the full price and left the discount as a phantom due.
+                $subtotal += $lineTotal;
+                $grossSubtotal += $lineSubtotal;
                 $profitAmount += $lineProfit;
 
                 $calculatedItems[] = [
@@ -592,7 +596,8 @@ class SaleController extends Controller
             $invoiceDiscountAmount = (float) ($validated['invoice_discount_amount'] ?? 0);
 
             if ($invoiceDiscountPercent > 0) {
-                $invoiceDiscountAmount += ($subtotal * $invoiceDiscountPercent) / 100;
+                // Same base as the POS screen: the percent applies to the price before item discounts.
+                $invoiceDiscountAmount += ($grossSubtotal * $invoiceDiscountPercent) / 100;
             }
 
             $billAmount = max($subtotal - $invoiceDiscountAmount, 0);
