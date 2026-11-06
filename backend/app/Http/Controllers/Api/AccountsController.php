@@ -404,7 +404,10 @@ class AccountsController extends Controller
             });
     }
 
-    /** Cash paid to the supplier while creating a purchase (later due payments come from supplier_payments). */
+    /**
+     * Cash paid to the supplier while creating a purchase (later due payments come from supplier_payments).
+     * Cancelled purchases stay in: the cash did leave, and it now sits with the supplier as advance.
+     */
     private function purchaseCashTransactions(Request $request, Carbon $dateFrom, Carbon $dateTo): Collection
     {
         if (! Schema::hasTable('purchases') || ! Schema::hasColumn('purchases', 'cash_paid_amount')) {
@@ -416,7 +419,6 @@ class AccountsController extends Controller
             ->leftJoin('suppliers', 'suppliers.id', '=', 'purchases.supplier_id')
             ->where('purchases.cash_paid_amount', '>', 0)
             ->whereBetween("purchases.$dateColumn", [$dateFrom->copy()->startOfDay(), $dateTo->copy()->endOfDay()])
-            ->when(Schema::hasColumn('purchases', 'status'), fn ($q) => $q->where(fn ($w) => $w->whereNull('purchases.status')->orWhere('purchases.status', '<>', 'cancelled')))
             ->when($request->filled('branch_id') && Schema::hasColumn('purchases', 'branch_id'), fn ($q) => $q->where('purchases.branch_id', $request->branch_id))
             ->when($request->filled('payment_method') && Schema::hasColumn('purchases', 'payment_method'), fn ($q) => $q->where('purchases.payment_method', $request->payment_method));
 
