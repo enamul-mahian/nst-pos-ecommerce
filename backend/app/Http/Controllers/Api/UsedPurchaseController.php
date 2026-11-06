@@ -265,7 +265,7 @@ class UsedPurchaseController extends Controller
             $user->update($this->filterExistingColumns('users', $payload));
         } else {
             $payload['password'] = Hash::make($phone);
-            $payload['temporary_password'] = $phone;
+            $payload['temporary_password'] = null; // the first password is the phone number; never stored readable
             $payload['must_change_password'] = true;
             $payload['password_reset_by'] = auth()->id();
             $payload['password_reset_at'] = now();
