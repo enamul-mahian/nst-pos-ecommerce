@@ -74,7 +74,9 @@ class EmiController extends Controller
                     'charge_amount' => round(($price * $charge) / 100, 2),
                     'processing_fee' => (float) $bank->processing_fee,
                     'total_amount' => round($total + (float) $bank->processing_fee, 2),
-                    'monthly_emi' => $tenure > 0 ? round(($total + (float) $bank->processing_fee) / $tenure, 2) : 0,
+                    // The bank's processing fee is paid once at purchase, not spread over the instalments.
+                    'monthly_emi' => $tenure > 0 ? round($total / $tenure, 2) : 0,
+                    'upfront_payment' => (float) $bank->processing_fee,
                     'minimum_amount' => (float) $bank->minimum_amount,
                     'eligible' => $price >= (float) $bank->minimum_amount,
                     'note' => $bank->note,
