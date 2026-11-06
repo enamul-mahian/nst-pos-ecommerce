@@ -862,9 +862,13 @@ function Topbar({ desktopMode, onSidebarAction, onMobileOpen }) {
       rerunRequested = false;
 
       const cacheBust = Date.now();
+      // Payment transactions are Super Admin only; other staff got a 403 on every poll.
+      const canSeePayments = accessRules.isSuperAdmin(user);
       const [summaryResult, paymentResult] = await Promise.allSettled([
         api.get('/dashboard/action-summary', { params: { _nst_rt: cacheBust } }),
-        api.get('/payment-gateways/transactions', { params: { per_page: 20, _nst_rt: cacheBust } }),
+        canSeePayments
+          ? api.get('/payment-gateways/transactions', { params: { per_page: 20, _nst_rt: cacheBust } })
+          : Promise.reject(new Error('not permitted')),
       ]);
 
       if (!mounted) return;
@@ -905,9 +909,10 @@ function Topbar({ desktopMode, onSidebarAction, onMobileOpen }) {
         return;
       }
 
+      // The server caches the summary for 20 seconds, so polling faster only adds load.
       schedule(anySuccess
-        ? 3000
-        : Math.min(30000, 3000 * (2 ** Math.min(failures, 3))));
+        ? 20000
+        : Math.min(60000, 20000 * (2 ** Math.min(failures, 2))));
     };
 
     const requestImmediateRefresh = () => {

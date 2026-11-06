@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import supplierService from '../../services/supplierService';
+import api from '../../services/api';
 import { NstPageHeader } from '../../components/ui/nst-page-header';
 import { Truck as NstHdrTruck } from 'lucide-react';
 import { useT } from '../../i18n';
@@ -36,6 +37,21 @@ export default function SupplierLedger() {
     supplierId !== 'null';
 
   const [supplier, setSupplier] = useState(null);
+
+  // Slips are private files: fetch with the login token, then open the file in a new tab.
+  const openPaymentSlip = async (paymentId) => {
+    const slipWindow = window.open('', '_blank');
+    try {
+      const response = await api.get(`/supplier-payments/${paymentId}/slip`, { responseType: 'blob' });
+      const fileUrl = URL.createObjectURL(response.data);
+      if (slipWindow) slipWindow.location.href = fileUrl;
+      else window.open(fileUrl, '_blank');
+      setTimeout(() => URL.revokeObjectURL(fileUrl), 60000);
+    } catch (error) {
+      if (slipWindow) slipWindow.close();
+      window.alert(error?.response?.status === 404 ? 'Slip file not found.' : 'Could not open the slip.');
+    }
+  };
   const [summary, setSummary] = useState(null);
   const [purchases, setPurchases] = useState([]);
   const [payments, setPayments] = useState([]);
@@ -566,14 +582,13 @@ export default function SupplierLedger() {
 
                       <td className="px-4 py-3">
                         {payment.payment_slip_url ? (
-                          <a
-                            href={payment.payment_slip_url}
-                            target="_blank"
-                            rel="noreferrer"
+                          <button
+                            type="button"
+                            onClick={() => openPaymentSlip(payment.id)}
                             className="rounded-lg bg-[var(--nst-dashboard-primary-soft)] px-3 py-1.5 text-xs font-semibold text-[var(--nst-dashboard-primary)] hover:bg-[var(--nst-dashboard-primary-soft)]"
                           >
                             View Slip
-                          </a>
+                          </button>
                         ) : (
                           <span className="text-gray-400">-</span>
                         )}

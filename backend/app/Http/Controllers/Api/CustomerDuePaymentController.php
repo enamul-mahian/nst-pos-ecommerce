@@ -91,8 +91,17 @@ class CustomerDuePaymentController extends Controller
             }
 
             $salesDueAfter = $this->getCustomerSalesDueTotal($lockedCustomer);
-            $newBalance = $dueColumn ? $salesDueAfter : max($previousBalance - $amount, 0);
-            $extraAmount = max($amount - $previousBalance, 0);
+
+            // Due the customer carries without an open invoice (opening balance) used to be wiped out because the
+            // new balance was rebuilt from invoice dues only. Pay it after the invoices, then keep any rest as advance.
+            $openingDue = max(round($customerBalanceBefore - $salesDueBefore, 2), 0);
+            $openingPaid = min(max($remainingAmount, 0), $openingDue);
+            $remainingAmount -= $openingPaid;
+
+            $newBalance = $dueColumn
+                ? round($salesDueAfter + $openingDue - $openingPaid, 2)
+                : max($previousBalance - $amount, 0);
+            $extraAmount = max(round($remainingAmount, 2), 0);
 
             $customerPaymentData = [
                 'customer_id' => $lockedCustomer->id,
@@ -118,6 +127,13 @@ class CustomerDuePaymentController extends Controller
             $payment = CustomerPayment::create($customerPaymentData);
 
             $this->updateCustomerBalance($lockedCustomer->id, $newBalance, $collectorId);
+
+            // Money paid beyond everything owed is kept as customer advance instead of disappearing.
+            if ($extraAmount > 0 && Schema::hasColumn('customers', 'advance_balance')) {
+                DB::table('customers')->where('id', $lockedCustomer->id)->update([
+                    'advance_balance' => DB::raw('COALESCE(advance_balance, 0) + ' . $extraAmount),
+                ]);
+            }
 
             return [
                 'payment' => $payment->load('collector:id,name,email'),

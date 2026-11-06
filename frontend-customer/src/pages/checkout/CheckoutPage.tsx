@@ -24,7 +24,9 @@ export const CheckoutPage: React.FC = () => {
     shippingMethod, 
     setPaymentMethod, 
     setShippingMethod, 
-    clearCart 
+    clearCart,
+    couponCode,
+    clearCoupon,
   } = useCartStore();
 
   // Delivery Address Form States
@@ -90,6 +92,7 @@ export const CheckoutPage: React.FC = () => {
         delivery_fee: deliveryFee,
         discount,
         total,
+        coupon_code: couponCode || undefined,
       };
 
       // Create Order on secure Backend POS portal endpoint
@@ -137,6 +140,8 @@ export const CheckoutPage: React.FC = () => {
     } catch (err: any) {
       const priceChanges = err?.response?.data?.price_changes;
       if (Array.isArray(priceChanges) && priceChanges.length) useCartStore.getState().syncPrices(priceChanges);
+      // The coupon stopped being valid (expired, used up): drop it so the shown total matches the server.
+      if (err?.response?.data?.coupon_error) clearCoupon();
       const parsedError = handleApiError(err);
       toast.error(parsedError.message || 'An error occurred during checkout.');
     } finally {

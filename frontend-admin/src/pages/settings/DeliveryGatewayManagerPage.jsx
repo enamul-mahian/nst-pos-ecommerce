@@ -369,7 +369,7 @@ export default function DeliveryGatewayManagerPage() {
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
                   <SecretInput label="API Key" name="api_key" value={form.credentials.api_key} configured={credentialStatus.api_key} onChange={setCredential} />
                   <SecretInput label="Secret Key" name="secret_key" value={form.credentials.secret_key} configured={credentialStatus.secret_key} onChange={setCredential} />
-                  <SecretInput label="Webhook Bearer Token (optional)" name="webhook_token" value={form.credentials.webhook_token} configured={credentialStatus.webhook_token} onChange={setCredential} />
+                  <SecretInput label="Webhook Bearer Token (required to receive courier status webhooks)" name="webhook_token" value={form.credentials.webhook_token} configured={credentialStatus.webhook_token} onChange={setCredential} />
                 </div>
               )}
 

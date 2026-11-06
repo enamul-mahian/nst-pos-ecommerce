@@ -83,6 +83,7 @@ class OrderController extends Controller
             'transaction_id' => [$manualPayment ? 'required' : 'nullable', 'string', 'max:190'],
             'paid_amount' => [$manualPayment ? 'required' : 'nullable', 'numeric', $manualPayment ? 'min:0.01' : 'min:0'],
             'promo_code' => ['nullable', 'string', 'max:100'],
+            'coupon_code' => ['nullable', 'string', 'max:80'],
             'items' => ['required', 'array', 'min:1', 'max:50'],
             'items.*.product_id' => ['required', 'integer', 'min:1'],
             'items.*.variant_id' => ['nullable', 'integer', 'min:1'],
@@ -127,6 +128,32 @@ class OrderController extends Controller
             }
 
             $quantity = (int) $row['quantity'];
+
+            // Only live products, and only what is actually in stock. Orders for draft/inactive or sold-out items
+            // used to be accepted and only failed later when staff tried to convert them.
+            if (in_array((string) $product->status, ['draft', 'inactive'], true)) {
+                return response()->json(['status' => false, 'message' => "{$product->name} is not available for online orders."], 422);
+            }
+            if (Schema::hasTable('branch_stocks')) {
+                $hasReserved = Schema::hasColumn('branch_stocks', 'reserved_quantity');
+                $available = (int) DB::table('branch_stocks')
+                    ->where('product_id', $product->id)
+                    ->when(Schema::hasColumn('branch_stocks', 'product_variant_id'), fn ($q) => $variant
+                        ? $q->where('product_variant_id', $variant->id)
+                        : $q->whereNull('product_variant_id'))
+                    ->when(! empty($row['branch_id']), fn ($q) => $q->where('branch_id', (int) $row['branch_id']))
+                    ->sum(DB::raw($hasReserved ? 'GREATEST(quantity - COALESCE(reserved_quantity, 0), 0)' : 'GREATEST(quantity, 0)'));
+                if ($available < $quantity) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => $available > 0
+                            ? "Only {$available} unit(s) of {$product->name} are in stock."
+                            : "{$product->name} is out of stock.",
+                        'stock_issue' => ['product_id' => $product->id, 'variant_id' => $variant?->id, 'available' => $available],
+                    ], 422);
+                }
+            }
+
             $unitPrice = $this->resolvePublicPrice($product, $variant);
             if ($unitPrice <= 0) {
                 return response()->json([
@@ -215,6 +242,19 @@ class OrderController extends Controller
             }
         }
 
+        // Store coupon: the server decides the discount; the cart only shows it. Re-checked with a lock when saving.
+        $couponCode = strtoupper(trim((string) ($validated['coupon_code'] ?? '')));
+        $couponBase = max($subtotal - $discount, 0);
+        $couponDiscount = 0.0;
+        if ($couponCode !== '') {
+            try {
+                $couponDiscount = app(\App\Services\CouponService::class)->evaluate($couponCode, $couponBase)['discount'];
+                $discount += $couponDiscount;
+            } catch (\Symfony\Component\HttpKernel\Exception\HttpException $exception) {
+                return response()->json(['status' => false, 'message' => $exception->getMessage(), 'coupon_error' => true], 422);
+            }
+        }
+
         $deliveryCharge = match ($validated['shipping_method'] ?? null) {
             'inside_dhaka' => 60.0,
             'outside_dhaka' => 120.0,
@@ -243,8 +283,18 @@ class OrderController extends Controller
             $customer,
             $user,
             $promoCode,
-            $promoRow
+            $promoRow,
+            $couponCode,
+            $couponBase,
+            $couponDiscount
         ) {
+            if ($couponCode !== '') {
+                // Count the use atomically; a coupon that ran out between the check and now is refused.
+                $couponService = app(\App\Services\CouponService::class);
+                $coupon = $couponService->evaluate($couponCode, $couponBase, true)['coupon'];
+                $couponService->markUsed($coupon);
+            }
+
             $order = CustomerOrder::query()->create([
                 'order_no' => $this->generateOrderNo(),
                 'customer_id' => $customerId,
@@ -272,6 +322,8 @@ class OrderController extends Controller
                 'latitude' => $validated['latitude'] ?? null,
                 'longitude' => $validated['longitude'] ?? null,
                 'promo_code' => $promoCode !== '' ? $promoCode : null,
+                'coupon_code' => $couponCode !== '' ? $couponCode : null,
+                'coupon_discount' => $couponDiscount,
                 'customer_note' => $validated['customer_note'] ?? null,
                 'source' => 'website',
                 'placed_at' => now(),

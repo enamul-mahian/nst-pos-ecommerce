@@ -13,6 +13,9 @@ interface CartState {
   discount: number;
   subtotal: number;
   total: number;
+  couponCode: string | null;
+  // Subtotal the coupon was checked against; the coupon is dropped when the cart changes.
+  couponSubtotal: number;
 
   // Actions
   addItem: (
@@ -36,6 +39,8 @@ interface CartState {
   setShippingMethod: (method: 'inside_dhaka' | 'outside_dhaka' | 'cash_on_delivery' | string) => void;
   clearCart: () => void;
   recalculateTotals: () => void;
+  applyCoupon: (code: string, discount: number) => void;
+  clearCoupon: () => void;
   syncPrices: (changes: { product_id: number; variant_id: number | null; price: number }[]) => void;
 }
 
@@ -57,6 +62,8 @@ export const useCartStore = create<CartState>()(
       discount: 0,
       subtotal: 0,
       total: 0,
+      couponCode: null,
+      couponSubtotal: 0,
 
       /**
        * Add a product/variant to the cart with duplicate detection & merging
@@ -221,11 +228,26 @@ export const useCartStore = create<CartState>()(
         get().recalculateTotals();
       },
 
+      applyCoupon: (code: string, discount: number) => {
+        set({ couponCode: code, discount: Math.max(0, Number(discount) || 0), couponSubtotal: get().subtotal });
+        get().recalculateTotals();
+      },
+
+      clearCoupon: () => {
+        set({ couponCode: null, discount: 0, couponSubtotal: 0 });
+        get().recalculateTotals();
+      },
+
       recalculateTotals: () => {
         const items = get().items;
         
         // Calculate subtotal
         const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+        // A coupon was checked against a specific cart amount; if the cart changed, the customer applies it again.
+        if (get().couponCode && subtotal !== get().couponSubtotal) {
+          set({ couponCode: null, discount: 0, couponSubtotal: 0 });
+        }
         
         // Resolve delivery fee
         const deliveryFee = get().deliveryFee;
@@ -252,6 +274,8 @@ export const useCartStore = create<CartState>()(
           discount: 0,
           subtotal: 0,
           total: 0,
+          couponCode: null,
+          couponSubtotal: 0,
         });
       },
     }),
@@ -263,6 +287,8 @@ export const useCartStore = create<CartState>()(
         shippingMethod: state.shippingMethod,
         deliveryFee: state.deliveryFee,
         discount: state.discount,
+        couponCode: state.couponCode,
+        couponSubtotal: state.couponSubtotal,
       }),
     }
   )

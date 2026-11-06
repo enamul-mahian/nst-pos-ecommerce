@@ -607,7 +607,16 @@ class SaleController extends Controller
             $paidAmount = collect($payments)->sum('amount');
             $dueAmount = max($finalAmount - $paidAmount, 0);
             $cashBackAmount = max($paidAmount - $finalAmount, 0);
-            $paymentStatus = $dueAmount > 0 ? ($paidAmount > 0 ? 'partial' : 'due') : 'paid';
+            // A due with no customer attached can never be collected or shown in any ledger.
+            abort_if($dueAmount > 0.009 && ! $customer, 422, 'Add the customer name and phone for a sale with due.');
+
+            // The previous due is shown on this invoice but still belongs to the older invoices. Keeping it inside
+            // this invoice's due counted it twice (ledger totals, due collection) and paying the old invoice left
+            // the copy here owed. This invoice owes only its own bill; money paid beyond it settles older dues.
+            $thisBill = $billAmount + $deliveryCharge;
+            $invoiceDue = round(max($thisBill - $paidAmount, 0), 2);
+            $paidTowardsOlderDue = round(min(max($paidAmount - $thisBill, 0), $previousDue), 2);
+            $paymentStatus = $invoiceDue > 0 ? ($paidAmount > 0 ? 'partial' : 'due') : 'paid';
             $paymentMethod = count($payments) > 1 ? 'mixed' : ($payments[0]['payment_method'] ?? 'due');
 
             $invoice = app(BranchInvoiceService::class)->allocate((int) $validated['branch_id'], $request->user()?->id);
@@ -632,7 +641,7 @@ class SaleController extends Controller
                 'final_amount' => $finalAmount,
                 'amount_in_words' => app(\App\Services\NumberToWordsService::class)->taka($finalAmount),
                 'paid_amount' => $paidAmount,
-                'due_amount' => $dueAmount,
+                'due_amount' => $invoiceDue,
                 'cash_back_amount' => $cashBackAmount,
                 'profit_amount' => $profitAmount,
                 'payment_method' => $paymentMethod,
@@ -703,6 +712,10 @@ class SaleController extends Controller
                         ? ($rawPayment['emi_reference'] ?? null)
                         : null,
                 ]);
+            }
+
+            if ($customer && $paidTowardsOlderDue > 0) {
+                $this->settleOlderInvoiceDues((int) $customer->id, (int) $sale->id, $paidTowardsOlderDue);
             }
 
             if ($customer) {
@@ -965,6 +978,9 @@ class SaleController extends Controller
             $finalAmount = $total + $previousDue;
             $dueAmount = max($finalAmount - $paidAmount, 0);
             $cashBackAmount = max($paidAmount - $finalAmount, 0);
+            // Same rule as POS sales: this invoice owes only its own price; extra payment settles older dues.
+            $invoiceDue = round(max($total - $paidAmount, 0), 2);
+            $paidTowardsOlderDue = round(min(max($paidAmount - $total, 0), $previousDue), 2);
             $purchasePrice = (float) $usedPurchase->purchase_price;
             $profitAmount = $total - $purchasePrice;
 
@@ -990,11 +1006,11 @@ class SaleController extends Controller
                 'final_amount' => $finalAmount,
                 'amount_in_words' => app(\App\Services\NumberToWordsService::class)->taka($finalAmount),
                 'paid_amount' => $paidAmount,
-                'due_amount' => $dueAmount,
+                'due_amount' => $invoiceDue,
                 'cash_back_amount' => $cashBackAmount,
                 'profit_amount' => $profitAmount,
                 'payment_method' => $validated['payment_method'] ?? 'cash',
-                'payment_status' => $dueAmount > 0 ? 'partial' : 'paid',
+                'payment_status' => $invoiceDue > 0 ? ($paidAmount > 0 ? 'partial' : 'due') : 'paid',
                 'status' => 'completed',
                 'sold_by' => $request->user()?->id,
                 'payment_received_by' => $request->user()?->id,
@@ -1048,6 +1064,10 @@ class SaleController extends Controller
                 'sold_at' => now(),
                 'sold_by' => $request->user()?->id,
             ]);
+
+            if ($customer && $paidTowardsOlderDue > 0) {
+                $this->settleOlderInvoiceDues((int) $customer->id, (int) $sale->id, $paidTowardsOlderDue);
+            }
 
             if ($customer) {
                 $customer->update(['current_balance' => $dueAmount, 'updated_by' => $request->user()?->id]);
@@ -1271,6 +1291,33 @@ class SaleController extends Controller
         ]);
     }
 
+
+    /** Apply money paid beyond a new invoice to the customer's older open invoices, oldest first. */
+    private function settleOlderInvoiceDues(int $customerId, int $exceptSaleId, float $amount): void
+    {
+        $remaining = round($amount, 2);
+        $older = Sale::query()
+            ->where('customer_id', $customerId)
+            ->whereKeyNot($exceptSaleId)
+            ->where('due_amount', '>', 0)
+            ->whereNotIn('status', ['cancelled', 'canceled', 'returned'])
+            ->orderBy('id')
+            ->lockForUpdate()
+            ->get();
+
+        foreach ($older as $invoice) {
+            if ($remaining <= 0) {
+                break;
+            }
+            $applied = min($remaining, (float) $invoice->due_amount);
+            $newDue = round((float) $invoice->due_amount - $applied, 2);
+            $invoice->forceFill([
+                'due_amount' => $newDue,
+                'payment_status' => $newDue > 0 ? 'partial' : 'paid',
+            ])->save();
+            $remaining = round($remaining - $applied, 2);
+        }
+    }
 
     private function saleUpdateData(array $data): array
     {

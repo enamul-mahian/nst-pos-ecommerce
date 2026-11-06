@@ -19,6 +19,9 @@ class ZktecoAttendanceController extends Controller
 
     public function cdata(Request $request)
     {
+        if (! $this->ipAllowed($request)) {
+            return response('FORBIDDEN', 403)->header('Content-Type', 'text/plain; charset=UTF-8');
+        }
         $serial = $this->serialFromRequest($request);
         $device = $this->findActiveDevice($serial);
         $this->service->recordPacket($device, $serial, '/iclock/cdata', $request->method(), $request->query(), $request->getContent(), $request->ip());
@@ -27,6 +30,9 @@ class ZktecoAttendanceController extends Controller
 
     public function getRequest(Request $request)
     {
+        if (! $this->ipAllowed($request)) {
+            return response('FORBIDDEN', 403)->header('Content-Type', 'text/plain; charset=UTF-8');
+        }
         $serial = $this->serialFromRequest($request);
         $device = $this->findActiveDevice($serial);
         $this->service->recordPacket($device, $serial, '/iclock/getrequest', $request->method(), $request->query(), $request->getContent(), $request->ip());
@@ -35,6 +41,9 @@ class ZktecoAttendanceController extends Controller
 
     public function deviceCommand(Request $request)
     {
+        if (! $this->ipAllowed($request)) {
+            return response('FORBIDDEN', 403)->header('Content-Type', 'text/plain; charset=UTF-8');
+        }
         $serial = $this->serialFromRequest($request);
         $device = $this->findActiveDevice($serial);
         $this->service->recordPacket($device, $serial, '/iclock/devicecmd', $request->method(), $request->query(), $request->getContent(), $request->ip());
@@ -43,6 +52,9 @@ class ZktecoAttendanceController extends Controller
 
     public function registry(Request $request)
     {
+        if (! $this->ipAllowed($request)) {
+            return response('FORBIDDEN', 403)->header('Content-Type', 'text/plain; charset=UTF-8');
+        }
         $serial = $this->serialFromRequest($request);
         $device = $this->findActiveDevice($serial);
         $this->service->recordPacket($device, $serial, '/iclock/registry', $request->method(), $request->query(), $request->getContent(), $request->ip());
@@ -353,6 +365,17 @@ class ZktecoAttendanceController extends Controller
     private function serialFromRequest(Request $request): string
     {
         return trim((string) ($request->query('SN') ?: $request->query('sn') ?: $request->input('SN') ?: $request->input('serial_number') ?: $request->header('X-Device-Serial', '')));
+    }
+
+    /**
+     * ADMS devices identify themselves only by serial number, so anyone who knows it can post punches.
+     * When ZKTECO_ALLOWED_IPS (comma separated public IPs of the office) is set, other sources are refused.
+     */
+    private function ipAllowed(Request $request): bool
+    {
+        $allowed = array_filter(array_map('trim', explode(',', (string) config('services.zkteco.allowed_ips', ''))));
+
+        return $allowed === [] || in_array((string) $request->ip(), $allowed, true);
     }
 
     private function findActiveDevice(string $serial): ?object

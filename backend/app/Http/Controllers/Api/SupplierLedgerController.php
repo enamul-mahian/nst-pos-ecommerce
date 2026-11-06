@@ -43,7 +43,8 @@ class SupplierLedgerController extends Controller
         if ($request->hasFile('payment_slip')) {
             $paymentSlipPath = $request
                 ->file('payment_slip')
-                ->store('supplier-payment-slips', 'public');
+                // Bank slips are private: kept off the public disk and served only through an authenticated route.
+                ->store('private/supplier-payment-slips', 'local');
         }
 
         try {
@@ -114,8 +115,14 @@ class SupplierLedgerController extends Controller
 
                 $purchaseDueAfter = $this->getSupplierPurchaseDueTotal($lockedSupplier);
 
+                // Due the supplier carries without a purchase behind it (opening balance). It used to be wiped out
+                // by every payment because the new balance was rebuilt from purchase dues only.
+                $openingDue = max(round($supplierBalanceBefore - $purchaseDueBefore, 2), 0);
+                $openingPaid = min(max($remainingAmount, 0), $openingDue);
+                $remainingAmount -= $openingPaid;
+
                 if ($dueColumn) {
-                    $newBalance = $purchaseDueAfter;
+                    $newBalance = round($purchaseDueAfter + $openingDue - $openingPaid, 2);
                 } else {
                     $newBalance = max($previousBalance - $amount, 0);
                 }
@@ -182,11 +189,26 @@ class SupplierLedgerController extends Controller
             ]);
         } catch (\Throwable $e) {
             if ($paymentSlipPath) {
-                Storage::disk('public')->delete($paymentSlipPath);
+                Storage::disk('local')->delete($paymentSlipPath);
             }
 
             throw $e;
         }
+    }
+
+    /** Bank/payment slip of a supplier payment, for logged-in staff with supplier access only. */
+    public function slip(int $paymentId)
+    {
+        $path = DB::table('supplier_payments')->where('id', $paymentId)->value('payment_slip_path');
+        abort_unless($path, 404, 'No slip for this payment.');
+
+        foreach (['local', 'public'] as $disk) {
+            if (Storage::disk($disk)->exists($path)) {
+                return Storage::disk($disk)->response($path, basename($path), ['X-Content-Type-Options' => 'nosniff', 'Cache-Control' => 'private, no-store']);
+            }
+        }
+
+        abort(404, 'Slip file not found.');
     }
 
     public function recalculate(Supplier $supplier)
@@ -487,7 +509,7 @@ class SupplierLedgerController extends Controller
                     'provider_name' => $this->getObjectValue($payment, ['provider_name'], '-'),
                     'transaction_id' => $this->getObjectValue($payment, ['transaction_id'], '-'),
                     'payment_slip_path' => $slipPath,
-                    'payment_slip_url' => $slipPath ? Storage::disk('public')->url($slipPath) : null,
+                    'payment_slip_url' => $slipPath ? url('/api/supplier-payments/' . $payment->id . '/slip') : null,
                     'amount' => (float) $this->getObjectValue($payment, ['amount'], 0),
                     'previous_balance' => (float) $this->getObjectValue($payment, ['previous_balance'], 0),
                     'new_balance' => (float) $this->getObjectValue($payment, ['new_balance'], 0),

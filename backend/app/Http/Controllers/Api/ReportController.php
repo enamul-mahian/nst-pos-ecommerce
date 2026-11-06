@@ -54,7 +54,7 @@ class ReportController extends Controller
         $base = $this->salesBaseQuery($request, $dateFrom, $dateTo);
 
         $amountExpression = $this->sumExpression('sales', $this->saleAmountColumn());
-        $paidExpression = $this->sumExpression('sales', 'paid_amount');
+        $paidExpression = $this->salesNetPaidExpression();
         $dueExpression = $this->sumExpression('sales', 'due_amount');
         $profitExpression = $this->sumExpression('sales', 'profit_amount');
 
@@ -539,7 +539,7 @@ class ReportController extends Controller
 
         $amountColumn = $this->saleAmountColumn();
         $amountExpression = $this->sumExpression('sales', $amountColumn);
-        $paidExpression = $this->sumExpression('sales', 'paid_amount');
+        $paidExpression = $this->salesNetPaidExpression();
         $dueExpression = $this->sumExpression('sales', 'due_amount');
         $profitExpression = $this->sumExpression('sales', 'profit_amount');
 
@@ -695,7 +695,7 @@ class ReportController extends Controller
         $totals = (clone $base)
             ->selectRaw('COUNT(sales.id) as sale_count')
             ->selectRaw($this->sumExpression('sales', $this->saleAmountColumn()) . ' as sale_amount')
-            ->selectRaw($this->sumExpression('sales', 'paid_amount') . ' as paid_amount')
+            ->selectRaw($this->salesNetPaidExpression() . ' as paid_amount')
             ->selectRaw($this->sumExpression('sales', 'due_amount') . ' as due_amount')
             ->selectRaw($this->sumExpression('sales', 'profit_amount') . ' as profit_amount')
             ->first();
@@ -884,6 +884,15 @@ class ReportController extends Controller
         }
 
         return null;
+    }
+
+    /** Money actually kept from sales: paid minus the change handed back (cash_back_amount). */
+    private function salesNetPaidExpression(): string
+    {
+        $paid = $this->sumExpression('sales', 'paid_amount');
+        $cashBack = $this->sumExpression('sales', 'cash_back_amount');
+
+        return $cashBack === '0' ? $paid : "($paid - $cashBack)";
     }
 
     private function sumExpression(string $table, ?string $column): string

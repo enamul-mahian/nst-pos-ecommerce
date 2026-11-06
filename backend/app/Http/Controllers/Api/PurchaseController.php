@@ -116,7 +116,7 @@ class PurchaseController extends Controller
 
         $validated = $request->validate([
             'supplier_id' => ['required', 'integer', Rule::exists('suppliers', 'id')],
-            'branch_id' => ['nullable', 'integer'],
+            'branch_id' => ['nullable', 'integer', Rule::exists('branches', 'id')],
 
             'purchase_no' => ['nullable', 'string', 'max:100'],
             'purchase_date' => ['nullable', 'date'],
@@ -163,8 +163,21 @@ class PurchaseController extends Controller
 
         $this->validateDeviceIdentifiers($validated['items'] ?? []);
 
+        // IMEI phones can sit in prime stock without a branch, but plain quantity is only ever stored per branch.
+        // Without a branch that quantity was saved on the purchase and silently never reached stock.
+        if (empty($validated['branch_id'])) {
+            foreach ($validated['items'] as $index => $item) {
+                $plain = (float) ($item['quantity'] ?? 1) - count($item['devices'] ?? []);
+                if ($plain > 0) {
+                    throw ValidationException::withMessages([
+                        'branch_id' => 'Select a branch: item ' . ($index + 1) . ' has quantity without IMEI/device rows, which is stocked per branch.',
+                    ]);
+                }
+            }
+        }
+
         $supplierInvoiceFilePath = $request->hasFile('supplier_invoice_file')
-            ? $request->file('supplier_invoice_file')->store('purchase-invoices', 'public')
+            ? $request->file('supplier_invoice_file')->store('private/purchase-invoices', 'local')
             : null;
 
         $result = DB::transaction(function () use ($request, $validated, $supplierInvoiceFilePath) {
@@ -387,15 +400,19 @@ class PurchaseController extends Controller
         $updateData = [];
 
         if ($request->hasFile('supplier_invoice_file') && Schema::hasColumn('purchases', 'supplier_invoice_file')) {
-            if (! empty($purchase->supplier_invoice_file) && Storage::disk('public')->exists($purchase->supplier_invoice_file)) {
-                Storage::disk('public')->delete($purchase->supplier_invoice_file);
+            if (! empty($purchase->supplier_invoice_file)) {
+                foreach (['local', 'public'] as $disk) {
+                    Storage::disk($disk)->delete($purchase->supplier_invoice_file);
+                }
             }
-            $updateData['supplier_invoice_file'] = $request->file('supplier_invoice_file')->store('purchase-invoices', 'public');
+            $updateData['supplier_invoice_file'] = $request->file('supplier_invoice_file')->store('private/purchase-invoices', 'local');
         }
 
         if ($request->boolean('remove_supplier_invoice_file') && Schema::hasColumn('purchases', 'supplier_invoice_file')) {
-            if (! empty($purchase->supplier_invoice_file) && Storage::disk('public')->exists($purchase->supplier_invoice_file)) {
-                Storage::disk('public')->delete($purchase->supplier_invoice_file);
+            if (! empty($purchase->supplier_invoice_file)) {
+                foreach (['local', 'public'] as $disk) {
+                    Storage::disk($disk)->delete($purchase->supplier_invoice_file);
+                }
             }
             $updateData['supplier_invoice_file'] = null;
         }
@@ -476,6 +493,23 @@ class PurchaseController extends Controller
                 ? 'Purchase cancelled: stock and supplier balance were reversed. It is kept on record because money was already paid (now supplier advance).'
                 : 'Purchase deleted: stock and supplier balance were reversed.',
         ]);
+    }
+
+    /** Supplier invoice file of a purchase, for logged-in staff with purchase access only. */
+    public function invoiceFile(string $id)
+    {
+        $path = Schema::hasColumn('purchases', 'supplier_invoice_file')
+            ? DB::table('purchases')->where('id', $id)->value('supplier_invoice_file')
+            : null;
+        abort_unless($path, 404, 'No supplier invoice file for this purchase.');
+
+        foreach (['local', 'public'] as $disk) {
+            if (Storage::disk($disk)->exists($path)) {
+                return Storage::disk($disk)->response($path, basename($path), ['X-Content-Type-Options' => 'nosniff', 'Cache-Control' => 'private, no-store']);
+            }
+        }
+
+        abort(404, 'Supplier invoice file not found.');
     }
 
     public function receive(string $id)

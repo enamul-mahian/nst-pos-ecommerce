@@ -42,7 +42,8 @@ class SupplierPayment extends Model
             return null;
         }
 
-        return Storage::disk('public')->url($this->payment_slip_path);
+        // Slips are private files; this route checks the login and supplier permission.
+        return url('/api/supplier-payments/' . $this->id . '/slip');
     }
 
     public function supplier()

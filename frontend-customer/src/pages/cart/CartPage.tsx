@@ -18,7 +18,8 @@ export const CartPage: React.FC = () => {
     total, 
     updateQuantity, 
     removeItem, 
-    recalculateTotals 
+    applyCoupon,
+    clearCoupon,
   } = useCartStore();
 
   const [couponCode, setCouponCode] = useState('');
@@ -38,20 +39,21 @@ export const CartPage: React.FC = () => {
 
     try {
       setIsApplyingCoupon(true);
-      // Calls secure coupon validation api endpoint
-      const response = await apiClient.get('/coupons/validate', {
-        params: { code: couponCode },
+      // Public check: the server decides the discount again when the order is placed.
+      const code = couponCode.trim().toUpperCase();
+      const response = await apiClient.get('/public/coupons/validate', {
+        params: { code, amount: subtotal },
       });
 
-      if (response.data?.status) {
-        toast.success(`Coupon "${couponCode}" applied successfully!`);
-        // Recalculate cart totals (Zustand will handle dynamic update)
-        recalculateTotals();
+      if (response.data?.success) {
+        applyCoupon(code, Number(response.data?.data?.discount || 0));
+        toast.success(`Coupon "${code}" applied successfully!`);
       } else {
         throw new Error(response.data?.message || 'Invalid coupon code.');
       }
     } catch (err: any) {
-      toast.error(err.message || 'Coupon code not found or expired.');
+      clearCoupon();
+      toast.error(err?.response?.data?.message || err.message || 'Coupon code not found or expired.');
     } finally {
       setIsApplyingCoupon(false);
     }

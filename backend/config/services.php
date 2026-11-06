@@ -52,4 +52,9 @@ return [
     'brandfetch' => [
         'client_id' => env('BRAND_FETCH_CLIENT_ID', ''),
     ],
+    // Public IPs allowed to push ZKTeco/ADMS attendance (comma separated). Empty = any IP (old behaviour).
+    'zkteco' => [
+        'allowed_ips' => env('ZKTECO_ALLOWED_IPS', ''),
+    ],
+
 ];
