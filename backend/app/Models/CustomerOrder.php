@@ -11,6 +11,8 @@ class CustomerOrder extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'coupon_code',
+        'coupon_discount',
         'order_no',
         'customer_id',
         'user_id',

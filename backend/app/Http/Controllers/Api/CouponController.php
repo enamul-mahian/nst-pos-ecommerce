@@ -44,24 +44,25 @@ class CouponController extends Controller
 
     public function validateCoupon(Request $request)
     {
-        $validated = $request->validate(['code' => ['required', 'string'], 'amount' => ['required', 'numeric', 'min:0']]);
-        $coupon = Coupon::where('code', strtoupper($validated['code']))->where('is_active', true)->first();
-        if (! $coupon) {
-            return response()->json(['success' => false, 'message' => 'Invalid coupon.'], 404);
+        $validated = $request->validate(['code' => ['required', 'string', 'max:80'], 'amount' => ['required', 'numeric', 'min:0']]);
+
+        try {
+            $result = app(\App\Services\CouponService::class)->evaluate($validated['code'], (float) $validated['amount']);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $exception) {
+            return response()->json(['success' => false, 'status' => false, 'message' => $exception->getMessage()], $exception->getStatusCode());
         }
-        $now = now();
-        if (($coupon->starts_at && $coupon->starts_at->gt($now)) || ($coupon->ends_at && $coupon->ends_at->lt($now))) {
-            return response()->json(['success' => false, 'message' => 'Coupon expired/not active yet.'], 422);
-        }
-        if ($coupon->usage_limit && $coupon->used_count >= $coupon->usage_limit) {
-            return response()->json(['success' => false, 'message' => 'Coupon usage limit exceeded.'], 422);
-        }
-        if ((float) $validated['amount'] < (float) $coupon->minimum_amount) {
-            return response()->json(['success' => false, 'message' => 'Minimum purchase amount not reached.'], 422);
-        }
-        $discount = $coupon->discount_type === 'percent' ? ((float) $validated['amount'] * (float) $coupon->discount_value / 100) : (float) $coupon->discount_value;
-        $discount = min($discount, (float) $validated['amount']);
-        return response()->json(['success' => true, 'data' => ['coupon' => $coupon, 'discount' => round($discount, 2)]]);
+
+        $coupon = $result['coupon'];
+
+        return response()->json([
+            'success' => true,
+            'status' => true,
+            'data' => [
+                // Public callers only need what the cart shows, not usage counts or internal notes.
+                'coupon' => $coupon->only(['code', 'title', 'discount_type', 'discount_value', 'minimum_amount', 'ends_at']),
+                'discount' => $result['discount'],
+            ],
+        ]);
     }
 
     private function validated(Request $request, bool $partial = false): array
