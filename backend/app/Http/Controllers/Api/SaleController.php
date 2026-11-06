@@ -1108,10 +1108,14 @@ class SaleController extends Controller
 
     private function cancelSale(Request $request, Sale $sale, string $status, array $meta = [])
     {
-        if ($sale->status !== 'completed') {
+        // Converted web orders stay "processing" until delivery completes; they must be cancellable too.
+        $allowed = $status === 'cancelled' ? ['completed', 'processing'] : ['completed'];
+        if (! in_array($sale->status, $allowed, true)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Only completed sales can be cancelled or returned.',
+                'message' => $status === 'cancelled'
+                    ? 'Only completed or processing sales can be cancelled.'
+                    : 'Only completed sales can be returned.',
             ], 422);
         }
 
@@ -1238,6 +1242,26 @@ class SaleController extends Controller
             }
 
             $sale->update($this->saleUpdateData($saleUpdate));
+
+            if (! empty($sale->customer_order_id)) {
+                $order = \App\Models\CustomerOrder::query()->whereKey($sale->customer_order_id)->lockForUpdate()->first();
+                if ($order && $order->status !== 'cancelled') {
+                    $history = is_array($order->status_history) ? $order->status_history : [];
+                    $history[] = [
+                        'status' => 'cancelled',
+                        'custom_status' => $status === 'returned' ? 'Order Returned' : 'Order Cancelled',
+                        'payment_status' => $order->payment_status,
+                        'changed_at' => now()->toIso8601String(),
+                        'changed_by' => $request->user()?->id,
+                        'source' => 'sale_' . $status,
+                    ];
+                    $order->forceFill([
+                        'status' => 'cancelled',
+                        'custom_status' => $status === 'returned' ? 'Order Returned' : 'Order Cancelled',
+                        'status_history' => $history,
+                    ])->save();
+                }
+            }
         });
 
         return response()->json([
@@ -1308,10 +1332,12 @@ class SaleController extends Controller
 
     public function destroy(Sale $sale)
     {
-        if ($sale->status === 'completed') {
+        // Only a reversed invoice may be removed. A "processing" web sale still holds stock, IMEIs, payment and its
+        // order link; deleting it orphaned all of those.
+        if (! in_array($sale->status, ['cancelled', 'canceled', 'returned'], true)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Completed sale cannot be deleted. Cancel it first.',
+                'message' => 'Only cancelled or returned sales can be deleted. Cancel it first.',
             ], 422);
         }
 
