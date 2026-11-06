@@ -18,6 +18,7 @@ import { inEditorPreview, usePageText } from '../../cms/pageTexts';
 import {
   isUsedProduct, productImage, productOldPrice, productPrice, readRecentlyViewed, rememberProduct, type RecentProduct,
 } from './recentlyViewed';
+import { sanitizeHtml } from '../../utils/sanitizeHtml';
 
 const taka = (value: unknown) => `৳${Number(value || 0).toLocaleString('en-IN')}`;
 const rowsOf = (payload: any): any[] => [payload?.data?.data, payload?.data, payload].find(Array.isArray) || [];
@@ -669,7 +670,7 @@ export const ProductDetailsPage: React.FC = () => {
                         {group.rows.map((row, idx) => (
                           <div key={`${row.id || row.label}-${idx}`} className="grid grid-cols-[38%_1fr] border-t border-slate-200 text-[13px] sm:grid-cols-[30%_1fr] sm:text-sm">
                             <dt className="border-r border-slate-200 bg-slate-50/70 px-3 py-2.5 text-slate-600 sm:px-4">{row.label}</dt>
-                            <dd className="min-w-0 break-words px-3 py-2.5 text-slate-800 sm:px-4" dangerouslySetInnerHTML={{ __html: row.value || '-' }} />
+                            <dd className="min-w-0 break-words px-3 py-2.5 text-slate-800 sm:px-4" dangerouslySetInnerHTML={{ __html: sanitizeHtml(row.value) || '-' }} />
                           </div>
                         ))}
                       </dl>
@@ -700,7 +701,7 @@ export const ProductDetailsPage: React.FC = () => {
                     </ul>
                   )}
                   {product.description
-                    ? <div className="nst-rich-text max-w-none text-sm leading-relaxed text-slate-600 [&_h2]:mt-4 [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-slate-900 [&_h3]:mt-3 [&_h3]:font-semibold [&_h3]:text-slate-900 [&_img]:h-auto [&_img]:max-w-full [&_li]:ml-5 [&_li]:list-disc [&_p]:mt-2 [&_table]:block [&_table]:overflow-x-auto" dangerouslySetInnerHTML={{ __html: product.description }} />
+                    ? <div className="nst-rich-text max-w-none text-sm leading-relaxed text-slate-600 [&_h2]:mt-4 [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-slate-900 [&_h3]:mt-3 [&_h3]:font-semibold [&_h3]:text-slate-900 [&_img]:h-auto [&_img]:max-w-full [&_li]:ml-5 [&_li]:list-disc [&_p]:mt-2 [&_table]:block [&_table]:overflow-x-auto" dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.description) }} />
                     : <p className="text-sm text-slate-400">No description published for this product.</p>}
                 </div>
               )}

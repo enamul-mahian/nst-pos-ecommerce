@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import type { BlockComponentProps } from '../registry/blockRegistry';
 import { registerBlock } from '../registry/blockRegistry';
+import { sanitizeHtml } from '../../utils/sanitizeHtml';
 
 const text = (value: unknown): string => typeof value === 'string' ? value : '';
 const record = (value: unknown): Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value) ? value as Record<string, unknown> : {};
@@ -36,7 +37,7 @@ const ParagraphBlock = (props: BlockComponentProps) => {
 const RichTextBlock = (props: BlockComponentProps) => {
   const content = contentOf(props);
   const html = text(content.html);
-  return html ? <div data-block-id={props.block.id} dangerouslySetInnerHTML={{ __html: html }} /> : null;
+  return html ? <div data-block-id={props.block.id} dangerouslySetInnerHTML={{ __html: sanitizeHtml(html) }} /> : null;
 };
 
 const ImageBlock = (props: BlockComponentProps) => {

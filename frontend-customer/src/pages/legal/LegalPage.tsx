@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useWebsiteStore } from '../../store/cms/useWebsiteStore';
 import { useT } from '../../i18n';
+import { sanitizeHtml } from '../../utils/sanitizeHtml';
 
 export const LegalPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -111,10 +112,10 @@ export const LegalPage: React.FC = () => {
             <span className="text-gray-400 text-xs font-semibold mt-1">{pageData.lastUpdated}</span>
           </div>
 
-          {/* Dynamic Rich Text Render block (dangerouslySetInnerHTML is fully secure because content is CMS-verified) */}
+          {/* CMS HTML is sanitized before render: staff-written HTML must not run script in a customer's browser. */}
           <div className="prose max-w-none text-slate-600 text-xs sm:text-sm leading-relaxed font-semibold">
             <div 
-              dangerouslySetInnerHTML={{ __html: pageData.htmlContent }} 
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(pageData.htmlContent) }} 
               className="space-y-6 [&>h3]:text-slate-800 [&>h3]:font-extrabold [&>h3]:text-sm sm:[&>h3]:text-base [&>h3]:mt-6 [&>h3]:mb-2 [&>h3]:border-l-2 [&>h3]:border-[var(--nst-primary)] [&>h3]:pl-2.5 [&>p]:leading-relaxed [&>p]:text-gray-500"
             />
           </div>
