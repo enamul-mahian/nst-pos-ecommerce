@@ -128,6 +128,32 @@ class OrderController extends Controller
             }
 
             $quantity = (int) $row['quantity'];
+
+            // Only live products, and only what is actually in stock. Orders for draft/inactive or sold-out items
+            // used to be accepted and only failed later when staff tried to convert them.
+            if (in_array((string) $product->status, ['draft', 'inactive'], true)) {
+                return response()->json(['status' => false, 'message' => "{$product->name} is not available for online orders."], 422);
+            }
+            if (Schema::hasTable('branch_stocks')) {
+                $hasReserved = Schema::hasColumn('branch_stocks', 'reserved_quantity');
+                $available = (int) DB::table('branch_stocks')
+                    ->where('product_id', $product->id)
+                    ->when(Schema::hasColumn('branch_stocks', 'product_variant_id'), fn ($q) => $variant
+                        ? $q->where('product_variant_id', $variant->id)
+                        : $q->whereNull('product_variant_id'))
+                    ->when(! empty($row['branch_id']), fn ($q) => $q->where('branch_id', (int) $row['branch_id']))
+                    ->sum(DB::raw($hasReserved ? 'GREATEST(quantity - COALESCE(reserved_quantity, 0), 0)' : 'GREATEST(quantity, 0)'));
+                if ($available < $quantity) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => $available > 0
+                            ? "Only {$available} unit(s) of {$product->name} are in stock."
+                            : "{$product->name} is out of stock.",
+                        'stock_issue' => ['product_id' => $product->id, 'variant_id' => $variant?->id, 'available' => $available],
+                    ], 422);
+                }
+            }
+
             $unitPrice = $this->resolvePublicPrice($product, $variant);
             if ($unitPrice <= 0) {
                 return response()->json([
