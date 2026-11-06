@@ -31,6 +31,7 @@ class PatchManagerController extends Controller
     public function validatePatch(Request $request)
     {
         $this->requireSuperAdmin($request);
+        $this->requireEnabled();
         $validated = $request->validate([
             'patch' => ['required', 'file', 'mimes:zip', 'max:204800'],
         ]);
@@ -73,6 +74,7 @@ class PatchManagerController extends Controller
     public function execute(Request $request)
     {
         $this->requireSuperAdmin($request);
+        $this->requireEnabled();
         $validated = $request->validate(['validation_token' => ['required', 'alpha_dash', 'max:80']]);
         $token = $validated['validation_token'];
         $stage = $this->managerRoot() . '/staging/' . $token;
@@ -144,6 +146,7 @@ class PatchManagerController extends Controller
     public function rollback(Request $request, string $id)
     {
         $this->requireSuperAdmin($request);
+        $this->requireEnabled();
         $runRoot = $this->managerRoot() . '/runs/' . basename($id);
         $path = $runRoot . '/run.json';
         abort_unless(File::exists($path), 404, 'Patch run not found.');
@@ -225,6 +228,15 @@ class PatchManagerController extends Controller
             File::ensureDirectoryExists(dirname($target));
             File::copy($file->getPathname(), $target);
         }
+    }
+
+    /**
+     * Writing files into the live project is remote code execution by design. It stays off unless the server
+     * owner turns it on (PATCH_MANAGER_ENABLED=true) for a maintenance window.
+     */
+    private function requireEnabled(): void
+    {
+        abort_unless((bool) config('app.patch_manager_enabled'), 403, 'Patch Manager is disabled on this server. Set PATCH_MANAGER_ENABLED=true to use it.');
     }
 
     private function requireSuperAdmin(Request $request): void

@@ -148,7 +148,8 @@ Route::get('/login', function () {
     ], 401);
 })->name('login');
 
-Route::post('/login', [AuthController::class, 'login'])->name('api.login');
+// Brute-force protection for staff login (customer and supplier logins already had limits).
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1')->name('api.login');
 
 // OAuth callbacks are state-protected and must be reachable without a bearer token after Google redirects the browser.
 Route::get('/google-business/callback', [\App\Http\Controllers\Api\GoogleBusinessController::class, 'callback']);
@@ -438,7 +439,8 @@ Route::middleware(['auth:sanctum', \App\Http\Middleware\EnsurePosStaff::class, '
 
     Route::get('/communications/logs', [MarketingCommunicationController::class, 'logs']);
     Route::post('/communications/send-manual', [MarketingCommunicationController::class, 'sendManual']);
-    Route::post('/communications/send-bulk', [MarketingCommunicationController::class, 'sendBulk']);
+    // Bulk SMS/email to all customers costs money and can be abused for phishing: Admin only.
+    Route::post('/communications/send-bulk', [MarketingCommunicationController::class, 'sendBulk'])->middleware(['role.access:super_admin,admin', 'throttle:5,1']);
     Route::post('/sales/{sale}/send-invoice', [MarketingCommunicationController::class, 'sendInvoice'])->middleware('release.permission:invoice,send');
     Route::get('/sales/{sale}/invoice-data', [InvoicePublicController::class, 'protectedShow'])->middleware('release.permission:invoice,view');
     Route::get('/sales/{sale}/invoice-pdf', [InvoicePublicController::class, 'protectedPdf'])->middleware('release.permission:invoice,print');
@@ -454,7 +456,7 @@ Route::middleware(['auth:sanctum', \App\Http\Middleware\EnsurePosStaff::class, '
 
     Route::get('/system-health', [SystemHealthController::class, 'index']);
     Route::get('/system-health/export', [SystemHealthController::class, 'export']);
-    Route::post('/system-health/repair', [SystemHealthController::class, 'repair']);
+    Route::post('/system-health/repair', [SystemHealthController::class, 'repair'])->middleware('role.access:super_admin,admin');
 
     /*
     |--------------------------------------------------------------------------
@@ -784,7 +786,7 @@ Route::middleware(['auth:sanctum', \App\Http\Middleware\EnsurePosStaff::class, '
 
     Route::get('/bulk-upload/types', [BulkUploadController::class, 'supportedTypes']);
     Route::get('/bulk-upload/template/{type}', [BulkUploadController::class, 'downloadTemplate']);
-    Route::post('/bulk-upload/{type}', [BulkUploadController::class, 'import']);
+    Route::post('/bulk-upload/{type}', [BulkUploadController::class, 'import'])->middleware('role.access:super_admin,admin');
 
     /*
     |--------------------------------------------------------------------------

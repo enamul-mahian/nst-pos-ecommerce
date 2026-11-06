@@ -15,6 +15,9 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    // Patch Manager writes uploaded files into the live project. Off unless explicitly enabled.
+    'patch_manager_enabled' => (bool) env('PATCH_MANAGER_ENABLED', false),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
