@@ -286,7 +286,7 @@ class ReportFileExportService
 
     private function workbookXml(string $title): string
     {
-        $sheetName = mb_substr(preg_replace('/[\\\/\?\*\[\]:]/', ' ', $title), 0, 31) ?: 'Report';
+        $sheetName = mb_substr(preg_replace('#[\\\\/?*\[\]:]#', ' ', $title), 0, 31) ?: 'Report';
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             . '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
             . '<sheets><sheet name="' . $this->xmlEscape($sheetName) . '" sheetId="1" r:id="rId1"/></sheets>'
