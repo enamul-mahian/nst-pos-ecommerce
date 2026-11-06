@@ -1080,6 +1080,9 @@ class SaleController extends Controller
         $validated = $request->validate([
             'reason' => ['nullable', 'string', 'max:500'],
             'note' => ['nullable', 'string', 'max:2000'],
+            // Money handed back to the customer. Defaults to everything they paid towards this bill; 0 = kept as store credit.
+            'refund_amount' => ['nullable', 'numeric', 'min:0'],
+            'refund_method' => ['nullable', 'string', 'max:100'],
         ]);
 
         return $this->cancelSale($request, $sale, 'cancelled', $validated);
@@ -1090,6 +1093,9 @@ class SaleController extends Controller
         $validated = $request->validate([
             'reason' => ['nullable', 'string', 'max:500'],
             'note' => ['nullable', 'string', 'max:2000'],
+            // Money handed back to the customer. Defaults to everything they paid towards this bill; 0 = kept as store credit.
+            'refund_amount' => ['nullable', 'numeric', 'min:0'],
+            'refund_method' => ['nullable', 'string', 'max:100'],
         ]);
 
         return $this->cancelSale($request, $sale, 'returned', $validated);
@@ -1111,7 +1117,23 @@ class SaleController extends Controller
                 $product = Product::where('id', $item->product_id)->lockForUpdate()->first();
 
                 if ($product) {
-                    $branchStock = BranchStock::where('branch_id', $sale->branch_id)->where('product_id', $product->id)->lockForUpdate()->first();
+                    // Put the stock back on the same row the sale took it from (variant row when there is one).
+                    $branchStock = null;
+                    if (! empty($item->branch_stock_id)) {
+                        $branchStock = BranchStock::whereKey($item->branch_stock_id)->lockForUpdate()->first();
+                    }
+                    if (! $branchStock) {
+                        $branchStock = BranchStock::where('branch_id', $sale->branch_id)
+                            ->where('product_id', $product->id)
+                            ->when(
+                                Schema::hasColumn('branch_stocks', 'product_variant_id'),
+                                fn ($query) => $item->product_variant_id
+                                    ? $query->where('product_variant_id', $item->product_variant_id)
+                                    : $query->whereNull('product_variant_id')
+                            )
+                            ->lockForUpdate()
+                            ->first();
+                    }
 
                     if ($branchStock) {
                         $branchStock->update(['quantity' => ((int) $branchStock->quantity) + (int) $item->quantity]);
@@ -1121,6 +1143,10 @@ class SaleController extends Controller
                         'stock_quantity' => ((int) ($product->stock_quantity ?? 0)) + (int) $item->quantity,
                         'status' => 'active',
                     ]);
+
+                    if ($item->product_variant_id && Schema::hasColumn('product_variants', 'stock_quantity')) {
+                        ProductVariant::whereKey($item->product_variant_id)->increment('stock_quantity', (int) $item->quantity);
+                    }
                 }
 
                 $this->releaseReturnedDeviceUnits($item, $request->user()?->id, $meta['reason'] ?? null, $meta['note'] ?? null);
@@ -1141,22 +1167,53 @@ class SaleController extends Controller
                 }
             }
 
+            // What this invoice itself charged (previous due carried onto it is not part of the return).
+            $billAmount = max(round((float) ($sale->final_amount ?? $sale->total ?? 0) - (float) ($sale->previous_due ?? 0), 2), 0);
+            $netPaid = max(round((float) ($sale->paid_amount ?? 0) - (float) ($sale->cash_back_amount ?? 0), 2), 0);
+            $paidTowardsBill = min($netPaid, $billAmount);
+            $unpaidBill = round($billAmount - $paidTowardsBill, 2);
+
+            $refundAmount = array_key_exists('refund_amount', $meta) && $meta['refund_amount'] !== null
+                ? round((float) $meta['refund_amount'], 2)
+                : $paidTowardsBill;
+            abort_if($refundAmount > $paidTowardsBill + 0.01, 422, 'Refund cannot be more than the amount paid for this invoice (' . number_format($paidTowardsBill, 2) . ').');
+
             if ($sale->customer_id) {
                 $customer = Customer::where('id', $sale->customer_id)->lockForUpdate()->first();
 
                 if ($customer) {
+                    // Remove only what this invoice still owed. The customer's other dues and later invoices stay intact
+                    // (the old code overwrote the balance with this sale's previous_due).
                     $customer->update([
-                        // Creating a sale sets customer current_balance to the sale due_amount.
-                        // Cancel/return restores the customer balance to its previous_due.
-                        'current_balance' => max((float) ($sale->previous_due ?? 0), 0),
+                        'current_balance' => max(round((float) ($customer->current_balance ?? 0) - $unpaidBill, 2), 0),
                         'updated_by' => $request->user()?->id,
                     ]);
                 }
             }
 
+            if ($refundAmount > 0) {
+                // A negative sale payment is the refund: the cashbook shows it as cash out on the return date.
+                $originalMethod = SalePayment::where('sale_id', $sale->id)->where('amount', '>', 0)->orderByDesc('amount')->value('payment_method');
+                SalePayment::create([
+                    'sale_id' => $sale->id,
+                    'payment_method' => $meta['refund_method'] ?? $originalMethod ?? 'cash',
+                    'provider_name' => $status === 'returned' ? 'Sale return refund' : 'Sale cancel refund',
+                    'amount' => -$refundAmount,
+                    'received_by' => $request->user()?->id,
+                    'note' => ($status === 'returned' ? 'Refund for returned invoice ' : 'Refund for cancelled invoice ') . $sale->invoice_no,
+                ]);
+            }
+
             $saleUpdate = [
                 'status' => $status,
+                // A returned/cancelled invoice is no longer owed by the customer.
+                'due_amount' => 0,
+                'payment_status' => $status,
             ];
+
+            if (Schema::hasColumn('sales', 'refund_amount')) {
+                $saleUpdate['refund_amount'] = $refundAmount;
+            }
 
             if ($status === 'cancelled') {
                 $saleUpdate['cancel_reason'] = $meta['reason'] ?? null;

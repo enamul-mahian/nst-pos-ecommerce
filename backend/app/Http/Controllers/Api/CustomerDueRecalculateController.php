@@ -150,6 +150,13 @@ class CustomerDueRecalculateController extends Controller
             $query->whereRaw('1 = 0');
         }
 
+        // Returned and cancelled invoices are not owed any more and must never receive due payments.
+        if (Schema::hasColumn('sales', 'status')) {
+            $query->where(function ($q) {
+                $q->whereNull('status')->orWhereNotIn('status', ['cancelled', 'canceled', 'returned']);
+            });
+        }
+
         return $query;
     }
 

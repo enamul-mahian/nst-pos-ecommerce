@@ -292,6 +292,27 @@ class ExchangeController extends Controller
                 ]);
             }
 
+            if ($due > 0) {
+                // Keep the exchange due on the invoice as well. Due collection rebuilds the customer balance from
+                // invoice dues, so a due kept only on the customer row disappeared after the next collection.
+                $lockedSale->forceFill([
+                    'due_amount' => round((float) $lockedSale->due_amount + $due, 2),
+                    'payment_status' => ((float) $lockedSale->paid_amount + $paid) > 0 ? 'partial' : 'due',
+                ])->save();
+            }
+
+            if ($refund > 0) {
+                // Money handed back on a down-grade exchange is cash out in the cashbook (negative sale payment).
+                SalePayment::create([
+                    'sale_id' => $lockedSale->id,
+                    'payment_method' => $validated['payment_method'] ?? 'cash',
+                    'provider_name' => 'Exchange refund ' . $exchange->exchange_no,
+                    'amount' => -$refund,
+                    'received_by' => $request->user()?->id,
+                    'note' => 'Refund for exchange ' . $exchange->exchange_no,
+                ]);
+            }
+
             if ($lockedSale->customer_id && $due > 0) {
                 $customer = Customer::whereKey($lockedSale->customer_id)->lockForUpdate()->first();
                 if ($customer) {

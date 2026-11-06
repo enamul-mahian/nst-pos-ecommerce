@@ -19,7 +19,8 @@ class AccountsController extends Controller
         $transactions = collect();
 
         $salePayments = $this->salePaymentTransactions($request, $dateFrom, $dateTo);
-        $transactions = $transactions->merge($salePayments);
+        $transactions = $transactions->merge($salePayments)
+            ->merge($this->saleCashBackTransactions($request, $dateFrom, $dateTo));
 
         // Due receive can create both sale_payments and customer_payments. Count
         // invoice-applied money from sale_payments and only the residual/extra
@@ -144,25 +145,66 @@ class AccountsController extends Controller
             ->limit(500)
             ->get()
             ->map(function ($row) use ($amountColumn, $dateColumn) {
+                // Refunds on returned/cancelled sales are stored as negative sale payments: they are cash going out.
+                $isRefund = (float) ($row->{$amountColumn} ?? 0) < 0;
+
                 return [
                     'id' => 'sale_payment_' . $row->id,
                     'raw_id' => $row->id,
-                    'direction' => 'in',
-                    'type' => 'cash_in',
-                    'source' => 'Sale Collection',
+                    'direction' => $isRefund ? 'out' : 'in',
+                    'type' => $isRefund ? 'cash_out' : 'cash_in',
+                    'source' => $isRefund ? 'Sale Refund' : 'Sale Collection',
                     'reference_no' => $row->reference_no ?? ('SALE-' . ($row->sale_id ?? $row->id)),
                     'party_name' => $row->party_name ?? 'Walk-in Customer',
                     'party_phone' => $row->party_phone ?? null,
                     'payment_method' => $row->payment_method ?? '-',
                     'provider_name' => $row->provider_name ?? null,
                     'transaction_id' => $row->transaction_id ?? null,
-                    'amount' => round((float) ($row->{$amountColumn} ?? 0), 2),
+                    'amount' => round(abs((float) ($row->{$amountColumn} ?? 0)), 2),
                     'note' => $row->note ?? null,
                     'user_name' => $row->user_name ?? null,
                     'date' => $row->{$dateColumn} ?? null,
                     'sort_date' => $row->{$dateColumn} ?? null,
                 ];
             });
+    }
+
+    /** Change handed back when a customer paid more than the bill (sales.cash_back_amount) is cash going out. */
+    private function saleCashBackTransactions(Request $request, Carbon $dateFrom, Carbon $dateTo): Collection
+    {
+        if (! Schema::hasTable('sales') || ! Schema::hasColumn('sales', 'cash_back_amount')) {
+            return collect();
+        }
+        if ($request->filled('payment_method') && $request->payment_method !== 'cash') {
+            return collect();
+        }
+
+        return DB::table('sales')
+            ->leftJoin('customers', 'customers.id', '=', 'sales.customer_id')
+            ->where('sales.cash_back_amount', '>', 0)
+            ->whereBetween('sales.created_at', [$dateFrom->copy()->startOfDay(), $dateTo->copy()->endOfDay()])
+            ->when($request->filled('branch_id'), fn ($q) => $q->where('sales.branch_id', $request->branch_id))
+            ->select('sales.id', 'sales.invoice_no', 'sales.cash_back_amount', 'sales.created_at', 'customers.name as party_name', 'customers.phone as party_phone')
+            ->limit(500)
+            ->get()
+            ->map(fn ($row) => [
+                'id' => 'sale_cash_back_' . $row->id,
+                'raw_id' => $row->id,
+                'direction' => 'out',
+                'type' => 'cash_out',
+                'source' => 'Sale Change / Cash Back',
+                'reference_no' => $row->invoice_no ?? ('SALE-' . $row->id),
+                'party_name' => $row->party_name ?? 'Walk-in Customer',
+                'party_phone' => $row->party_phone ?? null,
+                'payment_method' => 'cash',
+                'provider_name' => null,
+                'transaction_id' => null,
+                'amount' => round((float) $row->cash_back_amount, 2),
+                'note' => 'Change returned to customer',
+                'user_name' => null,
+                'date' => $row->created_at,
+                'sort_date' => $row->created_at,
+            ]);
     }
 
     private function customerPaymentTransactions(Request $request, Carbon $dateFrom, Carbon $dateTo): Collection

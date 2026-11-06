@@ -212,7 +212,13 @@ class CustomerLedgerController extends Controller
             'sale_date',
         ]);
 
+        // Summary totals count only invoices that are still active; returned/cancelled ones stay in the list but owe nothing.
         $baseQuery = $this->customerSaleQuery($customer);
+        if (Schema::hasColumn('sales', 'status')) {
+            $baseQuery->where(function ($q) {
+                $q->whereNull('sales.status')->orWhereNotIn('sales.status', ['cancelled', 'canceled', 'returned']);
+            });
+        }
 
         return [
             'total_invoice' => (clone $baseQuery)->count(),
