@@ -75,10 +75,14 @@ class TamperGuardController extends Controller
             return response()->json(['status' => true, 'recorded' => false]);
         }
 
+        // Opening devtools or right-clicking is common and harmless on its own; as "critical" every visitor who
+        // did it raised a dashboard alert. Still logged in Security Center, but low/medium so alerts stay meaningful.
+        $severity = $validated['app'] === 'admin' && $user ? 'medium' : 'low';
+
         $id = $this->events->record(
             $request,
             'tamper_attempt',
-            'critical',
+            $severity,
             [
                 'action' => $validated['action'],
                 'app' => $validated['app'],

@@ -186,7 +186,8 @@ class UserController extends Controller
         }
 
         if (Schema::hasColumn('users', 'temporary_password')) {
-            $data['temporary_password'] = $plainPassword;
+            // Never keep a readable password in the database; it is shown once in this response only.
+            $data['temporary_password'] = null;
         }
         if (Schema::hasColumn('users', 'must_change_password')) {
             $data['must_change_password'] = true;
@@ -201,10 +202,13 @@ class UserController extends Controller
         $user = User::create($data);
         $this->syncUserRoles($user, $request);
 
+        $formatted = $this->formatUser($user->fresh(['roles']), true);
+        $formatted['temporary_password'] = $plainPassword;
+
         return response()->json([
             'status' => true,
             'message' => 'User created successfully.',
-            'data' => $this->formatUser($user->fresh(['roles']), true),
+            'data' => $formatted,
         ], 201);
     }
 
@@ -267,7 +271,7 @@ class UserController extends Controller
             $data['password'] = Hash::make($plainPassword);
 
             if (Schema::hasColumn('users', 'temporary_password')) {
-                $data['temporary_password'] = $plainPassword;
+                $data['temporary_password'] = null;
             }
             if (Schema::hasColumn('users', 'must_change_password')) {
                 $data['must_change_password'] = true;
@@ -283,10 +287,15 @@ class UserController extends Controller
         $user->update($data);
         $this->syncUserRoles($user, $request);
 
+        $formatted = $this->formatUser($user->fresh(['roles']), $this->canSeeTemporaryPassword($request->user()));
+        if (isset($plainPassword)) {
+            $formatted['temporary_password'] = $plainPassword;
+        }
+
         return response()->json([
             'status' => true,
             'message' => 'User updated successfully.',
-            'data' => $this->formatUser($user->fresh(['roles']), $this->canSeeTemporaryPassword($request->user())),
+            'data' => $formatted,
         ]);
     }
 
@@ -305,7 +314,7 @@ class UserController extends Controller
         ];
 
         if (Schema::hasColumn('users', 'temporary_password')) {
-            $data['temporary_password'] = $newPassword;
+            $data['temporary_password'] = null;
         }
         if (Schema::hasColumn('users', 'must_change_password')) {
             $data['must_change_password'] = true;

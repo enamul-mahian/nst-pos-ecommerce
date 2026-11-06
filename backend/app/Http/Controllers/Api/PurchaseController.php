@@ -177,7 +177,7 @@ class PurchaseController extends Controller
         }
 
         $supplierInvoiceFilePath = $request->hasFile('supplier_invoice_file')
-            ? $request->file('supplier_invoice_file')->store('purchase-invoices', 'public')
+            ? $request->file('supplier_invoice_file')->store('private/purchase-invoices', 'local')
             : null;
 
         $result = DB::transaction(function () use ($request, $validated, $supplierInvoiceFilePath) {
@@ -400,15 +400,19 @@ class PurchaseController extends Controller
         $updateData = [];
 
         if ($request->hasFile('supplier_invoice_file') && Schema::hasColumn('purchases', 'supplier_invoice_file')) {
-            if (! empty($purchase->supplier_invoice_file) && Storage::disk('public')->exists($purchase->supplier_invoice_file)) {
-                Storage::disk('public')->delete($purchase->supplier_invoice_file);
+            if (! empty($purchase->supplier_invoice_file)) {
+                foreach (['local', 'public'] as $disk) {
+                    Storage::disk($disk)->delete($purchase->supplier_invoice_file);
+                }
             }
-            $updateData['supplier_invoice_file'] = $request->file('supplier_invoice_file')->store('purchase-invoices', 'public');
+            $updateData['supplier_invoice_file'] = $request->file('supplier_invoice_file')->store('private/purchase-invoices', 'local');
         }
 
         if ($request->boolean('remove_supplier_invoice_file') && Schema::hasColumn('purchases', 'supplier_invoice_file')) {
-            if (! empty($purchase->supplier_invoice_file) && Storage::disk('public')->exists($purchase->supplier_invoice_file)) {
-                Storage::disk('public')->delete($purchase->supplier_invoice_file);
+            if (! empty($purchase->supplier_invoice_file)) {
+                foreach (['local', 'public'] as $disk) {
+                    Storage::disk($disk)->delete($purchase->supplier_invoice_file);
+                }
             }
             $updateData['supplier_invoice_file'] = null;
         }
@@ -489,6 +493,23 @@ class PurchaseController extends Controller
                 ? 'Purchase cancelled: stock and supplier balance were reversed. It is kept on record because money was already paid (now supplier advance).'
                 : 'Purchase deleted: stock and supplier balance were reversed.',
         ]);
+    }
+
+    /** Supplier invoice file of a purchase, for logged-in staff with purchase access only. */
+    public function invoiceFile(string $id)
+    {
+        $path = Schema::hasColumn('purchases', 'supplier_invoice_file')
+            ? DB::table('purchases')->where('id', $id)->value('supplier_invoice_file')
+            : null;
+        abort_unless($path, 404, 'No supplier invoice file for this purchase.');
+
+        foreach (['local', 'public'] as $disk) {
+            if (Storage::disk($disk)->exists($path)) {
+                return Storage::disk($disk)->response($path, basename($path), ['X-Content-Type-Options' => 'nosniff', 'Cache-Control' => 'private, no-store']);
+            }
+        }
+
+        abort(404, 'Supplier invoice file not found.');
     }
 
     public function receive(string $id)
