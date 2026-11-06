@@ -605,6 +605,7 @@ Route::middleware(['auth:sanctum', \App\Http\Middleware\EnsurePosStaff::class, '
     Route::get('/suppliers/all', [SupplierController::class, 'all'])->middleware('release.permission:suppliers,view');
     Route::get('/suppliers/{supplier}/ledger', [SupplierLedgerController::class, 'ledger'])->middleware('release.permission:suppliers,view');
     Route::post('/suppliers/{supplier}/pay-due', [SupplierLedgerController::class, 'payDue'])->middleware('release.permission:payments,create');
+    Route::get('/supplier-payments/{paymentId}/slip', [SupplierLedgerController::class, 'slip'])->whereNumber('paymentId')->middleware('release.permission:suppliers,view');
     Route::post('/suppliers/{supplier}/recalculate-due', [SupplierLedgerController::class, 'recalculate'])->middleware('release.permission:suppliers,edit');
     Route::get('/suppliers', [SupplierController::class, 'index'])->middleware('release.permission:suppliers,view');
     Route::post('/suppliers', [SupplierController::class, 'store'])->middleware('release.permission:suppliers,create');
@@ -635,6 +636,7 @@ Route::middleware(['auth:sanctum', \App\Http\Middleware\EnsurePosStaff::class, '
     Route::get('/purchases', [PurchaseController::class, 'index'])->middleware('release.permission:purchases,view');
     Route::post('/purchases', [PurchaseController::class, 'store'])->middleware('release.permission:purchases,create');
     Route::get('/purchases/{purchase}', [PurchaseController::class, 'show'])->middleware('release.permission:purchases,view');
+    Route::get('/purchases/{purchase}/invoice-file', [PurchaseController::class, 'invoiceFile'])->middleware('release.permission:purchases,view');
     Route::match(['put', 'patch'], '/purchases/{purchase}', [PurchaseController::class, 'update'])->middleware('release.permission:purchases,edit');
     Route::delete('/purchases/{purchase}', [PurchaseController::class, 'destroy'])->middleware('release.permission:purchases,delete');
     Route::post('/purchases/{purchase}/receive', [PurchaseController::class, 'receive'])->middleware('release.permission:purchases,receive');
