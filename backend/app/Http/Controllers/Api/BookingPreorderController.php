@@ -52,6 +52,19 @@ class BookingPreorderController extends Controller
     public function publicStore(Request $request)
     {
         $validated = $this->validated($request, true);
+
+        // A guest must not choose the price, attach the booking to someone else's customer account or set staff
+        // statuses. Price comes from the product; the account link is made by staff.
+        unset($validated['customer_id'], $validated['custom_status']);
+        if (! empty($validated['product_id'])) {
+            $product = \App\Models\Product::find($validated['product_id']);
+            $variantId = $validated['product_variant_id'] ?? $validated['variant_id'] ?? null;
+            $variant = $variantId ? \App\Models\ProductVariant::query()->where('product_id', $product?->id)->find($variantId) : null;
+            $validated['product_price'] = (float) (($variant?->sale_price ?? 0) ?: ($product?->sale_price ?? 0) ?: ($product?->regular_price ?? 0));
+        } else {
+            $validated['product_price'] = null;
+        }
+
         $booking = $this->createBooking($validated, null);
         return response()->json(['success' => true, 'message' => 'Booking request submitted.', 'data' => $booking], 201);
     }

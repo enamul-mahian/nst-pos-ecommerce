@@ -172,11 +172,11 @@ Route::get('/public/recent-purchases', [\App\Http\Controllers\Api\RecentPurchase
 | Public Customer Tools: warranty, invoice, EMI, booking, message
 |--------------------------------------------------------------------------
 */
-Route::get('/public/warranty-check', [WarrantyPublicController::class, 'check']);
+Route::get('/public/warranty-check', [WarrantyPublicController::class, 'check'])->middleware('throttle:20,1');
 Route::get('/public/emi-banks', [EmiController::class, 'index']);
 Route::get('/public/emi-calculate', [EmiController::class, 'calculate']);
-Route::post('/public/bookings', [BookingPreorderController::class, 'publicStore']);
-Route::get('/public/bookings/status', [BookingPreorderController::class, 'publicStatus']);
+Route::post('/public/bookings', [BookingPreorderController::class, 'publicStore'])->middleware('throttle:5,1');
+Route::get('/public/bookings/status', [BookingPreorderController::class, 'publicStatus'])->middleware('throttle:20,1');
 Route::post('/public/customer-messages', [UnifiedCustomerMessageController::class, 'publicStore'])->middleware('throttle:10,1');
 Route::get('/public/hcaptcha/config', [HCaptchaController::class, 'config'])->middleware('throttle:60,1');
 Route::post('/public/customer-register', [PublicCustomerAuthController::class, 'register'])->middleware('throttle:5,1');
