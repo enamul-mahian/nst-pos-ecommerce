@@ -62,7 +62,10 @@ class PurchaseStockService
         $existingStock = DB::table('branch_stocks')
             ->where('branch_id', $branchId)
             ->where('product_id', $productId)
-            ->when($productVariantId && Schema::hasColumn('branch_stocks', 'product_variant_id'), fn ($query) => $query->where('product_variant_id', $productVariantId))
+            // A product without a variant must not land on one of its variant rows.
+            ->when(Schema::hasColumn('branch_stocks', 'product_variant_id'), fn ($query) => $productVariantId
+                ? $query->where('product_variant_id', $productVariantId)
+                : $query->whereNull('product_variant_id'))
             ->lockForUpdate()
             ->first();
 

@@ -24,7 +24,7 @@ class DashboardOperatingController extends Controller
         $user = $request->user();
         $roleFingerprint = sha1(json_encode($access->roleNames($user), JSON_UNESCAPED_UNICODE));
         $cacheKey = sprintf(
-            'nst:dashboard:action-summary:v3:user:%s:branch:%s:roles:%s',
+            'nst:dashboard:action-summary:v4:user:%s:branch:%s:roles:%s',
             (string) $user->id,
             (string) ($user->branch_id ?? 'none'),
             $roleFingerprint
@@ -112,7 +112,8 @@ class DashboardOperatingController extends Controller
             }
 
             return [
-                'notifications' => $notifications->sortByDesc('created_at')->take(12)->values(),
+                // Cache plain arrays: cache.serializable_classes is false, so a cached Collection came back as __PHP_Incomplete_Class.
+                'notifications' => $notifications->sortByDesc('created_at')->take(12)->values()->all(),
                 'counts' => [
                     'notifications' => $notifications->count(),
                     'unread_chat' => $unreadChat,

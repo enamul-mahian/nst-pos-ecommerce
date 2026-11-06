@@ -6,6 +6,7 @@ import {
 import { useWebsiteStore } from '../../store/cms/useWebsiteStore';
 import { useI18n } from '../../i18n';
 import { localizedField, menuPagesOf, slugOfPage } from '../../cms/sitePages';
+import { sanitizeHtml } from '../../utils/sanitizeHtml';
 
 const TikTokIcon: React.FC<React.SVGProps<SVGSVGElement>> = ({ className = '', ...props }) => (
   <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
@@ -65,7 +66,7 @@ export const Footer: React.FC = () => {
     return (
       <footer data-nst-builder-section-id="global-footer" data-nst-builder-section-type="footer" className="nst-custom-footer relative w-full">
         {footer?.customCss && <style>{String(footer.customCss).replace(/<\/style/gi, '')}</style>}
-        <div dangerouslySetInnerHTML={{ __html: customHtml }} />
+        <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(customHtml) }} />
       </footer>
     );
   }

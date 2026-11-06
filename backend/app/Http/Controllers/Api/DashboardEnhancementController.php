@@ -217,7 +217,8 @@ class DashboardEnhancementController extends Controller
             if (Schema::hasTable('branch_stocks')) {
                 $qtyColumn = Schema::hasColumn('branch_stocks', 'quantity') ? 'quantity' : null;
                 if ($qtyColumn) {
-                    $lowStock = DB::table('branch_stocks')->where($qtyColumn, '<=', 5);
+                    // Same rule as Reports and dashboard stats: 1–5 left. Zero is out of stock, counted separately.
+                    $lowStock = DB::table('branch_stocks')->where($qtyColumn, '>', 0)->where($qtyColumn, '<=', 5);
                     $this->applyDashboardBranchScope($lowStock, 'branch_stocks', $effectiveBranchIds);
                     $data['low_stock'] = $lowStock->count();
                 }

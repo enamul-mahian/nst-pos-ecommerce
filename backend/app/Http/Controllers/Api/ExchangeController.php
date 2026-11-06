@@ -167,24 +167,24 @@ class ExchangeController extends Controller
                     ]);
                 }
 
-                if (! $device) {
-                    $this->changeStock(
-                        $request,
-                        $lockedSale->branch_id,
-                        $item->product_id,
-                        $item->product_variant_id,
-                        (int) $row['quantity'],
-                        'return_in',
-                        'sale_exchange',
-                        $exchange->id,
-                        'Exchange return ' . $exchange->exchange_no
-                    );
-                    $this->changeCatalogStock(
-                        $item->product_id,
-                        $item->product_variant_id,
-                        (int) $row['quantity']
-                    );
-                }
+                // Stock goes back in for phones too: the replacement below takes stock out for phones as well,
+                // so returning a phone without adding stock made every phone exchange lose one unit.
+                $this->changeStock(
+                    $request,
+                    $lockedSale->branch_id,
+                    $item->product_id,
+                    $item->product_variant_id,
+                    (int) $row['quantity'],
+                    'return_in',
+                    'sale_exchange',
+                    $exchange->id,
+                    'Exchange return ' . $exchange->exchange_no
+                );
+                $this->changeCatalogStock(
+                    $item->product_id,
+                    $item->product_variant_id,
+                    (int) $row['quantity']
+                );
 
                 SaleExchangeItem::create([
                     'sale_exchange_id' => $exchange->id,
@@ -214,6 +214,13 @@ class ExchangeController extends Controller
 
                 $quantity = (int) $row['quantity'];
                 $unitPrice = round((float) $row['unit_price'], 2);
+
+                // The replacement price came straight from the request, so a phone could be swapped in for ৳0.
+                // Below the shop price needs Admin.
+                $shopPrice = round((float) (($variant?->sale_price ?? 0) ?: ($product->sale_price ?? 0)), 2);
+                if ($shopPrice > 0 && $unitPrice < $shopPrice - 0.01 && ! $this->accessControl->isAdmin($request->user())) {
+                    abort(422, "{$product->name} replacement price cannot be below the shop price (" . number_format($shopPrice, 2) . '). Ask an Admin for a lower price.');
+                }
                 $lineTotal = round($unitPrice * $quantity, 2);
                 $replacementValue += $lineTotal;
                 $devices = $this->replacementDevices($lockedSale->branch_id, $product->id, $variant?->id, $quantity, collect($row['device_unit_ids'] ?? []), $returnedDeviceIds);

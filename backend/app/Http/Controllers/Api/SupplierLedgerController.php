@@ -114,8 +114,14 @@ class SupplierLedgerController extends Controller
 
                 $purchaseDueAfter = $this->getSupplierPurchaseDueTotal($lockedSupplier);
 
+                // Due the supplier carries without a purchase behind it (opening balance). It used to be wiped out
+                // by every payment because the new balance was rebuilt from purchase dues only.
+                $openingDue = max(round($supplierBalanceBefore - $purchaseDueBefore, 2), 0);
+                $openingPaid = min(max($remainingAmount, 0), $openingDue);
+                $remainingAmount -= $openingPaid;
+
                 if ($dueColumn) {
-                    $newBalance = $purchaseDueAfter;
+                    $newBalance = round($purchaseDueAfter + $openingDue - $openingPaid, 2);
                 } else {
                     $newBalance = max($previousBalance - $amount, 0);
                 }

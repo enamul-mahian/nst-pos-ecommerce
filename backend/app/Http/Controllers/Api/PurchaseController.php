@@ -116,7 +116,7 @@ class PurchaseController extends Controller
 
         $validated = $request->validate([
             'supplier_id' => ['required', 'integer', Rule::exists('suppliers', 'id')],
-            'branch_id' => ['nullable', 'integer'],
+            'branch_id' => ['nullable', 'integer', Rule::exists('branches', 'id')],
 
             'purchase_no' => ['nullable', 'string', 'max:100'],
             'purchase_date' => ['nullable', 'date'],
@@ -162,6 +162,19 @@ class PurchaseController extends Controller
         ]);
 
         $this->validateDeviceIdentifiers($validated['items'] ?? []);
+
+        // IMEI phones can sit in prime stock without a branch, but plain quantity is only ever stored per branch.
+        // Without a branch that quantity was saved on the purchase and silently never reached stock.
+        if (empty($validated['branch_id'])) {
+            foreach ($validated['items'] as $index => $item) {
+                $plain = (float) ($item['quantity'] ?? 1) - count($item['devices'] ?? []);
+                if ($plain > 0) {
+                    throw ValidationException::withMessages([
+                        'branch_id' => 'Select a branch: item ' . ($index + 1) . ' has quantity without IMEI/device rows, which is stocked per branch.',
+                    ]);
+                }
+            }
+        }
 
         $supplierInvoiceFilePath = $request->hasFile('supplier_invoice_file')
             ? $request->file('supplier_invoice_file')->store('purchase-invoices', 'public')

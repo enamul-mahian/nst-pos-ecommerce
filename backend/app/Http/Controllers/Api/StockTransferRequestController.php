@@ -200,6 +200,24 @@ class StockTransferRequestController extends Controller
                     ->map(fn ($id) => (int) $id)->unique()->values();
                 abort_if($selectedDeviceIds->count() > $quantity, 422, 'Selected device count cannot exceed assigned quantity.');
 
+                // IMEI-tracked products must move with their phones. Moving only the stock number left the phones
+                // in the source branch, so the destination showed stock it could never sell.
+                $trackedInSource = DeviceUnit::query()
+                    ->where('product_id', $item->product_id)
+                    ->when($item->product_variant_id, fn ($q) => $q->where('product_variant_id', $item->product_variant_id))
+                    ->when(
+                        $transfer->from_branch_id,
+                        fn ($q) => $q->where('branch_id', $transfer->from_branch_id),
+                        fn ($q) => $q->whereNull('branch_id')
+                    )
+                    ->whereIn('status', ['available', 'ready_for_sale', 'reserved', 'booked'])
+                    ->exists();
+                abort_if(
+                    $trackedInSource && $selectedDeviceIds->count() !== $quantity,
+                    422,
+                    "Select exactly {$quantity} IMEI/device unit(s) for this item; it is an IMEI-tracked product."
+                );
+
                 foreach ($selectedDeviceIds as $deviceId) {
                     $unit = DeviceUnit::query()->whereKey($deviceId)->lockForUpdate()->firstOrFail();
                     abort_unless((int) $unit->product_id === (int) $item->product_id, 422, 'Selected device does not belong to the transfer product.');
@@ -211,7 +229,7 @@ class StockTransferRequestController extends Controller
                     } else {
                         abort_unless(empty($unit->branch_id), 422, 'Prime-stock transfer device must not already belong to a branch.');
                     }
-                    abort_unless(in_array((string) $unit->status, ['available', 'reserved', 'booked'], true), 422, 'Selected device is not transferable from its current status.');
+                    abort_unless(in_array((string) $unit->status, ['available', 'ready_for_sale', 'reserved', 'booked'], true), 422, 'Selected device is not transferable from its current status.');
 
                     DB::table('stock_transfer_device_units')->insert([
                         'stock_transfer_request_id' => $transfer->id,

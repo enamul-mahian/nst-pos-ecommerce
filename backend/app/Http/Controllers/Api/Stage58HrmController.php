@@ -340,10 +340,18 @@ class Stage58HrmController extends Controller
     {
         $data = $request->validate(['name' => ['required', 'string', 'max:160'], 'starts_on' => ['required', 'date'], 'ends_on' => ['required', 'date', 'after_or_equal:starts_on'], 'branch_id' => ['nullable', 'integer', 'exists:branches,id']]);
         $periodId = DB::transaction(function () use ($data, $request) {
-            $duplicate = DB::table('nst_hr_payroll_periods')->where('starts_on', $data['starts_on'])->where('ends_on', $data['ends_on'])->where(function ($q) use ($data) {
-                isset($data['branch_id']) ? $q->where('branch_id', $data['branch_id']) : $q->whereNull('branch_id');
-            })->exists();
-            if ($duplicate) throw ValidationException::withMessages(['starts_on' => 'Payroll already exists for this period and branch.']);
+            // Any overlapping, non-reversed period for the same scope pays the same days twice (only identical dates
+            // were blocked before). An all-branch period overlaps every branch period and the other way round.
+            $duplicate = DB::table('nst_hr_payroll_periods')
+                ->where('starts_on', '<=', $data['ends_on'])
+                ->where('ends_on', '>=', $data['starts_on'])
+                ->where('status', '<>', 'reversed')
+                ->where(function ($q) use ($data) {
+                    isset($data['branch_id'])
+                        ? $q->where('branch_id', $data['branch_id'])->orWhereNull('branch_id')
+                        : $q->whereRaw('1 = 1');
+                })->exists();
+            if ($duplicate) throw ValidationException::withMessages(['starts_on' => 'A payroll already covers some of these dates for this branch.']);
             $periodId = DB::table('nst_hr_payroll_periods')->insertGetId([
                 ...$data, 'period_no' => $this->nextNumber('PAY', 'nst_hr_payroll_periods', 'period_no'), 'status' => 'draft',
                 'created_by' => optional($request->user())->id, 'created_at' => now(), 'updated_at' => now(),
@@ -356,6 +364,26 @@ class Stage58HrmController extends Controller
                 $loanRecovery = round((float) DB::table('nst_hr_loans')->where('employee_id', $employee->id)->whereIn('status', ['approved', 'active'])->where('outstanding_amount', '>', 0)->get(['installment_amount', 'outstanding_amount'])->sum(fn ($loan) => min((float) $loan->installment_amount, (float) $loan->outstanding_amount)), 2);
                 $earnings = $this->decodeJson($salary->earnings, []); $deductions = $this->decodeJson($salary->deductions, []);
                 $gross = round((float) $salary->gross_salary, 2);
+
+                // Salary structures are monthly. A shorter period and absent days were ignored, so a one-week payroll
+                // paid a full month. Both are added as named deduction lines that HR can still edit on the entry.
+                $start = Carbon::parse($data['starts_on']);
+                $daysInMonth = $start->daysInMonth;
+                $periodDays = (int) round(abs($start->diffInDays(Carbon::parse($data['ends_on'])))) + 1;
+                $dailyRate = $daysInMonth > 0 ? $gross / $daysInMonth : 0;
+                if ($periodDays < $daysInMonth) {
+                    $deductions[] = ['name' => "Partial period ({$periodDays} of {$daysInMonth} days)", 'amount' => round($gross - $dailyRate * $periodDays, 2)];
+                }
+                if (Schema::hasTable('nst_hr_attendance')) {
+                    $absentDays = DB::table('nst_hr_attendance')
+                        ->where('employee_id', $employee->id)
+                        ->whereBetween('attendance_date', [$data['starts_on'], $data['ends_on']])
+                        ->where('status', 'absent')
+                        ->count();
+                    if ($absentDays > 0) {
+                        $deductions[] = ['name' => "Absent ({$absentDays} day" . ($absentDays > 1 ? 's' : '') . ')', 'amount' => round($dailyRate * $absentDays, 2)];
+                    }
+                }
                 $totalDeduction = round($this->componentTotal($deductions) + (float) $salary->tax_amount + $loanRecovery, 2);
                 $net = max(0, round($gross - $totalDeduction, 2));
                 DB::table('nst_hr_payroll_entries')->insert([
@@ -404,6 +432,7 @@ class Stage58HrmController extends Controller
             if ($data['action'] === 'reverse') {
                 if (!$period->journal_id) throw ValidationException::withMessages(['action' => 'Payroll journal is missing.']);
                 $this->reverseJournal((int) $period->journal_id, $request, 'Payroll reversal ' . $period->period_no);
+                $this->restorePayrollLoans($periodId);
                 DB::table('nst_hr_payroll_entries')->where('period_id', $periodId)->update(['paid_at' => null, 'updated_at' => now()]);
             }
             DB::table('nst_hr_payroll_periods')->where('id', $periodId)->update($update);
@@ -820,6 +849,26 @@ class Stage58HrmController extends Controller
         foreach (DB::table('nst_journal_lines')->where('journal_id', $journalId)->get() as $line) DB::table('nst_journal_lines')->insert(['journal_id' => $newId, 'account_id' => $line->account_id, 'debit' => $line->credit, 'credit' => $line->debit, 'memo' => 'Payroll reversal', 'created_at' => now(), 'updated_at' => now()]);
         DB::table('nst_journals')->where('id', $journalId)->update(['status' => 'reversed', 'reversed_by_journal_id' => $newId, 'reversed_by' => optional($request->user())->id, 'reversed_at' => now(), 'updated_at' => now()]);
         return $newId;
+    }
+
+    /** Undo recoverPayrollLoans when a paid payroll is reversed: the instalment was never really deducted. */
+    private function restorePayrollLoans(int $periodId): void
+    {
+        foreach (DB::table('nst_hr_payroll_entries')->where('period_id', $periodId)->where('loan_recovery', '>', 0)->get() as $entry) {
+            $remaining = (float) $entry->loan_recovery;
+            $loans = DB::table('nst_hr_loans')->where('employee_id', $entry->employee_id)->where('recovered_amount', '>', 0)->orderByDesc('id')->lockForUpdate()->get();
+            foreach ($loans as $loan) {
+                if ($remaining <= 0) break;
+                $restore = min($remaining, (float) $loan->recovered_amount);
+                DB::table('nst_hr_loans')->where('id', $loan->id)->update([
+                    'recovered_amount' => round((float) $loan->recovered_amount - $restore, 2),
+                    'outstanding_amount' => round((float) $loan->outstanding_amount + $restore, 2),
+                    'status' => 'active',
+                    'updated_at' => now(),
+                ]);
+                $remaining -= $restore;
+            }
+        }
     }
 
     private function recoverPayrollLoans(int $periodId): void

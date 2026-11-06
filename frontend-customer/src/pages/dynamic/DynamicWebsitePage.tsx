@@ -5,6 +5,7 @@ import DynamicPageRenderer from '../../builder/renderer/DynamicPageRenderer';
 import type { BuilderSite } from '../../builder/schema/website.schema';
 import { fetchPublishedWebsitePage } from '../../cms/builderClient';
 import { apiClient } from '../../api/client';
+import { sanitizeHtml } from '../../utils/sanitizeHtml';
 
 interface DynamicWebsitePageProps { includeGlobals?: boolean; }
 type CmsSection = { component_id?: string; component_type?: string; title?: string; content?: { html?: string; text?: string; [key: string]: unknown } | string; is_visible?: boolean; sort_order?: number; effect_settings?: Record<string, unknown> };
@@ -109,6 +110,6 @@ function CmsSectionRenderer({ section, index }: { section: CmsSection; index: nu
   const componentId = section.component_id || `section-${index + 1}`;
   return <section data-cms-component-id={componentId} data-cms-component-type={section.component_type || 'section'} data-cms-editable-field="content" className="rounded-2xl border border-slate-100 p-5">
     {section.title && <h2 className="text-xl font-black text-slate-900" data-cms-editable-field="title">{section.title}</h2>}
-    {html ? <div className="mt-3 text-base leading-8 text-slate-700" dangerouslySetInnerHTML={{ __html: html }} /> : <p className="mt-3 whitespace-pre-wrap text-base leading-8 text-slate-700">{text}</p>}
+    {html ? <div className="mt-3 text-base leading-8 text-slate-700" dangerouslySetInnerHTML={{ __html: sanitizeHtml(html) }} /> : <p className="mt-3 whitespace-pre-wrap text-base leading-8 text-slate-700">{text}</p>}
   </section>;
 }

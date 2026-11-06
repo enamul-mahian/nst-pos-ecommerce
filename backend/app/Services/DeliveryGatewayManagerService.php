@@ -219,10 +219,11 @@ class DeliveryGatewayManagerService
         $credentials = (array) ($provider->credentials ?? []);
         $expected = trim((string) ($credentials['webhook_token'] ?? ''));
 
-        if ($expected !== '') {
-            $provided = trim((string) preg_replace('/^Bearer\s+/i', '', (string) $authorization));
-            abort_unless($provided !== '' && hash_equals($expected, $provided), 401, 'Invalid courier webhook token.');
-        }
+        // Without a token anyone could post shipment updates for any order, so an unset token now refuses
+        // instead of accepting everything. Set the webhook token in Delivery API Manager and on the courier side.
+        abort_if($expected === '', 401, 'Courier webhook token is not configured for this provider.');
+        $provided = trim((string) preg_replace('/^Bearer\s+/i', '', (string) $authorization));
+        abort_unless($provided !== '' && hash_equals($expected, $provided), 401, 'Invalid courier webhook token.');
 
         $tracking = (string) (
             $payload['tracking_code']

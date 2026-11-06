@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Calendar, ChevronRight, Clock, ShieldCheck } from 'lucide-react';
 import { useWebsiteStore } from '../../store/cms/useWebsiteStore';
 import SocialShareBar from '../../components/common/SocialShareBar';
+import { sanitizeHtml } from '../../utils/sanitizeHtml';
 
 type BlogItem = {
   id: number | string;
@@ -104,7 +105,7 @@ export const BlogDetailsPage: React.FC = () => {
 
           <div
             className="prose max-w-none text-sm leading-7 text-slate-600"
-            dangerouslySetInnerHTML={{ __html: activeBlog.contentHtml || activeBlog.summary || '' }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(activeBlog.contentHtml || activeBlog.summary || '') }}
           />
 
           <div className="mt-3 flex items-center gap-1.5 border-t border-gray-100 pt-5 text-[10px] font-bold uppercase text-gray-400">

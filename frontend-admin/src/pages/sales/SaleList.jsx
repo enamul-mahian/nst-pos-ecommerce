@@ -239,8 +239,10 @@ export default function SaleList() {
     return sale?.final_amount || sale?.total_amount || sale?.grand_total || 0;
   };
 
+  // Money kept on the invoice: what was paid minus change handed back.
   const getPaidAmount = (sale) => {
-    return sale?.paid_amount || sale?.total_paid || 0;
+    const paid = Number(sale?.paid_amount || sale?.total_paid || 0);
+    return Math.max(paid - Number(sale?.cash_back_amount || 0), 0);
   };
 
   const getDueAmount = (sale) => {

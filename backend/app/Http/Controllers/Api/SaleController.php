@@ -607,6 +607,8 @@ class SaleController extends Controller
             $paidAmount = collect($payments)->sum('amount');
             $dueAmount = max($finalAmount - $paidAmount, 0);
             $cashBackAmount = max($paidAmount - $finalAmount, 0);
+            // A due with no customer attached can never be collected or shown in any ledger.
+            abort_if($dueAmount > 0.009 && ! $customer, 422, 'Add the customer name and phone for a sale with due.');
             $paymentStatus = $dueAmount > 0 ? ($paidAmount > 0 ? 'partial' : 'due') : 'paid';
             $paymentMethod = count($payments) > 1 ? 'mixed' : ($payments[0]['payment_method'] ?? 'due');
 

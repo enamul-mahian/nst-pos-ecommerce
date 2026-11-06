@@ -35,6 +35,7 @@ class AccountsController extends Controller
             ->merge($this->purchaseCashTransactions($request, $dateFrom, $dateTo))
             ->merge($this->usedPurchaseTransactions($request, $dateFrom, $dateTo))
             ->merge($this->exchangePayoutTransactions($request, $dateFrom, $dateTo))
+            ->merge($this->payrollTransactions($request, $dateFrom, $dateTo))
             ->sortByDesc('sort_date')
             ->take($limit)
             ->values();
@@ -502,6 +503,40 @@ class AccountsController extends Controller
                 $row->paid_at ?? $row->created_at,
                 $row->note ?? null
             ));
+    }
+
+    /** Paid payroll periods (net salary). Reversed periods are left out: the money came back. */
+    private function payrollTransactions(Request $request, Carbon $dateFrom, Carbon $dateTo): Collection
+    {
+        if (! Schema::hasTable('nst_hr_payroll_periods') || ! Schema::hasColumn('nst_hr_payroll_periods', 'paid_at')) {
+            return collect();
+        }
+
+        return DB::table('nst_hr_payroll_periods')
+            ->where('status', 'paid')
+            ->where('net_total', '>', 0)
+            ->whereBetween('paid_at', [$dateFrom->copy()->startOfDay(), $dateTo->copy()->endOfDay()])
+            ->when($request->filled('branch_id'), fn ($q) => $q->where('branch_id', $request->branch_id))
+            ->limit(200)
+            ->get()
+            ->map(function ($period) {
+                $method = Schema::hasTable('nst_hr_payroll_entries')
+                    ? (DB::table('nst_hr_payroll_entries')->where('period_id', $period->id)->whereNotNull('payment_method')->value('payment_method') ?: 'bank')
+                    : 'bank';
+
+                return $this->cashOutRow(
+                    'payroll_' . $period->id,
+                    'Payroll',
+                    $period->period_no ?? ('PAY-' . $period->id),
+                    $period->name ?? 'Staff salary',
+                    null,
+                    $method,
+                    (float) $period->net_total,
+                    $period->paid_at,
+                    null
+                );
+            })
+            ->when($request->filled('payment_method'), fn ($rows) => $rows->where('payment_method', $request->payment_method)->values());
     }
 
     private function cashOutRow(string $id, string $source, string $reference, string $party, ?string $phone, string $method, float $amount, $date, ?string $note): array
