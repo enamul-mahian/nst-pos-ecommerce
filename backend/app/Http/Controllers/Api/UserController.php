@@ -232,6 +232,7 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $this->authorizeUserManagement($request);
+        $this->authorizeTargetUser($request, $user);
 
         $rules = $this->validationRules($request, $user);
         $validated = $request->validate($rules);
@@ -292,6 +293,7 @@ class UserController extends Controller
     public function resetPassword(Request $request, User $user)
     {
         $this->authorizeUserManagement($request);
+        $this->authorizeTargetUser($request, $user);
 
         $validated = $request->validate([
             'password' => ['nullable', 'string', 'min:6', 'max:100'],
@@ -333,6 +335,7 @@ class UserController extends Controller
     public function destroy(Request $request, User $user)
     {
         $this->authorizeUserManagement($request);
+        $this->authorizeTargetUser($request, $user);
 
         if ($request->user()?->id === $user->id) {
             return response()->json([
@@ -412,6 +415,14 @@ class UserController extends Controller
             'customer_id',
             'supplier_id',
         ];
+    }
+
+    /** Only a Super Admin may edit, reset or delete a Super Admin account. */
+    private function authorizeTargetUser(Request $request, User $target): void
+    {
+        if ($this->isSuperAdmin($target) && ! $this->isSuperAdmin($request->user())) {
+            abort(403, 'Only Super Admin can change a Super Admin account.');
+        }
     }
 
     private function authorizeUserManagement(Request $request): void
